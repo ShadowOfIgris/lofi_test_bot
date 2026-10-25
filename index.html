@@ -143,39 +143,39 @@ input[type="range"] {
     <div class="slider-row">
       <div class="slider-heading">
         <label for="pianoVol">Пианино</label>
-        <output id="pianoOut">80%</output>
+        <output id="pianoOut">100%</output>
       </div>
-      <input id="pianoVol" type="range" min="0" max="100" value="80">
+      <input id="pianoVol" type="range" min="0" max="100" value="100">
     </div>
 
     <div class="slider-row">
       <div class="slider-heading">
         <label for="bassVol">Бас</label>
-        <output id="bassOut">35%</output>
+        <output id="bassOut">15%</output>
       </div>
-      <input id="bassVol" type="range" min="0" max="100" value="35">
+      <input id="bassVol" type="range" min="0" max="100" value="15">
     </div>
 
     <div class="slider-row">
       <div class="slider-heading">
         <label for="drumsVol">Ударные</label>
-        <output id="drumsOut">35%</output>
+        <output id="drumsOut">100%</output>
       </div>
-      <input id="drumsVol" type="range" min="0" max="100" value="35">
+      <input id="drumsVol" type="range" min="0" max="100" value="100">
     </div>
 
     <div class="slider-row">
       <div class="slider-heading">
         <label for="textureVol">Текстура записи</label>
-        <output id="textureOut">25%</output>
+        <output id="textureOut">15%</output>
       </div>
-      <input id="textureVol" type="range" min="0" max="100" value="25">
+      <input id="textureVol" type="range" min="0" max="100" value="15">
     </div>
   </section>
 
   <div id="status">Сначала загрузи звуки.</div>
   <div class="small">
-    72 BPM · уютная минорная гармония · процедурная мелодия ·
+    72 BPM · уютная минорная гармония · развивающиеся мелодии ·
     мягкий бит · независимая громкость слоёв.
   </div>
 </main>
@@ -335,19 +335,19 @@ input[type="range"] {
       piano.volume.value = -4;
 
       // Бас: мягкий треугольный синтезатор с низким фильтром.
-      bassGain = createGain(0.35);
+      bassGain = createGain(0.12);
       const bassFilter = new Tone.Filter({
         type: "lowpass",
-        frequency: 260,
+        frequency: 155,
         rolloff: -24
       });
       bass = new Tone.Synth({
         oscillator: { type: "triangle" },
         envelope: {
-          attack: 0.025,
-          decay: 0.22,
-          sustain: 0.22,
-          release: 0.45
+          attack: 0.055,
+          decay: 0.28,
+          sustain: 0.12,
+          release: 0.32
         }
       });
       bass.connect(bassFilter);
@@ -446,7 +446,7 @@ input[type="range"] {
     $("textureOut").textContent = t + "%";
 
     if (pianoGain) pianoGain.gain.rampTo(p / 100, 0.08);
-    if (bassGain) bassGain.gain.rampTo(b / 100, 0.08);
+    if (bassGain) bassGain.gain.rampTo((b / 100) * 0.35, 0.08);
     if (drumsGain) drumsGain.gain.rampTo(d / 100, 0.08);
     if (textureGain) textureGain.gain.rampTo((t / 100) * 0.048, 0.08);
   }
@@ -503,102 +503,141 @@ input[type="range"] {
 
   function generateBar(time) {
     const position = barNumber % 4;
+    const phrasePosition = barNumber % 16;
+    const section = Math.floor(phrasePosition / 4);
 
-    if (position === 0) {
+    // Гармония держится четыре такта, а обновляется раз в 16 тактов.
+    // Так музыка развивается, но не перескакивает между случайными аккордами.
+    if (barNumber > 0 && phrasePosition === 0) {
       currentProgression = choose(progressions);
     }
 
     const chord = currentProgression[position];
+    const breakdown = section === 3;
+    const lightSection = section === 1;
 
-    // Аккорд в начале такта.
-    piano.triggerAttackRelease(
-      chord.notes,
-      3.4 * beat,
-      time,
-      0.25 + Math.random() * 0.08
-    );
-
-    // Басовая нота на первой доле и иногда на третьей.
-    bass.triggerAttackRelease(
-      chord.root,
-      "2n",
-      time,
-      0.45
-    );
-
-    if (Math.random() > 0.35) {
-      bass.triggerAttackRelease(
-        chord.root,
-        "8n",
-        time + 2 * beat,
-        0.27
+    // Аккорды: иногда полный аккорд, иногда более редкое и лёгкое звучание.
+    const chordVelocity = breakdown ? 0.18 : (lightSection ? 0.21 : 0.27);
+    if (!breakdown || position % 2 === 0) {
+      piano.triggerAttackRelease(
+        chord.notes,
+        (breakdown ? 2.6 : 3.4) * beat,
+        time,
+        chordVelocity
       );
     }
 
-    // Ненавязчивый kick: обычно первая и третья доли,
-    // с небольшой вероятностью пропуска для живого дыхания.
-    if (Math.random() > 0.12) {
-      kick.triggerAttackRelease("C1", "8n", time, 0.55);
-    }
-    if (Math.random() > 0.32) {
-      kick.triggerAttackRelease("C1", "8n", time + 2 * beat, 0.38);
+    // Бас остаётся фоном: короткий, тёплый и не в каждом такте.
+    if (!breakdown && (position === 0 || position === 2)) {
+      bass.triggerAttackRelease(chord.root, "2n", time, 0.24);
+    } else if (breakdown && position === 0) {
+      bass.triggerAttackRelease(chord.root, "2n", time, 0.16);
     }
 
-    // Snare на второй и четвёртой долях.
-    if (Math.random() > 0.15) {
-      snare.triggerAttackRelease("8n", time + beat, 0.24);
-    }
-    if (Math.random() > 0.18) {
-      snare.triggerAttackRelease("8n", time + 3 * beat, 0.22);
+    // Ударные меняют плотность между частями 16-тактового цикла.
+    if (!breakdown && !lightSection) {
+      if (Math.random() > 0.08) {
+        kick.triggerAttackRelease("C1", "8n", time, 0.42);
+      }
+      if (Math.random() > 0.28) {
+        kick.triggerAttackRelease("C1", "8n", time + 2 * beat, 0.29);
+      }
+      if (Math.random() > 0.12) {
+        snare.triggerAttackRelease("8n", time + beat, 0.20);
+      }
+      if (Math.random() > 0.15) {
+        snare.triggerAttackRelease("8n", time + 3 * beat, 0.19);
+      }
+    } else if (lightSection) {
+      // Вторая часть тише по активности: оставляем редкие акценты.
+      if (position % 2 === 0) {
+        kick.triggerAttackRelease("C1", "8n", time, 0.28);
+      }
+      if (position === 3 && Math.random() > 0.35) {
+        snare.triggerAttackRelease("8n", time + 3 * beat, 0.13);
+      }
+    } else {
+      // В конце цикла почти убираем бит, чтобы было ощущение передышки.
+      if (position === 0 && Math.random() > 0.45) {
+        kick.triggerAttackRelease("C1", "8n", time, 0.20);
+      }
     }
 
-    // Редкие восьмые хэты, чтобы ритм не был слишком навязчивым.
+    // Хэты с разной плотностью и небольшими паузами.
+    const hatChance = breakdown ? 0.12 : (lightSection ? 0.24 : 0.48);
     for (let i = 0; i < 8; i++) {
-      if (Math.random() > 0.48) {
+      if (Math.random() < hatChance) {
         hats.triggerAttackRelease(
           "32n",
-          time + i * beat / 2,
-          0.10 + Math.random() * 0.08
+          time + i * beat / 2 + (i % 2 ? beat * 0.018 : 0),
+          breakdown ? 0.055 : 0.09 + Math.random() * 0.05
         );
       }
     }
 
-    // Мелодия: несколько нот из одной гармонически подходящей гаммы.
-    const count = 2 + Math.floor(Math.random() * 3);
-    const slots = [0.5, 1, 1.5, 2, 2.5, 3, 3.5];
-    const used = [];
+    // Мелодия строится из небольших фраз: мотив повторяется с изменениями,
+    // а не выбирается полностью случайный набор нот каждый такт.
+    const motifs = [
+      [0, 2, 4, 2],
+      [4, 3, 2, 1],
+      [0, 2, 3, 4],
+      [4, 2, 1, 0]
+    ];
+    const motif = motifs[position];
+    const slotsByBar = [
+      [0.5, 1.5, 2.5, 3.5],
+      [0.5, 1, 2.5, 3.5],
+      [1, 1.5, 2.5, 3],
+      [0.5, 2, 3.5]
+    ];
+    const slots = slotsByBar[position];
+    const chordTonePool = chord.notes.filter(note => scale.includes(note));
+    const safePool = chordTonePool.length ? chordTonePool : scale;
 
-    for (let i = 0; i < count; i++) {
-      let slot = choose(slots);
-      let attempts = 0;
-
-      while (used.includes(slot) && attempts < 10) {
-        slot = choose(slots);
-        attempts++;
-      }
-      used.push(slot);
-
-      if (Math.random() < 0.14) continue;
-
-      let note = choose(scale);
-
-      if (Math.random() < 0.5) {
-        const previousIndex = scale.indexOf(previousNote);
-        if (previousIndex >= 0) {
-          const step = choose([-2, -1, 1, 2]);
-          note = scale[
-            Math.max(0, Math.min(scale.length - 1, previousIndex + step))
-          ];
+    if (!breakdown || position % 2 === 0) {
+      for (let i = 0; i < slots.length; i++) {
+        // Часть нот приходит из мотива, часть — из аккорда.
+        let note;
+        if (i < motif.length && Math.random() < 0.68) {
+          note = scale[motif[i]];
+        } else {
+          note = choose(safePool);
         }
+
+        // Вариации сохраняют фразу узнаваемой, но не полностью одинаковой.
+        if (Math.random() < 0.22) {
+          const idx = scale.indexOf(note);
+          if (idx >= 0) {
+            const step = choose([-1, 1]);
+            note = scale[Math.max(0, Math.min(scale.length - 1, idx + step))];
+          }
+        }
+
+        if (Math.random() < (breakdown ? 0.32 : 0.12)) continue;
+
+        const velocity = breakdown
+          ? 0.10 + Math.random() * 0.05
+          : (lightSection ? 0.11 + Math.random() * 0.07 : 0.14 + Math.random() * 0.10);
+
+        piano.triggerAttackRelease(
+          note,
+          choose([0.45, 0.7, 1.0, 1.3]),
+          time + slots[i] * beat,
+          velocity
+        );
+        previousNote = note;
       }
+    }
 
-      previousNote = note;
-
+    // Иногда добавляем тихое арпеджио в конце такта — музыкальный ответ.
+    if (!breakdown && Math.random() > 0.55) {
+      const arpeggio = chord.notes;
+      const note = choose(arpeggio);
       piano.triggerAttackRelease(
         note,
-        choose([0.45, 0.7, 1.0, 1.3]),
-        time + slot * beat,
-        0.13 + Math.random() * 0.12
+        "8n",
+        time + 3.5 * beat,
+        0.09
       );
     }
 
