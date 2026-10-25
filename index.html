@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Midnight FM</title>
 <style>
 :root {
@@ -12,114 +12,69 @@
   --panel: #111522;
   --text: #e8e8f1;
   --muted: #858ba5;
-  --accent: #a9a2ff;
+  --accent: #aaa2ff;
 }
 * { box-sizing: border-box; }
 body {
-  margin: 0;
-  min-height: 100vh;
-  background: radial-gradient(ellipse at 50% 0%, #20223d 0%, var(--bg) 65%);
+  margin: 0; min-height: 100vh; padding: 24px;
+  display: flex; justify-content: center; align-items: center;
+  background: radial-gradient(ellipse at 50% 0%, #222440, var(--bg) 68%);
   color: var(--text);
   font-family: Inter, system-ui, sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
 }
-.app { width: min(100%, 620px); }
-header { text-align: center; margin-bottom: 26px; }
-.logo {
-  font-size: 12px; letter-spacing: 5px;
-  color: var(--accent); text-transform: uppercase;
-}
-h1 {
-  font-size: clamp(32px, 7vw, 48px);
-  font-weight: 300; letter-spacing: 2px;
-  margin: 12px 0 7px;
-}
-.subtitle { color: var(--muted); font-size: 13px; }
+.app { width: min(100%, 560px); }
+header { text-align: center; margin-bottom: 25px; }
+.logo { font-size: 11px; letter-spacing: 5px; color: var(--accent); }
+h1 { font-weight: 300; font-size: clamp(34px, 8vw, 48px); letter-spacing: 2px; margin: 12px 0 7px; }
+.subtitle { font-size: 13px; color: var(--muted); }
 .scene {
   height: 190px; position: relative; overflow: hidden;
-  border-radius: 14px; margin-bottom: 18px;
-  background: linear-gradient(180deg, #171a32 0%, #30314b 65%, #151827 100%);
+  border-radius: 12px; margin-bottom: 16px;
+  background: linear-gradient(#171a32, #30314b 65%, #151827);
 }
 .moon {
-  position: absolute; width: 54px; height: 54px;
-  top: 26px; right: 19%; border-radius: 50%;
-  background: #e4e0ff;
-  box-shadow: 0 0 35px #b1a8ff55;
+  position: absolute; width: 52px; height: 52px; top: 25px; right: 20%;
+  border-radius: 50%; background: #e5e1ff;
+  box-shadow: 0 0 38px #b1a8ff55;
 }
 .skyline {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 105px; display: flex; align-items: end;
-  justify-content: space-around; gap: 4px;
+  position: absolute; inset: auto 0 0; height: 105px;
+  display: flex; align-items: end; justify-content: space-around; gap: 4px;
 }
-.building {
-  flex: 1; max-width: 58px; background: #101321;
-  position: relative; border-radius: 2px 2px 0 0;
-}
+.building { flex: 1; max-width: 58px; background: #101321; position: relative; }
 .building:after {
   content: ""; position: absolute; inset: 10px 7px;
-  background: repeating-linear-gradient(
-    0deg, transparent 0 10px, #a7a3e525 10px 13px
-  );
+  background: repeating-linear-gradient(0deg, transparent 0 10px, #aaa5e525 10px 13px);
 }
 .now {
-  padding: 20px 18px; border-radius: 12px;
-  background: var(--panel); border: 1px solid #ffffff0d;
-  text-align: center; margin-bottom: 14px;
+  padding: 21px 16px; text-align: center; background: var(--panel);
+  border: 1px solid #ffffff0d; border-radius: 12px; margin-bottom: 12px;
 }
-.track-label {
-  font-size: 10px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted);
-}
+.label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
 #trackName { font-size: 19px; margin-top: 9px; }
 #trackDesc { font-size: 12px; color: var(--muted); margin-top: 5px; }
 .controls {
-  padding: 20px; border-radius: 12px;
   background: var(--panel); border: 1px solid #ffffff0d;
+  border-radius: 12px; padding: 20px;
 }
-.buttons { display: flex; gap: 10px; margin-bottom: 22px; }
 button {
-  border: 0; border-radius: 8px; padding: 13px 16px;
-  cursor: pointer; font: inherit; transition: opacity .2s, background .2s;
+  width: 100%; border: 0; border-radius: 8px; padding: 14px;
+  font: inherit; font-weight: 600; cursor: pointer;
+  color: #111323; background: var(--accent);
 }
-button:disabled { opacity: .5; cursor: wait; }
-#toggle {
-  flex: 1; background: var(--accent); color: #111323;
-  font-weight: 650;
-}
-#variation {
-  background: #252941; color: var(--text);
-}
-.sliders { display: grid; gap: 17px; }
-.slider-head {
-  display: flex; justify-content: space-between;
-  font-size: 13px; margin-bottom: 7px;
-}
-.slider-head span:last-child { color: var(--muted); }
-input[type=range] {
-  width: 100%; accent-color: var(--accent); cursor: pointer;
-}
-.status {
-  margin-top: 16px; font-size: 11px;
-  color: var(--muted); text-align: center; min-height: 16px;
-}
-footer {
-  color: #686e86; text-align: center;
-  font-size: 11px; margin-top: 18px; letter-spacing: 1px;
-}
-@media(max-width: 430px) {
-  body { padding: 14px; }
-  .controls { padding: 16px; }
-  .scene { height: 160px; }
-}
+button:disabled { opacity: .6; cursor: wait; }
+.volume { margin-top: 17px; }
+.volume-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+input { width: 100%; margin-top: 9px; accent-color: var(--accent); }
+#status { text-align: center; color: var(--muted); font-size: 11px; margin-top: 15px; min-height: 14px; }
+footer { text-align: center; color: #686e86; font-size: 10px; letter-spacing: 2px; margin-top: 18px; }
+@media(max-width:430px) { body { padding: 14px; } .scene { height: 160px; } }
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="logo">Independent radio</div>
+    <div class="logo">INDEPENDENT RADIO</div>
     <h1>Midnight FM</h1>
     <div class="subtitle">somewhere between yesterday and tomorrow</div>
   </header>
@@ -140,39 +95,18 @@ footer {
   </div>
 
   <div class="now">
-    <div class="track-label">Now playing</div>
+    <div class="label">NOW PLAYING</div>
     <div id="trackName">Midnight memories</div>
-    <div id="trackDesc">waiting for the night...</div>
+    <div id="trackDesc">a little music for the hours that belong to you</div>
   </div>
 
   <div class="controls">
-    <div class="buttons">
-      <button id="toggle">▶ Start radio</button>
-      <button id="variation">↻ New variation</button>
+    <button id="toggle">▶ Start radio</button>
+    <div class="volume">
+      <div class="volume-head"><label for="volume">Volume</label><span id="volumeValue">70%</span></div>
+      <input id="volume" type="range" min="0" max="100" value="70">
     </div>
-    <div class="sliders">
-      <div>
-        <div class="slider-head"><label for="music">Piano</label><span id="musicVal">70%</span></div>
-        <input id="music" type="range" min="0" max="100" value="70">
-      </div>
-      <div>
-        <div class="slider-head"><label for="beat">Beat</label><span id="beatVal">35%</span></div>
-        <input id="beat" type="range" min="0" max="100" value="35">
-      </div>
-      <div>
-        <div class="slider-head"><label for="bass">Bass</label><span id="bassVal">40%</span></div>
-        <input id="bass" type="range" min="0" max="100" value="40">
-      </div>
-      <div>
-        <div class="slider-head"><label for="amb">Ambience</label><span id="ambVal">45%</span></div>
-        <input id="amb" type="range" min="0" max="100" value="45">
-      </div>
-      <div>
-        <div class="slider-head"><label for="master">Master volume</label><span id="masterVal">75%</span></div>
-        <input id="master" type="range" min="0" max="100" value="75">
-      </div>
-    </div>
-    <div class="status" id="status">Radio is sleeping.</div>
+    <div id="status">Radio is sleeping.</div>
   </div>
   <footer>24 HOURS · AFTER DARK · ALWAYS ON</footer>
 </div>
@@ -182,30 +116,7 @@ footer {
   "use strict";
 
   const $ = id => document.getElementById(id);
-  const files = {
-    piano: "Presets/piano.wav",
-    beat: "Presets/drums.wav",
-    bass: "Presets/bass.wav",
-    amb: "Presets/ambience.mp3"
-  };
-
-  let ctx, master, compressor;
-  let playing = false;
-  let buffers = {};
-  let layers = {};
-  let timer = null;
-  let variationTimer = null;
-  let stepTimer = null;
-  let pianoTimer = null;
-  let nextStepTime = 0;
-  let step = 0;
-  let generation = 0;
-  let currentPattern = null;
-  let activeNodes = new Set();
-
-  const scale = [0, 2, 3, 7, 10];
-  const rootMidi = 45;
-  const titles = [
+  const TITLES = [
     ["Midnight memories", "somewhere you used to know"],
     ["Rain on the window", "the city never really sleeps"],
     ["Last train home", "one more stop before tomorrow"],
@@ -215,462 +126,435 @@ footer {
     ["Distant lights", "the world feels softer from here"],
     ["After the rain", "everything is quiet again"],
     ["No destination", "it's about the road, not the end"],
-    ["Sleepless", "thoughts drifting past the window"]
+    ["Sleepless", "thoughts drifting past the window"],
+    ["Neon dreams", "somewhere far from the noise"],
+    ["Slow motion", "there's no need to hurry"]
   ];
 
-  function setStatus(message) {
-    $("status").textContent = message;
-  }
+  let ctx = null;
+  let master = null;
+  let musicBus = null;
+  let ambientBus = null;
+  let ambientSource = null;
+  let ambientBuffer = null;
+  let playing = false;
+  let schedulerTimer = null;
+  let nextTime = 0;
+  let step = 0;
+  let bar = 0;
+  let bpm = 72;
+  let swing = 0.06;
+  let keyRoot = 45;
+  let scale = [];
+  let progression = [];
+  let barData = null;
+  let nextBarAt = 0;
+  let arrangementBars = 0;
+  let groove = null;
+  let lastTitle = -1;
 
-  function random(min, max) {
-    return min + Math.random() * (max - min);
-  }
+  const active = new Set();
 
-  function pick(array) {
-    return array[Math.floor(Math.random() * array.length)];
-  }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function chance(p) { return Math.random() < p; }
 
-  function initAudio() {
+  function status(text) { $("status").textContent = text; }
+
+  function init() {
     if (ctx) return;
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) throw new Error("Web Audio is not supported.");
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) throw new Error("Web Audio is not supported");
+    ctx = new AC();
 
-    ctx = new AudioContextClass();
     master = ctx.createGain();
-    compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.value = -18;
-    compressor.knee.value = 16;
+    musicBus = ctx.createGain();
+    ambientBus = ctx.createGain();
+
+    const compressor = ctx.createDynamicsCompressor();
+    compressor.threshold.value = -20;
+    compressor.knee.value = 18;
     compressor.ratio.value = 3;
-    compressor.attack.value = 0.02;
-    compressor.release.value = 0.3;
+    compressor.attack.value = 0.012;
+    compressor.release.value = 0.25;
+
+    musicBus.connect(master);
+    ambientBus.connect(master);
     master.connect(compressor);
     compressor.connect(ctx.destination);
-    applyVolumes();
+    setVolume();
   }
 
-  async function loadBuffers() {
-    initAudio();
-    const results = await Promise.all(
-      Object.entries(files).map(async ([name, path]) => {
-        const response = await fetch(path);
-        if (!response.ok) throw new Error("Can't load " + path);
-        const data = await response.arrayBuffer();
-        buffers[name] = await ctx.decodeAudioData(data);
-      })
-    );
-    return results;
-  }
-
-  function applyVolumes() {
-    if (!ctx) return;
-    const values = {
-      piano: Number($("music").value) / 100,
-      beat: Number($("beat").value) / 100,
-      bass: Number($("bass").value) / 100,
-      amb: Number($("amb").value) / 100
-    };
-    for (const [key, value] of Object.entries(values)) {
-      $(key === "piano" ? "musicVal" : key + "Val").textContent =
-        Math.round(value * 100) + "%";
-      if (layers[key]) {
-        layers[key].gain.gain.setTargetAtTime(value, ctx.currentTime, 0.12);
-      }
+  function setVolume() {
+    const v = Number($("volume").value) / 100;
+    $("volumeValue").textContent = Math.round(v * 100) + "%";
+    if (master && ctx) {
+      master.gain.setTargetAtTime(v, ctx.currentTime, 0.08);
     }
-    $("masterVal").textContent = $("master").value + "%";
-    master.gain.setTargetAtTime(Number($("master").value) / 100,
-      ctx.currentTime, 0.12);
   }
 
-  function createLayer(name, gainValue) {
-    const gain = ctx.createGain();
-    gain.gain.value = gainValue;
-    gain.connect(master);
-    layers[name] = { gain };
+  async function loadAmbience() {
+    if (ambientBuffer) return;
+    const response = await fetch("Presets/ambience.mp3");
+    if (!response.ok) throw new Error("Couldn't load Presets/ambience.mp3");
+    ambientBuffer = await ctx.decodeAudioData(await response.arrayBuffer());
   }
 
-  function sourceFromBuffer(name, offset = 0, duration = null) {
-    const source = ctx.createBufferSource();
-    source.buffer = buffers[name];
-    source.loop = true;
-    source.connect(layers[name].gain);
-    const length = buffers[name].duration;
-    source.start(0, Math.max(0, offset % length));
-    activeNodes.add(source);
-    source.onended = () => activeNodes.delete(source);
-    return source;
+  function makeTitle() {
+    let i = Math.floor(Math.random() * TITLES.length);
+    if (i === lastTitle) i = (i + 1) % TITLES.length;
+    lastTitle = i;
+    $("trackName").textContent = TITLES[i][0];
+    $("trackDesc").textContent = TITLES[i][1];
   }
 
-  function makePattern() {
-    const progression = pick([
+  function chooseScale() {
+    // Minor pentatonic: reliably mellow, with room for melodic variation.
+    scale = [0, 3, 5, 7, 10];
+    keyRoot = pick([43, 45, 48, 50, 52, 55]);
+  }
+
+  function newArrangement() {
+    bpm = pick([66, 68, 70, 72, 74, 76, 78, 80]);
+    swing = rand(0.015, 0.14);
+    chooseScale();
+
+    progression = pick([
       [0, 3, 5, 4],
       [0, 5, 3, 4],
       [0, 3, 1, 4],
       [0, 4, 5, 3],
       [5, 3, 0, 4],
-      [0, 2, 5, 4]
+      [0, 2, 5, 4],
+      [0, 4, 1, 3],
+      [3, 5, 0, 4]
     ]);
-    const notes = [];
-    const length = pick([8, 12, 16]);
-    let lastNote = 0;
 
-    for (let i = 0; i < length; i++) {
-      const bar = Math.floor(i / 4);
-      const chord = progression[bar % progression.length];
-      const hasNote = Math.random() < pick([0.52, 0.68, 0.78]);
-      if (!hasNote) {
-        notes.push(null);
-        continue;
-      }
+    groove = {
+      drums: pick(["soft", "dusty", "sparse", "steady", "broken"]),
+      bass: pick(["root", "walking", "sparse"]),
+      piano: pick(["open", "arpeggio", "fragments", "call-response"]),
+      density: pick([0.48, 0.62, 0.72, 0.82]),
+      velocity: rand(0.75, 1.1)
+    };
 
-      let degree = chord + pick([0, 0, 1, 2, 4]);
-      if (Math.random() < 0.22) degree += 5;
-      let octave = pick([0, 0, 1]);
-      let midi = rootMidi + scale[degree % scale.length] + octave * 12;
+    arrangementBars = 0;
+    makeTitle();
+    status("On air · " + bpm + " BPM");
+  }
 
-      if (lastNote && Math.random() < 0.65) {
-        midi = Math.max(lastNote - 12, Math.min(lastNote + 12, midi));
-      }
-      lastNote = midi;
-      notes.push({
-        midi,
-        velocity: random(0.045, 0.11),
-        duration: random(1.2, 2.7),
-        pan: random(-0.55, 0.55)
-      });
-    }
+  function midiHz(n) { return 440 * Math.pow(2, (n - 69) / 12); }
 
-    return {
-      progression,
-      notes,
-      beatStyle: pick(["soft", "sparse", "steady", "half"]),
-      bassStyle: pick(["root", "syncopated", "sparse"]),
-      swing: random(0.0, 0.13),
-      bpm: pick([66, 68, 70, 72, 74, 76])
+  function track(node) {
+    active.add(node);
+    node.addEventListener("ended", () => active.delete(node), { once: true });
+  }
+
+  function pluck(midi, when, duration, velocity, pan = 0) {
+    const f = midiHz(midi);
+    const voice = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    const stereo = ctx.createStereoPanner();
+    const fundamental = ctx.createOscillator();
+    const harmonic = ctx.createOscillator();
+    const body = ctx.createGain();
+    const shimmer = ctx.createGain();
+
+    fundamental.type = "triangle";
+    fundamental.frequency.setValueAtTime(f, when);
+    harmonic.type = "sine";
+    harmonic.frequency.setValueAtTime(f * 2.003, when);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(rand(1300, 2400), when);
+    filter.frequency.exponentialRampToValueAtTime(700, when + duration);
+
+    body.gain.value = 0.78;
+    shimmer.gain.value = 0.22;
+
+    voice.gain.setValueAtTime(0.0001, when);
+    voice.gain.linearRampToValueAtTime(velocity, when + 0.012);
+    voice.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+
+    stereo.pan.setValueAtTime(pan, when);
+    fundamental.connect(body);
+    harmonic.connect(shimmer);
+    body.connect(filter);
+    shimmer.connect(filter);
+    filter.connect(voice);
+    voice.connect(stereo);
+    stereo.connect(musicBus);
+
+    fundamental.start(when);
+    harmonic.start(when);
+    fundamental.stop(when + duration + 0.03);
+    harmonic.stop(when + duration + 0.03);
+    track(fundamental);
+    track(harmonic);
+
+    fundamental.onended = () => {
+      fundamental.disconnect(); harmonic.disconnect();
+      body.disconnect(); shimmer.disconnect();
+      filter.disconnect(); voice.disconnect(); stereo.disconnect();
     };
   }
 
-  function midiFrequency(midi) {
-    return 440 * Math.pow(2, (midi - 69) / 12);
-  }
-
-  function playPianoNote(note, when) {
-    if (!playing || !note) return;
+  function bassNote(midi, when, duration, velocity) {
     const osc = ctx.createOscillator();
+    const sub = ctx.createOscillator();
     const filter = ctx.createBiquadFilter();
     const gain = ctx.createGain();
-    const pan = ctx.createStereoPanner();
 
     osc.type = "triangle";
-    osc.frequency.setValueAtTime(midiFrequency(note.midi), when);
-    filter.type = "lowpass";
-    filter.frequency.value = 1800;
-    filter.Q.value = 0.45;
-    pan.pan.value = note.pan;
-
-    gain.gain.setValueAtTime(0.0001, when);
-    gain.gain.linearRampToValueAtTime(note.velocity, when + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + note.duration);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(pan);
-    pan.connect(master);
-    osc.start(when);
-    osc.stop(when + note.duration + 0.05);
-
-    activeNodes.add(osc);
-    osc.onended = () => {
-      activeNodes.delete(osc);
-      osc.disconnect();
-      filter.disconnect();
-      gain.disconnect();
-      pan.disconnect();
-    };
-  }
-
-  function playBassNote(midi, when, duration = 0.45, volume = 0.07) {
-    const osc = ctx.createOscillator();
-    const filter = ctx.createBiquadFilter();
-    const gain = ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(midiFrequency(midi), when);
+    sub.type = "sine";
+    osc.frequency.setValueAtTime(midiHz(midi), when);
+    sub.frequency.setValueAtTime(midiHz(midi), when);
     filter.type = "lowpass";
     filter.frequency.value = 180;
+
     gain.gain.setValueAtTime(0.0001, when);
-    gain.gain.linearRampToValueAtTime(volume, when + 0.025);
+    gain.gain.linearRampToValueAtTime(velocity, when + 0.025);
     gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
 
     osc.connect(filter);
+    sub.connect(filter);
     filter.connect(gain);
-    gain.connect(master);
-    osc.start(when);
-    osc.stop(when + duration + 0.05);
-    activeNodes.add(osc);
+    gain.connect(musicBus);
+    osc.start(when); sub.start(when);
+    osc.stop(when + duration + 0.03);
+    sub.stop(when + duration + 0.03);
+    track(osc); track(sub);
     osc.onended = () => {
-      activeNodes.delete(osc);
-      osc.disconnect();
-      filter.disconnect();
-      gain.disconnect();
+      osc.disconnect(); sub.disconnect(); filter.disconnect(); gain.disconnect();
     };
   }
 
-  function playKick(when, volume = 0.14) {
+  function kick(when, volume = 0.12) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(105, when);
+    osc.frequency.setValueAtTime(100, when);
     osc.frequency.exponentialRampToValueAtTime(42, when + 0.13);
     gain.gain.setValueAtTime(volume, when);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.16);
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(when);
-    osc.stop(when + 0.17);
-    activeNodes.add(osc);
-    osc.onended = () => {
-      activeNodes.delete(osc);
-      osc.disconnect();
-      gain.disconnect();
-    };
+    gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.17);
+    osc.connect(gain); gain.connect(musicBus);
+    osc.start(when); osc.stop(when + 0.18);
+    track(osc);
+    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
   }
 
-  function playHat(when, volume = 0.018) {
-    const length = Math.floor(ctx.sampleRate * 0.045);
-    const noiseBuffer = ctx.createBuffer(1, length, ctx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
-    const source = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
-    const gain = ctx.createGain();
-    source.buffer = noiseBuffer;
-    filter.type = "highpass";
-    filter.frequency.value = 6500;
-    gain.gain.setValueAtTime(volume, when);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.045);
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(master);
-    source.start(when);
-    activeNodes.add(source);
-    source.onended = () => {
-      activeNodes.delete(source);
-      source.disconnect();
-      filter.disconnect();
-      gain.disconnect();
-    };
-  }
-
-  function playSnare(when, volume = 0.035) {
-    const length = Math.floor(ctx.sampleRate * 0.11);
-    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  function noiseHit(when, kind, volume) {
+    const duration = kind === "hat" ? 0.045 : 0.12;
+    const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < length; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
     }
-    const source = ctx.createBufferSource();
+
+    const src = ctx.createBufferSource();
     const filter = ctx.createBiquadFilter();
     const gain = ctx.createGain();
-    source.buffer = buffer;
-    filter.type = "bandpass";
-    filter.frequency.value = 1800;
+    src.buffer = buffer;
+    filter.type = kind === "hat" ? "highpass" : "bandpass";
+    filter.frequency.value = kind === "hat" ? 6500 : 1900;
     gain.gain.setValueAtTime(volume, when);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.11);
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(master);
-    source.start(when);
-    activeNodes.add(source);
-    source.onended = () => {
-      activeNodes.delete(source);
-      source.disconnect();
-      filter.disconnect();
-      gain.disconnect();
-    };
+    gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+    src.connect(filter); filter.connect(gain); gain.connect(musicBus);
+    src.start(when);
+    track(src);
+    src.onended = () => { src.disconnect(); filter.disconnect(); gain.disconnect(); };
   }
 
-  function scheduleStep(when, stepNumber, pattern) {
-    const beat = pattern.bpm / 60;
-    const sixteenth = 60 / pattern.bpm / 4;
-    const barStep = stepNumber % 16;
-    const bar = Math.floor(stepNumber / 16);
-    const chordIndex = Math.floor(barStep / 4);
-    const chordDegree = pattern.progression[(bar + chordIndex) % pattern.progression.length];
-    const noteIndex = Math.floor(barStep / 2) % pattern.notes.length;
+  function makeBarData() {
+    const chord = progression[bar % progression.length];
+    const chordRoot = keyRoot + scale[chord % scale.length];
+    const chordNotes = [
+      chordRoot + 12,
+      chordRoot + 12 + scale[2],
+      chordRoot + 12 + scale[4],
+      chordRoot + 24
+    ];
+    const notes = [];
+    const count = pick([3, 4, 5, 6, 7]);
 
-    if (barStep % 2 === 0) {
-      const note = pattern.notes[noteIndex];
-      if (note && Math.random() < 0.84) {
-        playPianoNote(note, when);
+    // Each bar gets its own phrase: new contour, rests, octave and rhythm.
+    let pos = pick([0, 1, 2, 3]);
+    let previous = pick(chordNotes);
+    for (let i = 0; i < count; i++) {
+      const movement = pick([-2, -1, 0, 1, 2, 3]);
+      let candidate = previous + movement * pick([2, 3, 5]);
+      candidate = Math.max(keyRoot + 12, Math.min(keyRoot + 31, candidate));
+      const degree = scale.findIndex((n, ix) =>
+        ix === scale.length - 1 ? candidate % 12 === (keyRoot + n) % 12 :
+        candidate % 12 === (keyRoot + n) % 12
+      );
+      if (degree < 0) candidate = pick(chordNotes);
+      if (chance(0.28)) candidate += 12;
+      notes.push({
+        beat: pos,
+        midi: candidate,
+        velocity: rand(0.035, 0.085) * groove.velocity,
+        duration: rand(0.45, 1.55),
+        pan: rand(-0.5, 0.5)
+      });
+      previous = candidate;
+      pos += pick([0.5, 0.5, 1, 1, 1.5, 2]);
+      if (pos >= 4) break;
+    }
+
+    return { chord, chordRoot, chordNotes, notes };
+  }
+
+  function scheduleBar(when) {
+    if (arrangementBars > 0 && arrangementBars % pick([8, 12, 16]) === 0) {
+      newArrangement();
+    }
+
+    barData = makeBarData();
+    const beatLen = 60 / bpm;
+    const barDuration = beatLen * 4;
+    const barStart = when;
+    const style = groove.drums;
+
+    // Chord pads appear occasionally, never on every bar.
+    if (groove.piano === "open" && chance(0.45)) {
+      barData.chordNotes.slice(0, 3).forEach((n, i) => {
+        pluck(n, barStart + i * 0.035, rand(1.2, 2.2), 0.018, (i - 1) * 0.35);
+      });
+    }
+
+    for (const note of barData.notes) {
+      if (!chance(groove.density)) continue;
+      const offset = note.beat * beatLen;
+      pluck(note.midi, barStart + offset, note.duration, note.velocity, note.pan);
+      if (groove.piano === "arpeggio" && chance(0.35)) {
+        pluck(note.midi + 12, barStart + offset + beatLen * 0.5,
+          note.duration * 0.65, note.velocity * 0.55, -note.pan);
       }
     }
 
-    const beatChance = pattern.beatStyle === "sparse" ? 0.55 :
-      pattern.beatStyle === "half" ? 0.68 : 0.9;
-
-    if (barStep % 4 === 0 && Math.random() < beatChance) {
-      playKick(when, pattern.beatStyle === "soft" ? 0.095 : 0.13);
+    // Bass changes shape with the harmony and arrangement.
+    if (groove.bass !== "sparse" || chance(0.65)) {
+      bassNote(barData.chordRoot - 12, barStart, beatLen * rand(1.1, 1.8), 0.055);
+      if (groove.bass === "walking" && chance(0.7)) {
+        const approach = barData.chordRoot - 12 + pick([2, 3, 5, 7]);
+        bassNote(approach, barStart + beatLen * 2.5, beatLen * 0.7, 0.035);
+      } else if (groove.bass === "root" && chance(0.55)) {
+        bassNote(barData.chordRoot - 12, barStart + beatLen * 2, beatLen * 0.8, 0.04);
+      }
     }
 
-    if ((barStep === 4 || barStep === 12) &&
-        pattern.beatStyle !== "sparse" && Math.random() < 0.75) {
-      playSnare(when, 0.028);
+    // Variation in groove, with occasional space between beats.
+    if (style !== "sparse" && chance(style === "steady" ? 0.9 : 0.7)) {
+      kick(barStart, style === "soft" ? 0.07 : 0.11);
+    }
+    if (style !== "sparse" && chance(0.65)) kick(barStart + beatLen * 2, 0.075);
+
+    if (style === "steady" || (style !== "sparse" && chance(0.55))) {
+      noiseHit(barStart + beatLen, "snare", 0.022);
+      noiseHit(barStart + beatLen * 3, "snare", 0.025);
+    } else if (chance(0.25)) {
+      noiseHit(barStart + beatLen * pick([1, 2, 3]), "snare", 0.018);
     }
 
-    if (barStep % 2 === 1 && Math.random() < 0.7) {
-      playHat(when, 0.012);
-    } else if (barStep % 4 === 3 && Math.random() < 0.25) {
-      playHat(when, 0.016);
+    for (let i = 0; i < 8; i++) {
+      if (chance(style === "dusty" ? 0.4 : 0.6)) {
+        noiseHit(barStart + i * beatLen * 0.5, "hat", rand(0.006, 0.013));
+      }
     }
 
-    if (barStep === 0 || (pattern.bassStyle === "syncopated" && barStep === 10) ||
-        (pattern.bassStyle === "sparse" && barStep === 8)) {
-      const bassMidi = rootMidi + scale[chordDegree % scale.length] - 12;
-      playBassNote(bassMidi, when, 0.5, 0.075);
-    }
-
-    return sixteenth;
+    arrangementBars++;
+    bar++;
+    return barDuration;
   }
 
   function scheduler() {
     if (!playing) return;
-    const lookahead = 0.12;
-    while (nextStepTime < ctx.currentTime + lookahead) {
-      const pattern = currentPattern;
-      const sixteenth = scheduleStep(nextStepTime, step, pattern);
-      nextStepTime += sixteenth * (step % 2 === 1 ? 1 + pattern.swing : 1);
-      step++;
+    const horizon = ctx.currentTime + 0.18;
+    while (nextTime < horizon) {
+      const duration = scheduleBar(nextTime);
+      nextTime += duration;
     }
   }
 
-  function stopTimers() {
-    clearInterval(timer);
-    clearInterval(variationTimer);
-    clearInterval(stepTimer);
-    clearInterval(pianoTimer);
-    timer = variationTimer = stepTimer = pianoTimer = null;
-  }
-
-  function stopGeneratedAudio() {
-    for (const node of activeNodes) {
-      try { node.stop(); } catch (_) {}
-    }
-    activeNodes.clear();
-  }
-
-  function startBed() {
-    for (const key of ["piano", "beat", "bass", "amb"]) {
-      createLayer(key, 0);
-      if (buffers[key]) {
-        sourceFromBuffer(key, random(0, buffers[key].duration));
-      }
-    }
-
-    // Keep the ambience layer; procedural instruments supply the musical variety.
-    for (const key of ["piano", "beat", "bass"]) {
-      layers[key].gain.gain.setValueAtTime(0, ctx.currentTime);
-    }
-    applyVolumes();
-  }
-
-  function updateTrackTitle() {
-    const [name, description] = pick(titles);
-    $("trackName").textContent = name;
-    $("trackDesc").textContent = description;
-  }
-
-  function setNewVariation(initial = false) {
-    if (!playing) return;
-    generation++;
-    currentPattern = makePattern();
-    step = 0;
-    nextStepTime = ctx.currentTime + 0.08;
-    updateTrackTitle();
-
-    // Change intensity gradually instead of abruptly cutting any sound.
-    const now = ctx.currentTime;
-    const fade = initial ? 0.8 : 2.5;
-    layers.piano.gain.gain.cancelScheduledValues(now);
-    layers.piano.gain.gain.setTargetAtTime(
-      Number($("music").value) / 100, now, fade / 4
-    );
-    layers.beat.gain.gain.cancelScheduledValues(now);
-    layers.beat.gain.gain.setTargetAtTime(
-      Number($("beat").value) / 100, now, fade / 4
-    );
-    layers.bass.gain.gain.cancelScheduledValues(now);
-    layers.bass.gain.gain.setTargetAtTime(
-      Number($("bass").value) / 100, now, fade / 4
-    );
-
-    setStatus("Playing · " + currentPattern.bpm + " BPM · new arrangement");
-  }
-
-  async function startRadio() {
+  async function start() {
     if (playing) return;
     $("toggle").disabled = true;
-    setStatus("Waking up the radio...");
-
+    status("Tuning in...");
     try {
-      initAudio();
-      if (!Object.keys(buffers).length) await loadBuffers();
+      init();
       await ctx.resume();
+      await loadAmbience();
+
+      ambientSource = ctx.createBufferSource();
+      ambientSource.buffer = ambientBuffer;
+      ambientSource.loop = true;
+      ambientSource.connect(ambientBus);
+      ambientSource.start();
+      ambientBus.gain.setValueAtTime(0, ctx.currentTime);
+      ambientBus.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 3);
+
+      musicBus.gain.setValueAtTime(0, ctx.currentTime);
+      musicBus.gain.linearRampToValueAtTime(0.88, ctx.currentTime + 2);
 
       playing = true;
-      startBed();
-      setNewVariation(true);
-      stepTimer = setInterval(scheduler, 25);
-      variationTimer = setInterval(() => {
-        if (playing) setNewVariation();
-      }, random(45000, 85000));
-
+      bar = 0;
+      arrangementBars = 0;
+      newArrangement();
+      nextTime = ctx.currentTime + 0.15;
+      schedulerTimer = setInterval(scheduler, 30);
       $("toggle").textContent = "Ⅱ Pause radio";
-      setStatus("On air · let the night unfold");
-    } catch (error) {
-      console.error(error);
-      setStatus("Couldn't load audio. Check the Presets folder and hosting.");
+      status("On air · changing melodies, endlessly");
+    } catch (e) {
+      console.error(e);
+      status("Audio couldn't start. Check Presets/ambience.mp3.");
       playing = false;
     } finally {
       $("toggle").disabled = false;
     }
   }
 
-  function stopRadio() {
+  function stop() {
     playing = false;
-    stopTimers();
-    stopGeneratedAudio();
+    clearInterval(schedulerTimer);
+    schedulerTimer = null;
 
     if (ctx) {
       const now = ctx.currentTime;
-      for (const layer of Object.values(layers)) {
-        layer.gain.gain.cancelScheduledValues(now);
-        layer.gain.gain.setTargetAtTime(0, now, 0.12);
-      }
+      musicBus.gain.cancelScheduledValues(now);
+      musicBus.gain.setTargetAtTime(0, now, 0.1);
+      ambientBus.gain.cancelScheduledValues(now);
+      ambientBus.gain.setTargetAtTime(0, now, 0.1);
     }
+
+    setTimeout(() => {
+      if (playing) return;
+      try {
+        if (ambientSource) {
+          ambientSource.stop();
+          ambientSource.disconnect();
+          ambientSource = null;
+        }
+        for (const node of active) {
+          try { node.stop(); } catch (_) {}
+        }
+        active.clear();
+      } catch (_) {}
+    }, 500);
 
     $("toggle").textContent = "▶ Start radio";
-    setStatus("Radio is sleeping.");
+    status("Radio is sleeping.");
   }
 
-  $("toggle").addEventListener("click", async () => {
-    if (playing) stopRadio();
-    else await startRadio();
+  $("toggle").addEventListener("click", () => {
+    if (playing) stop();
+    else start();
   });
 
-  $("variation").addEventListener("click", () => {
-    if (playing) setNewVariation();
-    else {
-      updateTrackTitle();
-      $("trackDesc").textContent = "press Start radio to listen";
-    }
-  });
+  $("volume").addEventListener("input", setVolume);
 
-  for (const id of ["music", "beat", "bass", "amb", "master"]) {
-    $(id).addEventListener("input", applyVolumes);
-  }
-
-  updateTrackTitle();
-  setStatus("Radio is sleeping.");
+  $("trackName").textContent = "Midnight memories";
+  status("Radio is sleeping.");
 })();
 </script>
 </body>
