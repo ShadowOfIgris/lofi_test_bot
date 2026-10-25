@@ -4,147 +4,263 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Midnight FM — Procedural Lo-fi</title>
+<title>Midnight FM — Lo-fi Radio Lab</title>
 <script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
 <style>
 * { box-sizing: border-box; }
+
 body {
-  margin: 0; min-height: 100vh; padding: 20px;
-  display: grid; place-items: center;
-  background: #0b101c; color: #ece8df;
+  margin: 0;
+  min-height: 100vh;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  background: #0b101c;
+  color: #ece8df;
   font-family: Georgia, serif;
 }
+
 main {
-  width: min(440px, 100%); padding: 30px;
-  border: 1px solid #414354; border-radius: 20px;
+  width: min(460px, 100%);
+  padding: 28px;
+  border: 1px solid #414354;
+  border-radius: 20px;
   background: linear-gradient(160deg, #202536, #121725 75%);
   box-shadow: 0 24px 80px #0007;
 }
+
 .eyebrow {
-  color: #b8a88e; font: 10px Arial, sans-serif;
-  letter-spacing: 4px; text-transform: uppercase;
+  color: #b8a88e;
+  font: 10px Arial, sans-serif;
+  letter-spacing: 4px;
+  text-transform: uppercase;
 }
-h1 { font-size: 29px; font-weight: normal; letter-spacing: 2px; margin: 12px 0 8px; }
-p { color: #b4b6c3; font-size: 14px; line-height: 1.6; }
+
+h1 {
+  font-size: 29px;
+  font-weight: normal;
+  letter-spacing: 2px;
+  margin: 12px 0 8px;
+}
+
+p {
+  color: #b4b6c3;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 button {
-  width: 100%; margin-top: 11px; padding: 14px;
-  border: 1px solid #5a6072; border-radius: 28px;
-  background: #30384b; color: #f2eee6; font-size: 14px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  border: 1px solid #5a6072;
+  border-radius: 28px;
+  background: #30384b;
+  color: #f2eee6;
+  font-size: 14px;
   cursor: pointer;
 }
+
 button:hover { background: #414b60; }
 button:disabled { opacity: .45; cursor: wait; }
-.primary { background: #d5c8ad; color: #191d28; border-color: transparent; }
-#status { min-height: 38px; margin-top: 18px; color: #c0b49e; font: 12px/1.6 Arial, sans-serif; }
-.small { color: #818ba0; font: 11px/1.6 Arial, sans-serif; margin-top: 14px; }
+
+.primary {
+  background: #d5c8ad;
+  color: #191d28;
+  border-color: transparent;
+}
+
+.controls {
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid #373e50;
+  border-radius: 14px;
+  background: #11172580;
+}
+
+.controls h2 {
+  margin: 0 0 16px;
+  color: #d9cdb8;
+  font-size: 15px;
+  font-weight: normal;
+}
+
+.slider-row { margin-top: 15px; }
+
+.slider-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #c4c6d0;
+  font: 12px Arial, sans-serif;
+}
+
+.slider-heading output {
+  color: #d9cdb8;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: #c9b99c;
+  cursor: pointer;
+}
+
+#status {
+  min-height: 36px;
+  margin-top: 18px;
+  color: #c0b49e;
+  font: 12px/1.6 Arial, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.small {
+  margin-top: 14px;
+  color: #818ba0;
+  font: 11px/1.6 Arial, sans-serif;
+}
 </style>
 </head>
+
 <body>
 <main>
   <div class="eyebrow">Midnight FM · sound lab</div>
-  <h1>Endless Lo-fi</h1>
+  <h1>Warm Lo-fi Radio</h1>
   <p>
-    Тёплое пианино, меняющиеся аккорды и мелодии,
-    которые сочиняются прямо во время воспроизведения.
+    Тёплое пианино, мягкий бас и приглушённый бит.
+    Музыка создаётся на ходу.
   </p>
 
-  <button id="load" class="primary">1. Загрузить пианино</button>
-  <button id="chord" disabled>Тест: тёплый аккорд</button>
-  <button id="melody" disabled>Тест: мелодия</button>
-  <button id="play" class="primary" disabled>▶ Запустить генератор</button>
-  <button id="stop" disabled>■ Остановить музыку</button>
+  <button id="load" class="primary">1. Загрузить звуки</button>
+  <button id="chord" disabled>Тест: пианино</button>
+  <button id="play" class="primary" disabled>▶ Запустить радио</button>
+  <button id="stop" disabled>■ Остановить радио</button>
+
+  <section class="controls">
+    <h2>Микшер</h2>
+
+    <div class="slider-row">
+      <div class="slider-heading">
+        <label for="pianoVol">Пианино</label>
+        <output id="pianoOut">80%</output>
+      </div>
+      <input id="pianoVol" type="range" min="0" max="100" value="80">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-heading">
+        <label for="bassVol">Бас</label>
+        <output id="bassOut">35%</output>
+      </div>
+      <input id="bassVol" type="range" min="0" max="100" value="35">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-heading">
+        <label for="drumsVol">Ударные</label>
+        <output id="drumsOut">35%</output>
+      </div>
+      <input id="drumsVol" type="range" min="0" max="100" value="35">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-heading">
+        <label for="textureVol">Текстура записи</label>
+        <output id="textureOut">25%</output>
+      </div>
+      <input id="textureVol" type="range" min="0" max="100" value="25">
+    </div>
+  </section>
 
   <div id="status">Сначала загрузи звуки.</div>
   <div class="small">
-    Темп: 72 BPM · тональность: до минор ·
-    случайные мелодические фразы и гармонические последовательности.
+    72 BPM · уютная минорная гармония · процедурная мелодия ·
+    мягкий бит · независимая громкость слоёв.
   </div>
 </main>
 
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+
   const loadButton = $("load");
   const chordButton = $("chord");
-  const melodyButton = $("melody");
   const playButton = $("play");
   const stopButton = $("stop");
   const status = $("status");
 
-  let piano = null;
   let ready = false;
   let loading = false;
   let playing = false;
+  let piano = null;
+  let bass = null;
+  let kick = null;
+  let snare = null;
+  let hats = null;
   let noise = null;
-  let noiseGain = null;
-  let effects = [];
+
+  let pianoGain, bassGain, drumsGain, textureGain;
+  let pianoFilter, pianoCompressor, saturation, reverb;
+  let noiseHighpass, noiseLowpass;
   let repeatId = null;
   let barNumber = 0;
 
+  const effects = [];
   const BPM = 72;
   const beat = 60 / BPM;
 
-  // Гармонии в до миноре. Порядок аккордов меняется
-  // между музыкальными фразами, но звучание остаётся согласованным.
   const progressions = [
     [
-      { name: "Cm", notes: ["C3", "D#3", "G3"], bass: "C3" },
-      { name: "Ab", notes: ["C3", "G#3", "D#4"], bass: "G#3" },
-      { name: "Eb", notes: ["D#3", "G3", "A#3"], bass: "D#3" },
-      { name: "Bb", notes: ["A#3", "D4", "F4"], bass: "A#3" }
+      { notes: ["C4", "D#4", "G4"], root: "C2" },
+      { notes: ["C4", "G#4", "D#5"], root: "G#1" },
+      { notes: ["D#4", "G4", "A#4"], root: "D#2" },
+      { notes: ["A#3", "D4", "F4"], root: "A#1" }
     ],
     [
-      { name: "Cm", notes: ["C3", "D#3", "G3"], bass: "C3" },
-      { name: "Bb", notes: ["A#3", "D4", "F4"], bass: "A#3" },
-      { name: "Ab", notes: ["C3", "G#3", "D#4"], bass: "G#3" },
-      { name: "G", notes: ["B3", "D4", "G4"], bass: "G3" }
+      { notes: ["C4", "D#4", "G4"], root: "C2" },
+      { notes: ["A#3", "D4", "F4"], root: "A#1" },
+      { notes: ["C4", "G#4", "D#5"], root: "G#1" },
+      { notes: ["B3", "D4", "G4"], root: "G1" }
     ],
     [
-      { name: "Ab", notes: ["C3", "G#3", "D#4"], bass: "G#3" },
-      { name: "Eb", notes: ["D#3", "G3", "A#3"], bass: "D#3" },
-      { name: "Cm", notes: ["C3", "D#3", "G3"], bass: "C3" },
-      { name: "Bb", notes: ["A#3", "D4", "F4"], bass: "A#3" }
+      { notes: ["C4", "G#4", "D#5"], root: "G#1" },
+      { notes: ["D#4", "G4", "A#4"], root: "D#2" },
+      { notes: ["C4", "D#4", "G4"], root: "C2" },
+      { notes: ["A#3", "D4", "F4"], root: "A#1" }
     ]
   ];
 
-  // Пентатоника до минора: безопасный набор нот
-  // для создания мелодий поверх этих аккордов.
   const scale = [
     "C4", "D#4", "F4", "G4", "A#4",
     "C5", "D#5", "F5", "G5"
   ];
 
+  let currentProgression = progressions[0];
+  let previousNote = "G4";
+
   function say(message) {
     status.textContent = message;
   }
 
+  function choose(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
   function setControls() {
     chordButton.disabled = !ready || playing;
-    melodyButton.disabled = !ready || playing;
     playButton.disabled = !ready || playing;
     stopButton.disabled = !playing;
   }
 
-  function makeNoise() {
-    noise = new Tone.Noise("pink");
-    const highpass = new Tone.Filter({
-      type: "highpass", frequency: 1800, rolloff: -12
-    });
-    const lowpass = new Tone.Filter({
-      type: "lowpass", frequency: 6500
-    });
-    noiseGain = new Tone.Gain(0.008);
-
-    noise.connect(highpass);
-    highpass.connect(lowpass);
-    lowpass.connect(noiseGain);
-    noiseGain.toDestination();
-    noise.start();
-
-    effects.push(noise, highpass, lowpass, noiseGain);
+  function createGain(value) {
+    const gain = new Tone.Gain(value);
+    gain.toDestination();
+    effects.push(gain);
+    return gain;
   }
 
-  async function loadPiano() {
+  async function loadAudio() {
     if (loading || ready) return;
 
     if (typeof Tone === "undefined") {
@@ -154,31 +270,45 @@ button:disabled { opacity: .45; cursor: wait; }
 
     loading = true;
     loadButton.disabled = true;
-    say("Загружаем звуки и эффекты…");
+    say("Загружаем пианино и создаём инструменты…");
 
     try {
       await Tone.start();
 
-      const highpass = new Tone.Filter({
-        type: "highpass", frequency: 85, rolloff: -12
+      // Пианино: сохраняем тёплую обработку из предыдущей версии.
+      pianoGain = new Tone.Gain(0.8);
+      pianoFilter = new Tone.Filter({
+        type: "lowpass",
+        frequency: 6200,
+        rolloff: -12
       });
-      const lowpass = new Tone.Filter({
-        type: "lowpass", frequency: 6200, rolloff: -12
+      const pianoHighpass = new Tone.Filter({
+        type: "highpass",
+        frequency: 85,
+        rolloff: -12
       });
-      const compressor = new Tone.Compressor({
-        threshold: -25, ratio: 2, attack: 0.025, release: 0.25
+      pianoCompressor = new Tone.Compressor({
+        threshold: -25,
+        ratio: 2,
+        attack: 0.025,
+        release: 0.25
       });
-      const saturation = new Tone.Distortion(0.07);
+      saturation = new Tone.Distortion(0.07);
       saturation.wet.value = 0.16;
-      const reverb = new Tone.Reverb({ decay: 3.2, wet: 0.2 });
+      reverb = new Tone.Reverb({ decay: 3.2, wet: 0.2 });
 
-      highpass.connect(lowpass);
-      lowpass.connect(compressor);
-      compressor.connect(saturation);
+      pianoGain.connect(pianoHighpass);
+      pianoHighpass.connect(pianoFilter);
+      pianoFilter.connect(pianoCompressor);
+      pianoCompressor.connect(saturation);
       saturation.connect(reverb);
       reverb.toDestination();
 
-      effects.push(highpass, lowpass, compressor, saturation, reverb);
+      effects.push(
+        pianoGain, pianoHighpass, pianoFilter,
+        pianoCompressor, saturation, reverb
+      );
+
       await reverb.generate();
 
       piano = new Tone.Sampler({
@@ -201,16 +331,99 @@ button:disabled { opacity: .45; cursor: wait; }
         attack: 0.025,
         release: 2.2
       });
-
-      piano.connect(highpass);
+      piano.connect(pianoGain);
       piano.volume.value = -4;
 
+      // Бас: мягкий треугольный синтезатор с низким фильтром.
+      bassGain = createGain(0.35);
+      const bassFilter = new Tone.Filter({
+        type: "lowpass",
+        frequency: 260,
+        rolloff: -24
+      });
+      bass = new Tone.Synth({
+        oscillator: { type: "triangle" },
+        envelope: {
+          attack: 0.025,
+          decay: 0.22,
+          sustain: 0.22,
+          release: 0.45
+        }
+      });
+      bass.connect(bassFilter);
+      bassFilter.connect(bassGain);
+      effects.push(bassFilter);
+
+      // Kick: округлый и негромкий.
+      drumsGain = createGain(0.35);
+      kick = new Tone.MembraneSynth({
+        pitchDecay: 0.04,
+        octaves: 3,
+        oscillator: { type: "sine" },
+        envelope: {
+          attack: 0.001,
+          decay: 0.28,
+          sustain: 0,
+          release: 0.12
+        }
+      });
+      kick.volume.value = -3;
+      kick.connect(drumsGain);
+
+      // Snare: короткий шумовой щелчок с мягким телом.
+      snare = new Tone.NoiseSynth({
+        noise: { type: "pink" },
+        envelope: {
+          attack: 0.002,
+          decay: 0.13,
+          sustain: 0,
+          release: 0.025
+        }
+      });
+      snare.volume.value = -13;
+      snare.connect(drumsGain);
+
+      // Hats: короткие и тихие металлические шорохи.
+      hats = new Tone.MetalSynth({
+        frequency: 220,
+        envelope: {
+          attack: 0.001,
+          decay: 0.07,
+          release: 0.01
+        },
+        harmonicity: 5.1,
+        modulationIndex: 24,
+        resonance: 3200,
+        octaves: 1.5
+      });
+      hats.volume.value = -25;
+      hats.connect(drumsGain);
+
+      // Тихий розовый шум для ощущения старой записи.
+      textureGain = createGain(0.012);
+      noiseHighpass = new Tone.Filter({
+        type: "highpass",
+        frequency: 1800,
+        rolloff: -12
+      });
+      noiseLowpass = new Tone.Filter({
+        type: "lowpass",
+        frequency: 6500
+      });
+      noise = new Tone.Noise("pink");
+      noise.connect(noiseHighpass);
+      noiseHighpass.connect(noiseLowpass);
+      noiseLowpass.connect(textureGain);
+
+      effects.push(noiseHighpass, noiseLowpass);
+      noise.start();
+
       await Tone.loaded();
-      makeNoise();
 
       ready = true;
       setControls();
-      say("Готово! Можно тестировать звук или запускать генератор.");
+      updateMix();
+      say("Готово! Послушай пианино или запускай радио.");
     } catch (error) {
       console.error(error);
       say("Ошибка загрузки: " + error.message);
@@ -221,98 +434,136 @@ button:disabled { opacity: .45; cursor: wait; }
     }
   }
 
-  function disposeAudio() {
-    if (piano) {
-      try { piano.dispose(); } catch (_) {}
-      piano = null;
-    }
-    for (const effect of effects) {
-      try { effect.dispose(); } catch (_) {}
-    }
-    effects = [];
-    ready = false;
+  function updateMix() {
+    const p = Number($("pianoVol").value);
+    const b = Number($("bassVol").value);
+    const d = Number($("drumsVol").value);
+    const t = Number($("textureVol").value);
+
+    $("pianoOut").textContent = p + "%";
+    $("bassOut").textContent = b + "%";
+    $("drumsOut").textContent = d + "%";
+    $("textureOut").textContent = t + "%";
+
+    if (pianoGain) pianoGain.gain.rampTo(p / 100, 0.08);
+    if (bassGain) bassGain.gain.rampTo(b / 100, 0.08);
+    if (drumsGain) drumsGain.gain.rampTo(d / 100, 0.08);
+    if (textureGain) textureGain.gain.rampTo((t / 100) * 0.048, 0.08);
   }
 
-  function playChordTest() {
+  function testPiano() {
     if (!ready || playing) return;
     const now = Tone.now() + 0.1;
 
     piano.triggerAttackRelease(
       ["C4", "D#4", "G4", "A#4", "D#5"],
-      4, now, 0.48
+      4,
+      now,
+      0.48
     );
     piano.triggerAttackRelease(
-      ["G3", "C4"], 3.5, now + 0.08, 0.24
+      ["G3", "C4"],
+      3.5,
+      now + 0.08,
+      0.24
     );
-    say("Звучит тёплый аккорд.");
+    say("Тест пианино: тёплый аккорд.");
   }
 
-  function playMelodyTest() {
+  function startRadio() {
     if (!ready || playing) return;
-    const now = Tone.now() + 0.1;
-    const notes = [
-      ["G4", 0, 0.38, 1.1],
-      ["D#5", 0.7, 0.32, 0.9],
-      ["C5", 1.4, 0.38, 1.3],
-      ["G4", 2.3, 0.29, 0.9],
-      ["A#4", 2.8, 0.37, 1.2],
-      ["G4", 3.6, 0.30, 1.0],
-      ["D#4", 4.3, 0.34, 1.4],
-      ["C4", 5.1, 0.42, 1.8],
-      ["G4", 6.1, 0.27, 1.0],
-      ["C5", 6.7, 0.33, 1.5]
-    ];
 
-    piano.triggerAttackRelease(
-      ["C4", "D#4", "G4"], 3.4, now, 0.22
-    );
-    piano.triggerAttackRelease(
-      ["A#3", "D4", "F4"], 3.1, now + 3.6, 0.18
-    );
+    try {
+      Tone.Transport.stop();
+      Tone.Transport.cancel();
+      Tone.Transport.bpm.value = BPM;
+      Tone.Transport.timeSignature = 4;
 
-    for (const [note, offset, velocity, duration] of notes) {
-      piano.triggerAttackRelease(
-        note, duration, now + offset, velocity
-      );
+      barNumber = 0;
+      previousNote = "G4";
+      currentProgression = choose(progressions);
+
+      // Событие повторяется раз в такт. Все звуки назначаются
+      // по времени Transport, поэтому ритм не зависит от задержек JS.
+      repeatId = Tone.Transport.scheduleRepeat((time) => {
+        generateBar(time);
+      }, "1m");
+
+      playing = true;
+      Tone.Transport.start("+0.1");
+      setControls();
+      say("Midnight FM играет: пианино, бас и мягкий бит.");
+    } catch (error) {
+      console.error(error);
+      playing = false;
+      setControls();
+      say("Не удалось запустить радио: " + error.message);
     }
-    say("Звучит тестовая мелодия.");
-  }
-
-  function choose(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  function makePhrase() {
-    // Меняем гармонию не на каждом такте, а после фразы.
-    if (barNumber % 4 === 0) {
-      makePhrase.progression = choose(progressions);
-    }
-    return makePhrase.progression[barNumber % 4];
   }
 
   function generateBar(time) {
-    const chord = makePhrase();
-    const isNewPhrase = barNumber % 4 === 0;
+    const position = barNumber % 4;
 
-    // Аккорд на сильную долю, иногда чуть тише.
+    if (position === 0) {
+      currentProgression = choose(progressions);
+    }
+
+    const chord = currentProgression[position];
+
+    // Аккорд в начале такта.
     piano.triggerAttackRelease(
       chord.notes,
-      3.6 * beat,
+      3.4 * beat,
       time,
-      isNewPhrase ? 0.34 : 0.27 + Math.random() * 0.08
+      0.25 + Math.random() * 0.08
     );
 
-    // Редкая низкая опора, чтобы музыка дышала.
-    if (Math.random() > 0.25) {
-      piano.triggerAttackRelease(
-        chord.bass,
-        1.8 * beat,
-        time + 0.02,
-        0.15 + Math.random() * 0.08
+    // Басовая нота на первой доле и иногда на третьей.
+    bass.triggerAttackRelease(
+      chord.root,
+      "2n",
+      time,
+      0.45
+    );
+
+    if (Math.random() > 0.35) {
+      bass.triggerAttackRelease(
+        chord.root,
+        "8n",
+        time + 2 * beat,
+        0.27
       );
     }
 
-    // 2–4 мелодические ноты с паузами.
+    // Ненавязчивый kick: обычно первая и третья доли,
+    // с небольшой вероятностью пропуска для живого дыхания.
+    if (Math.random() > 0.12) {
+      kick.triggerAttackRelease("C1", "8n", time, 0.55);
+    }
+    if (Math.random() > 0.32) {
+      kick.triggerAttackRelease("C1", "8n", time + 2 * beat, 0.38);
+    }
+
+    // Snare на второй и четвёртой долях.
+    if (Math.random() > 0.15) {
+      snare.triggerAttackRelease("8n", time + beat, 0.24);
+    }
+    if (Math.random() > 0.18) {
+      snare.triggerAttackRelease("8n", time + 3 * beat, 0.22);
+    }
+
+    // Редкие восьмые хэты, чтобы ритм не был слишком навязчивым.
+    for (let i = 0; i < 8; i++) {
+      if (Math.random() > 0.48) {
+        hats.triggerAttackRelease(
+          "32n",
+          time + i * beat / 2,
+          0.10 + Math.random() * 0.08
+        );
+      }
+    }
+
+    // Мелодия: несколько нот из одной гармонически подходящей гаммы.
     const count = 2 + Math.floor(Math.random() * 3);
     const slots = [0.5, 1, 1.5, 2, 2.5, 3, 3.5];
     const used = [];
@@ -327,70 +578,34 @@ button:disabled { opacity: .45; cursor: wait; }
       }
       used.push(slot);
 
-      // Иногда оставляем такт почти без мелодии.
       if (Math.random() < 0.14) continue;
 
       let note = choose(scale);
 
-      // Иногда делаем соседний шаг, чтобы мелодия
-      // звучала более связно, а не как чистая случайность.
-      if (i > 0 && Math.random() < 0.48) {
-        const previous = scale.indexOf(generateBar.previousNote);
-        if (previous >= 0) {
+      if (Math.random() < 0.5) {
+        const previousIndex = scale.indexOf(previousNote);
+        if (previousIndex >= 0) {
           const step = choose([-2, -1, 1, 2]);
-          note = scale[Math.max(0, Math.min(scale.length - 1, previous + step))];
+          note = scale[
+            Math.max(0, Math.min(scale.length - 1, previousIndex + step))
+          ];
         }
       }
 
-      generateBar.previousNote = note;
-
-      const velocity = 0.13 + Math.random() * 0.16;
-      const duration = choose([0.45, 0.7, 1.0, 1.3]);
+      previousNote = note;
 
       piano.triggerAttackRelease(
         note,
-        duration,
+        choose([0.45, 0.7, 1.0, 1.3]),
         time + slot * beat,
-        velocity
+        0.13 + Math.random() * 0.12
       );
     }
 
     barNumber++;
   }
 
-  async function startGenerator() {
-    if (!ready || playing) return;
-
-    try {
-      await Tone.start();
-
-      playing = true;
-      barNumber = 0;
-      generateBar.previousNote = "G4";
-
-      Tone.Transport.stop();
-      Tone.Transport.cancel();
-      Tone.Transport.bpm.value = BPM;
-      Tone.Transport.timeSignature = 4;
-
-      // Первый такт и дальнейшая генерация идут по часам Tone.js.
-      repeatId = Tone.Transport.scheduleRepeat((time) => {
-        generateBar(time);
-      }, "1m");
-
-      Tone.Transport.start("+0.1");
-
-      setControls();
-      say("Midnight FM играет. Музыка сочиняется на ходу…");
-    } catch (error) {
-      console.error(error);
-      say("Не удалось запустить музыку: " + error.message);
-      playing = false;
-      setControls();
-    }
-  }
-
-  function stopGenerator() {
+  function stopRadio() {
     if (!playing) return;
 
     Tone.Transport.stop();
@@ -398,14 +613,38 @@ button:disabled { opacity: .45; cursor: wait; }
     repeatId = null;
     playing = false;
     setControls();
-    say("Музыка остановлена. Можешь запустить новую генерацию.");
+    say("Радио остановлено.");
   }
 
-  loadButton.addEventListener("click", loadPiano);
-  chordButton.addEventListener("click", playChordTest);
-  melodyButton.addEventListener("click", playMelodyTest);
-  playButton.addEventListener("click", startGenerator);
-  stopButton.addEventListener("click", stopGenerator);
+  function disposeAudio() {
+    try {
+      Tone.Transport.stop();
+      Tone.Transport.cancel();
+    } catch (_) {}
+
+    for (const instrument of [piano, bass, kick, snare, hats, noise]) {
+      if (instrument) {
+        try { instrument.dispose(); } catch (_) {}
+      }
+    }
+
+    for (const effect of effects) {
+      try { effect.dispose(); } catch (_) {}
+    }
+
+    effects.length = 0;
+    piano = bass = kick = snare = hats = noise = null;
+    ready = false;
+  }
+
+  loadButton.addEventListener("click", loadAudio);
+  chordButton.addEventListener("click", testPiano);
+  playButton.addEventListener("click", startRadio);
+  stopButton.addEventListener("click", stopRadio);
+
+  ["pianoVol", "bassVol", "drumsVol", "textureVol"].forEach(id => {
+    $(id).addEventListener("input", updateMix);
+  });
 })();
 </script>
 </body>
