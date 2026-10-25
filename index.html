@@ -85,15 +85,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </div>
 
 <script>
-// ============================================================
-// TELEGRAM
-// ============================================================
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('#121212'); tg.setBackgroundColor('#121212'); } catch(e){} }
 
 const $ = id => document.getElementById(id);
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const rand = (a, b) => a + Math.random() * (b - a);
+const chance = p => Math.random() < p;
 
 // ============================================================
 // MUSIC THEORY
@@ -104,7 +102,8 @@ const KEY_MIDI = { C:60, 'C#':61, D:62, 'D#':63, E:64, F:65, 'F#':66, G:67, 'G#'
 const CHORD_TONES = {
   maj7: [0,4,7,11], m7: [0,3,7,10], '7': [0,4,7,10],
   maj9: [0,4,7,11,14], m9: [0,3,7,10,14], '9': [0,4,7,10,14],
-  '13': [0,4,7,10,21], '6': [0,4,7,9], m6: [0,3,7,9], m7b5: [0,3,6,10]
+  '13': [0,4,7,10,21], '6': [0,4,7,9], m6: [0,3,7,9], m7b5: [0,3,6,10],
+  sus2: [0,2,7], sus4: [0,5,7]
 };
 
 const PROGRESSIONS = {
@@ -113,59 +112,84 @@ const PROGRESSIONS = {
     [{r:'C',q:'maj9'},{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'13'}],
     [{r:'F',q:'maj9'},{r:'E',q:'m7'},{r:'D',q:'m9'},{r:'C',q:'maj9'}],
     [{r:'A',q:'m9'},{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'13'}],
+    [{r:'D',q:'m7'},{r:'G',q:'7'},{r:'C',q:'maj7'},{r:'F',q:'maj7'}],
+    [{r:'E',q:'m7'},{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'13'}],
+    [{r:'C',q:'maj9'},{r:'E',q:'m7'},{r:'A',q:'m9'},{r:'D',q:'m9'}],
   ],
   jazzhop: [
     [{r:'D',q:'m9'},{r:'G',q:'13'},{r:'C',q:'maj9'},{r:'A',q:'m9'}],
     [{r:'C',q:'maj9'},{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'13'}],
     [{r:'E',q:'m7'},{r:'A',q:'7'},{r:'D',q:'m9'},{r:'G',q:'13'}],
     [{r:'F',q:'maj9'},{r:'E',q:'m7'},{r:'D',q:'m9'},{r:'G',q:'13'}],
+    [{r:'A',q:'m9'},{r:'D',q:'9'},{r:'G',q:'13'},{r:'C',q:'maj9'}],
+    [{r:'D',q:'m9'},{r:'G',q:'7'},{r:'E',q:'m7'},{r:'A',q:'7'}],
+    [{r:'C',q:'maj9'},{r:'D',q:'m9'},{r:'E',q:'m7'},{r:'A',q:'7'}],
   ],
   ambient: [
     [{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'9'},{r:'A',q:'m9'}],
     [{r:'C',q:'maj9'},{r:'F',q:'maj9'},{r:'A',q:'m9'},{r:'G',q:'9'}],
+    [{r:'A',q:'m9'},{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'9'}],
+    [{r:'D',q:'m9'},{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'9'}],
   ],
   sleepy: [
     [{r:'C',q:'maj7'},{r:'F',q:'maj7'},{r:'D',q:'m7'},{r:'G',q:'7'}],
     [{r:'F',q:'maj7'},{r:'C',q:'maj7'},{r:'A',q:'m7'},{r:'G',q:'7'}],
     [{r:'D',q:'m7'},{r:'G',q:'7'},{r:'C',q:'maj7'},{r:'A',q:'m7'}],
+    [{r:'A',q:'m7'},{r:'F',q:'maj7'},{r:'C',q:'maj7'},{r:'G',q:'7'}],
   ],
 };
 
 // ============================================================
-// GENRES — барабаны громче, слоёв больше
+// GENRES — БАРАБАНЫ ГРОМЧЕ
 // ============================================================
 const GENRES = {
   chillhop: {
     label: 'Chillhop', bpm: [72, 82], masterFilter: 4200, satur: 0.05,
     reverbDecay: 2.2, reverbWet: 0.35, chorusWet: 0.25, chorusRate: 1.2,
     padVol: -20, padAttack: 1.2, padRelease: 3.0,
-    bassVol: -12, melVol: -20, melDelay: 0.3,
-    kickVol: -8, snareVol: -14, hatVol: -22, shakerVol: -26, openHatVol: -24, rimVol: -20,
-    drumDensity: 0.95, melDensity: 0.55, arpChance: 0.25, swing: 0.15,
+    bassVol: -10, melVol: -20, melDelay: 0.3,
+    kickVol: -4, snareVol: -10, hatVol: -18, shakerVol: -22, openHatVol: -20, rimVol: -16,
+    drumDensity: 0.95, melDensity: 0.55, arpChance: 0.25,
   },
   jazzhop: {
     label: 'Jazzhop', bpm: [80, 90], masterFilter: 4400, satur: 0.06,
     reverbDecay: 2.0, reverbWet: 0.30, chorusWet: 0.20, chorusRate: 1.5,
     padVol: -19, padAttack: 1.0, padRelease: 2.5,
-    bassVol: -11, melVol: -18, melDelay: 0.25,
-    kickVol: -7, snareVol: -13, hatVol: -20, shakerVol: -24, openHatVol: -22, rimVol: -18,
-    drumDensity: 1.0, melDensity: 0.7, arpChance: 0.35, swing: 0.2,
+    bassVol: -9, melVol: -18, melDelay: 0.25,
+    kickVol: -3, snareVol: -9, hatVol: -16, shakerVol: -20, openHatVol: -18, rimVol: -14,
+    drumDensity: 1.0, melDensity: 0.7, arpChance: 0.35,
   },
   ambient: {
     label: 'Ambient', bpm: [55, 65], masterFilter: 3200, satur: 0.03,
     reverbDecay: 4.5, reverbWet: 0.55, chorusWet: 0.4, chorusRate: 0.6,
     padVol: -16, padAttack: 2.5, padRelease: 5.0,
-    bassVol: -16, melVol: -24, melDelay: 0.45,
-    kickVol: -18, snareVol: -26, hatVol: -32, shakerVol: -34, openHatVol: -32, rimVol: -30,
-    drumDensity: 0.25, melDensity: 0.28, arpChance: 0.15, swing: 0.05,
+    bassVol: -14, melVol: -24, melDelay: 0.45,
+    kickVol: -14, snareVol: -22, hatVol: -28, shakerVol: -30, openHatVol: -28, rimVol: -26,
+    drumDensity: 0.3, melDensity: 0.28, arpChance: 0.15,
   },
   sleepy: {
     label: 'Sleepy', bpm: [62, 72], masterFilter: 3600, satur: 0.04,
     reverbDecay: 3.2, reverbWet: 0.45, chorusWet: 0.3, chorusRate: 0.9,
     padVol: -19, padAttack: 2.0, padRelease: 4.0,
-    bassVol: -15, melVol: -22, melDelay: 0.4,
-    kickVol: -12, snareVol: -19, hatVol: -26, shakerVol: -30, openHatVol: -28, rimVol: -24,
-    drumDensity: 0.6, melDensity: 0.42, arpChance: 0.2, swing: 0.1,
+    bassVol: -13, melVol: -22, melDelay: 0.4,
+    kickVol: -7, snareVol: -14, hatVol: -22, shakerVol: -26, openHatVol: -24, rimVol: -20,
+    drumDensity: 0.6, melDensity: 0.42, arpChance: 0.2,
+  },
+};
+
+// Грувы барабанов — паттерны кика и снейра
+const GROOVES = {
+  boomBap: {
+    kicks: [0, 1.75, 2.5], snares: [1, 3], ghostSnares: [2.75], hatVel: 0.45,
+  },
+  sparse: {
+    kicks: [0, 2.5], snares: [1, 3], ghostSnares: [3.75], hatVel: 0.35,
+  },
+  rolling: {
+    kicks: [0, 1.75, 2.5, 3.5], snares: [1, 3], ghostSnares: [1.75, 2.75], hatVel: 0.5,
+  },
+  halfTime: {
+    kicks: [0, 2], snares: [2], ghostSnares: [1.5, 3.5], hatVel: 0.4,
   },
 };
 
@@ -177,8 +201,6 @@ let session = null;
 let playing = false;
 let transitioning = false;
 let repeatId = null;
-let motif = null;
-let motifBars = 0;
 let elapsedStart = 0;
 let elapsedAccum = 0;
 let volume = 0.65;
@@ -186,7 +208,7 @@ let muted = false;
 const state = { currentGenre: 'chillhop' };
 
 // ============================================================
-// CRACKLE BUFFER
+// CRACKLE
 // ============================================================
 function makeCrackleBuffer() {
   const sr = Tone.context.sampleRate;
@@ -194,9 +216,7 @@ function makeCrackleBuffer() {
   const buf = Tone.context.createBuffer(1, len, sr);
   const d = buf.getChannelData(0);
   for (let i = 0; i < len; i++) {
-    d[i] = Math.random() < 0.0003
-      ? (Math.random() * 2 - 1) * 0.4
-      : (Math.random() * 2 - 1) * 0.002;
+    d[i] = Math.random() < 0.0003 ? (Math.random() * 2 - 1) * 0.4 : (Math.random() * 2 - 1) * 0.002;
   }
   return buf;
 }
@@ -215,24 +235,20 @@ class LofiEngine {
     const c = this.cfg;
     const n = this.nodes = {};
 
-    // Master: filter → soft satur → compressor → gain → limiter → destination
-    n.limiter = new Tone.Limiter(-2).toDestination();
-    n.masterGain = new Tone.Gain(0.6).connect(n.limiter);
-    n.comp = new Tone.Compressor({ threshold: -20, ratio: 3, attack: 0.02, release: 0.25 }).connect(n.masterGain);
+    n.limiter = new Tone.Limiter(-1.5).toDestination();
+    n.masterGain = new Tone.Gain(0.65).connect(n.limiter);
+    n.comp = new Tone.Compressor({ threshold: -18, ratio: 3.5, attack: 0.02, release: 0.25 }).connect(n.masterGain);
     n.satur = new Tone.Chebyshev({ order: 1, wet: c.satur }).connect(n.comp);
     n.filter = new Tone.Filter({ frequency: c.masterFilter, type: 'lowpass', rolloff: -24, Q: 0.3 }).connect(n.satur);
 
-    // Reverb send
     n.reverb = new Tone.Reverb({ decay: c.reverbDecay, wet: 1, preDelay: 0.02 }).connect(n.filter);
     n.reverbSend = new Tone.Gain(c.reverbWet).connect(n.reverb);
 
-    // ============ PAD ============
+    // PAD
     n.chorus = new Tone.Chorus({ frequency: c.chorusRate, delayTime: 3.5, depth: 0.7, wet: c.chorusWet }).start();
     n.chorus.connect(n.filter);
     n.chorus.connect(n.reverbSend);
-
     n.padFilter = new Tone.Filter({ frequency: 2200, type: 'lowpass', rolloff: -12, Q: 0.4 }).connect(n.chorus);
-
     n.pad = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: 'sine' },
       envelope: { attack: c.padAttack, decay: 0.8, sustain: 0.7, release: c.padRelease }
@@ -240,7 +256,7 @@ class LofiEngine {
     n.pad.volume.value = c.padVol;
     n.pad.set({ detune: -4 });
 
-    // ============ BASS ============
+    // BASS
     n.bass = new Tone.MonoSynth({
       oscillator: { type: 'sine' },
       filter: { Q: 0.4, type: 'lowpass', frequency: 180 },
@@ -250,10 +266,9 @@ class LofiEngine {
     }).connect(n.filter);
     n.bass.volume.value = c.bassVol;
 
-    // ============ MELODY ============
+    // MELODY
     n.melDelay = new Tone.FeedbackDelay({ delayTime: 0.14, feedback: 0.15, wet: c.melDelay }).connect(n.filter);
     n.melFilter = new Tone.Filter({ frequency: 2400, type: 'lowpass', rolloff: -12, Q: 0.4 }).connect(n.melDelay);
-
     n.melody = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: 'sine' },
       envelope: { attack: 0.015, decay: 0.35, sustain: 0.12, release: 0.8 },
@@ -261,7 +276,7 @@ class LofiEngine {
     }).connect(n.melFilter);
     n.melody.volume.value = c.melVol;
 
-    // ============ DRUMS ============
+    // DRUMS — все инструменты
     n.kick = new Tone.MembraneSynth({
       pitchDecay: 0.02, octaves: 2,
       envelope: { attack: 0.005, decay: 0.45, sustain: 0.01, release: 0.6 }
@@ -276,39 +291,22 @@ class LofiEngine {
     n.snare.volume.value = c.snareVol;
     n.snare.connect(n.reverbSend);
 
-    // Closed hat — 16-е
     n.hatFilter = new Tone.Filter({ frequency: 7000, type: 'highpass' }).connect(n.filter);
-    n.hat = new Tone.NoiseSynth({
-      noise: { type: 'white' },
-      envelope: { attack: 0.002, decay: 0.03, sustain: 0 }
-    }).connect(n.hatFilter);
+    n.hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.002, decay: 0.03, sustain: 0 } }).connect(n.hatFilter);
     n.hat.volume.value = c.hatVol;
 
-    // Open hat — на off-beats
     n.openHatFilter = new Tone.Filter({ frequency: 6000, type: 'highpass' }).connect(n.filter);
-    n.openHat = new Tone.NoiseSynth({
-      noise: { type: 'white' },
-      envelope: { attack: 0.002, decay: 0.15, sustain: 0.02, release: 0.1 }
-    }).connect(n.openHatFilter);
+    n.openHat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.002, decay: 0.15, sustain: 0.02, release: 0.1 } }).connect(n.openHatFilter);
     n.openHat.volume.value = c.openHatVol;
 
-    // Shaker — 16-е мягкие
     n.shakerFilter = new Tone.Filter({ frequency: 8500, type: 'highpass' }).connect(n.filter);
-    n.shaker = new Tone.NoiseSynth({
-      noise: { type: 'pink' },
-      envelope: { attack: 0.001, decay: 0.02, sustain: 0 }
-    }).connect(n.shakerFilter);
+    n.shaker = new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.001, decay: 0.02, sustain: 0 } }).connect(n.shakerFilter);
     n.shaker.volume.value = c.shakerVol;
 
-    // Rim — щелчок на 4-й доле
     n.rimFilter = new Tone.Filter({ frequency: 2200, type: 'bandpass', Q: 4 }).connect(n.filter);
-    n.rim = new Tone.MembraneSynth({
-      pitchDecay: 0.01, octaves: 1,
-      envelope: { attack: 0.001, decay: 0.06, sustain: 0 }
-    }).connect(n.rimFilter);
+    n.rim = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 1, envelope: { attack: 0.001, decay: 0.06, sustain: 0 } }).connect(n.rimFilter);
     n.rim.volume.value = c.rimVol;
 
-    // Vinyl crackle
     n.vinyl = new Tone.Player({ url: new Tone.ToneAudioBuffer(makeCrackleBuffer()), loop: true }).connect(n.filter);
     n.vinyl.volume.value = -22;
   }
@@ -318,9 +316,7 @@ class LofiEngine {
       try { this.nodes.vinyl.start(); } catch(e) {}
     }
   }
-  stopVinyl() {
-    if (this.nodes.vinyl) try { this.nodes.vinyl.stop(); } catch(e) {}
-  }
+  stopVinyl() { if (this.nodes.vinyl) try { this.nodes.vinyl.stop(); } catch(e) {} }
   dispose() {
     try { this.stopVinyl(); } catch(e) {}
     Object.values(this.nodes).forEach(n => {
@@ -331,7 +327,7 @@ class LofiEngine {
 }
 
 // ============================================================
-// SESSION
+// SESSION — много случайностей
 // ============================================================
 function createSession(genre) {
   const cfg = GENRES[genre];
@@ -369,29 +365,50 @@ function createSession(genre) {
     prevMidi = notes;
   }
 
+  // Случайные характеристики сессии — вот тут и рождается разнообразие
+  const personalities = ['stepwise', 'arpeggio', 'syncopated', 'longnotes'];
+  const grooveKeys = Object.keys(GROOVES);
+
   return {
     genre, bpm, key, keyShift, progression, voicings,
     barCount: 0,
     maxBars: 64 + Math.floor(Math.random() * 32),
     mode: pick(['minor', 'major']),
+    personality: pick(personalities),
+    groove: GROOVES[pick(grooveKeys)],
+    grooveName: pick(grooveKeys),
+    swingAmount: pick([0.10, 0.15, 0.20, 0.25]),
+    padRegister: pick([-12, 0, 0, 0, 12]),   // иногда ниже, иногда выше
+    modulationBar: 32 + Math.floor(Math.random() * 16),
+    motifs: [],                                // пул мотивов
+    motifIdx: 0,
   };
 }
 
-// Секции — 64-тактовый цикл с развитием
+// ============================================================
+// SECTION + MODULATION
+// ============================================================
 function getSection(bar) {
-  const cycle = bar % 64;
+  const cycle = bar % 72;
   if (cycle < 8) return 'intro';
-  if (cycle < 24) return 'verse';
+  if (cycle < 20) return 'verse';
+  if (cycle < 24) return 'build';
   if (cycle < 40) return 'chorus';
   if (cycle < 48) return 'break';
-  if (cycle < 56) return 'chorus2';
+  if (cycle < 64) return 'chorus';
+  if (cycle < 68) return 'drop';
   return 'outro';
 }
 
+function isFillBar(bar) {
+  const cycle = bar % 72;
+  return [19, 23, 39, 47, 63, 67].includes(cycle);
+}
+
 // ============================================================
-// MELODY
+// MELODY — 4 разных типа
 // ============================================================
-function generateMelody(sess, chord) {
+function generateMelody(sess, chord, personality) {
   const rootMidi = KEY_MIDI[sess.key] + sess.keyShift;
   const penta = sess.mode === 'minor' ? [0,3,5,7,10] : [0,2,4,7,9];
   const range = [];
@@ -405,30 +422,80 @@ function generateMelody(sess, chord) {
   if (!range.length) return [];
 
   const chordInRange = chord.midi.filter(m => m >= 62 && m <= 76);
-  let cur = chordInRange.length ? pick(chordInRange) : range[Math.floor(range.length / 2)];
-
-  const count = 2 + Math.floor(Math.random() * 3);
+  const startNote = chordInRange.length ? pick(chordInRange) : range[Math.floor(range.length / 2)];
   const phrase = [];
-  for (let i = 0; i < count; i++) {
-    phrase.push({ midi: cur, beat: i * 0.5 });
-    const idx = range.indexOf(cur);
-    if (idx >= 0) {
-      const dir = Math.random() < 0.5 ? 1 : -1;
-      const step = Math.random() < 0.75 ? 1 : 2;
-      cur = range[Math.max(0, Math.min(range.length - 1, idx + dir * step))];
-    }
-  }
 
-  if (chordInRange.length) {
-    const last = phrase[phrase.length - 1];
-    let best = chordInRange[0], bestD = Infinity;
-    for (const ct of chordInRange) {
-      const d = Math.abs(ct - last.midi);
-      if (d < bestD) { bestD = d; best = ct; }
+  if (personality === 'arpeggio') {
+    // Идём по нотам аккорда вверх/вниз
+    const tones = chordInRange.length ? [...chordInRange].sort((a,b) => a-b) : range.slice(0, 4);
+    const dir = chance(0.5) ? 1 : -1;
+    const seq = dir > 0 ? tones : [...tones].reverse();
+    for (let i = 0; i < Math.min(4, seq.length); i++) {
+      phrase.push({ midi: seq[i], beat: i * 0.25 });
     }
-    last.midi = best;
+  } else if (personality === 'syncopated') {
+    // Рваный ритм с паузами
+    const beats = [0, 0.75, 1.5, 2.25, 3];
+    let cur = startNote;
+    for (const b of beats) {
+      if (chance(0.7)) {
+        phrase.push({ midi: cur, beat: b });
+        const idx = range.indexOf(cur);
+        if (idx >= 0) cur = range[Math.max(0, Math.min(range.length - 1, idx + (chance(0.5) ? 1 : -1)))];
+      }
+    }
+  } else if (personality === 'longnotes') {
+    // Мало нот, длинные
+    let cur = startNote;
+    for (let i = 0; i < 2; i++) {
+      phrase.push({ midi: cur, beat: i * 2, dur: '2n' });
+      const idx = range.indexOf(cur);
+      if (idx >= 0) {
+        const step = chance(0.6) ? 2 : 3;
+        cur = range[Math.max(0, Math.min(range.length - 1, idx + (chance(0.5) ? step : -step)))];
+      }
+    }
+  } else {
+    // stepwise — плавное движение
+    let cur = startNote;
+    const count = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < count; i++) {
+      phrase.push({ midi: cur, beat: i * 0.5 });
+      const idx = range.indexOf(cur);
+      if (idx >= 0) {
+        const dir = chance(0.5) ? 1 : -1;
+        const step = chance(0.75) ? 1 : 2;
+        cur = range[Math.max(0, Math.min(range.length - 1, idx + dir * step))];
+      }
+    }
+    if (chordInRange.length) {
+      const last = phrase[phrase.length - 1];
+      let best = chordInRange[0], bestD = Infinity;
+      for (const ct of chordInRange) {
+        const d = Math.abs(ct - last.midi);
+        if (d < bestD) { bestD = d; best = ct; }
+      }
+      last.midi = best;
+    }
   }
   return phrase;
+}
+
+function getMotif(sess, chord) {
+  // Пул из 3 мотивов, чередуются
+  if (!sess.motifs.length || chance(0.35)) {
+    sess.motifs.push(generateMelody(sess, chord, sess.personality));
+    if (sess.motifs.length > 3) sess.motifs.shift();
+  }
+  sess.motifIdx = (sess.motifIdx + 1) % Math.max(1, sess.motifs.length);
+  const base = sess.motifs[sess.motifIdx];
+  if (!base || !base.length) return [];
+  // Вариация: немного сдвигаем
+  return base.map(p => ({
+    midi: p.midi + (chance(0.12) ? pick([-2, -1, 1, 2]) : 0),
+    beat: p.beat + (chance(0.1) ? 0.25 : 0),
+    dur: p.dur,
+  }));
 }
 
 // ============================================================
@@ -442,6 +509,7 @@ function scheduleBar(time) {
   const beat = 60 / session.bpm;
   const n = engine.nodes;
   const section = getSection(bar);
+  const isFill = isFillBar(bar);
 
   if (bar > 0 && bar >= session.maxBars) {
     setTimeout(() => autoTransition(), 100);
@@ -450,20 +518,28 @@ function scheduleBar(time) {
 
   $('npMeta').textContent = `${session.key} · ${chord.name} · ${section}`;
 
-  const drumsOn = section === 'verse' || section === 'chorus' || section === 'chorus2';
-  const fullDrums = section === 'chorus' || section === 'chorus2';
-  const padOn = section !== 'outro';
-  const bassOn = section !== 'intro' || Math.random() < 0.5;
-  const melodyOn = fullDrums || section === 'break';
+  // Drop = полная тишина на такт
+  if (section === 'drop') return;
 
-  // === PAD ===
+  const drumsOn = ['verse', 'build', 'chorus', 'outro'].includes(section);
+  const fullDrums = section === 'chorus';
+  const padOn = section !== 'outro' || chance(0.5);
+  const bassOn = section !== 'intro' || chance(0.5);
+  const melodyOn = ['chorus', 'break', 'outro'].includes(section);
+
+  // === PAD (с учётом регистра и модуляции) ===
   if (padOn) {
-    if (Math.random() < cfg.arpChance && fullDrums) {
+    const padShift = session.padRegister;
+    if (chance(cfg.arpChance) && fullDrums) {
       chord.notes.forEach((note, i) => {
-        n.pad.triggerAttackRelease(note, '2n', time + i * 0.04, 0.42);
+        const shifted = Tone.Frequency(Tone.Frequency(note).toMidi() + padShift, 'midi').toNote();
+        n.pad.triggerAttackRelease(shifted, '2n', time + i * 0.04, 0.42);
       });
     } else {
-      n.pad.triggerAttackRelease(chord.notes, '1m', time, 0.48);
+      const padNotes = chord.notes.map(note =>
+        Tone.Frequency(Tone.Frequency(note).toMidi() + padShift, 'midi').toNote()
+      );
+      n.pad.triggerAttackRelease(padNotes, '1m', time, 0.48);
     }
   }
 
@@ -471,89 +547,100 @@ function scheduleBar(time) {
   if (bassOn) {
     const bassNote = Tone.Frequency(chord.bassMidi, 'midi').toNote();
     n.bass.triggerAttackRelease(bassNote, '2n', time + rand(0, 0.02));
-    if (Math.random() < 0.5) {
-      n.bass.triggerAttackRelease(bassNote, '4n', time + beat * 2.5 + rand(0, 0.03));
-    }
-    if (fullDrums && Math.random() < 0.4) {
-      n.bass.triggerAttackRelease(bassNote, '8n', time + beat * 3.75 + rand(0, 0.02));
-    }
+    if (chance(0.5)) n.bass.triggerAttackRelease(bassNote, '4n', time + beat * 2.5 + rand(0, 0.03));
+    if (fullDrums && chance(0.4)) n.bass.triggerAttackRelease(bassNote, '8n', time + beat * 3.75 + rand(0, 0.02));
   }
 
   // === DRUMS ===
-  if (drumsOn && Math.random() < cfg.drumDensity) {
+  const drumDensity = section === 'build' ? 0.4 : cfg.drumDensity;
+  if (drumsOn && (chance(drumDensity) || fullDrums)) {
+    const groove = session.groove;
 
-    // KICK
-    n.kick.triggerAttackRelease('C1', '8n', time + rand(-0.008, 0.008));
-    if (Math.random() < 0.7) n.kick.triggerAttackRelease('C1', '8n', time + beat * 1.75 + rand(-0.012, 0.012));
-    if (Math.random() < 0.5) n.kick.triggerAttackRelease('C1', '8n', time + beat * 2.5 + rand(-0.012, 0.012));
-    if (fullDrums && Math.random() < 0.3) n.kick.triggerAttackRelease('C1', '8n', time + beat * 3.5 + rand(-0.012, 0.012));
-
-    // SNARE on 2 & 4 + ghosts
-    n.snare.triggerAttackRelease('16n', time + beat + rand(-0.012, 0.012), 0.7);
-    n.snare.triggerAttackRelease('16n', time + beat * 3 + rand(-0.012, 0.012), 0.75);
-    // Ghost snares
-    if (fullDrums) {
-      if (Math.random() < 0.4) n.snare.triggerAttackRelease('32n', time + beat * 1.75 + rand(-0.01, 0.01), 0.15);
-      if (Math.random() < 0.4) n.snare.triggerAttackRelease('32n', time + beat * 2.75 + rand(-0.01, 0.01), 0.18);
-      if (Math.random() < 0.3) n.snare.triggerAttackRelease('32n', time + beat * 3.75 + rand(-0.01, 0.01), 0.12);
+    // Kick по паттерну грува
+    for (const b of groove.kicks) {
+      const offset = chance(0.15) ? rand(-0.015, 0.015) : rand(-0.006, 0.006);
+      n.kick.triggerAttackRelease('C1', '8n', time + beat * b + offset);
+    }
+    if (fullDrums && chance(0.35)) {
+      n.kick.triggerAttackRelease('C1', '8n', time + beat * 3.5 + rand(-0.012, 0.012));
     }
 
-    // HATS — 16-е с акцентами
+    // Snare по паттерну
+    for (const b of groove.snares) {
+      n.snare.triggerAttackRelease('16n', time + beat * b + rand(-0.012, 0.012), 0.7);
+    }
+    // Ghost snares
+    for (const b of groove.ghostSnares) {
+      if (fullDrums && chance(0.5)) {
+        n.snare.triggerAttackRelease('32n', time + beat * b + rand(-0.01, 0.01), 0.18);
+      }
+    }
+
+    // Hats — 16-е, но по-разному
     for (let i = 0; i < 16; i++) {
       const isEighth = i % 2 === 0;
       const isOffEighth = i % 4 === 2;
-      const swingOff = isOffEighth ? beat * cfg.swing * 0.5 : 0;
-      const vel = isEighth ? 0.45 : 0.22;
-      if (fullDrums || Math.random() < 0.75) {
+      const swingOff = isOffEighth ? beat * session.swingAmount * 0.5 : 0;
+      const vel = (isEighth ? groove.hatVel : groove.hatVel * 0.5) * (chance(0.15) ? 0.6 : 1);
+      if (fullDrums || chance(0.7)) {
         n.hat.triggerAttackRelease('32n', time + (i * beat) / 4 + swingOff + rand(-0.005, 0.005), vel);
       }
     }
 
-    // OPEN HAT на 2.5 / 4.5 (off-beat)
-    if (fullDrums && Math.random() < 0.5) {
+    // Open hat
+    if (fullDrums && chance(0.5)) {
       n.openHat.triggerAttackRelease('8n', time + beat * 1.5 + rand(-0.01, 0.01), 0.5);
     }
-    if (fullDrums && Math.random() < 0.35) {
+    if (fullDrums && chance(0.35)) {
       n.openHat.triggerAttackRelease('8n', time + beat * 3.5 + rand(-0.01, 0.01), 0.45);
     }
 
-    // SHAKER — 16-е постоянно на второй половине
+    // Shaker — 16-е, случайно
     if (fullDrums) {
       for (let i = 0; i < 16; i++) {
-        if (Math.random() < 0.4) {
+        if (chance(0.4)) {
           n.shaker.triggerAttackRelease('32n', time + (i * beat) / 4 + rand(-0.005, 0.005), 0.3);
         }
       }
     }
 
-    // RIM на 3.5 (ghost accent)
-    if (fullDrums && Math.random() < 0.25) {
+    // Rim
+    if (fullDrums && chance(0.25)) {
       n.rim.triggerAttackRelease('C4', '32n', time + beat * 3.5 + rand(-0.01, 0.01), 0.4);
+    }
+
+    // FILL — в конце секции
+    if (isFill) {
+      // Snare fill 16-ми на последней доле
+      for (let i = 0; i < 4; i++) {
+        n.snare.triggerAttackRelease('32n', time + beat * 3 + (i * beat) / 4, 0.4 + i * 0.1);
+      }
+      // Hat fill
+      if (chance(0.5)) {
+        for (let i = 0; i < 8; i++) {
+          n.hat.triggerAttackRelease('32n', time + beat * 3 + (i * beat) / 8, 0.3 + i * 0.04);
+        }
+      }
     }
   }
 
   // === MELODY ===
-  if (melodyOn && Math.random() < cfg.melDensity) {
-    let phrase;
-    if (motif && motifBars < 2 && Math.random() < 0.55) {
-      phrase = motif.map(p => ({
-        midi: p.midi + (Math.random() < 0.08 ? pick([-2, -1, 1, 2]) : 0),
-        beat: p.beat,
-      }));
-      motifBars++;
-    } else {
-      phrase = generateMelody(session, chord);
-      motif = phrase.map(p => ({ midi: p.midi, beat: p.beat }));
-      motifBars = 0;
-    }
+  if (melodyOn && chance(cfg.melDensity)) {
+    const phrase = getMotif(session, chord);
     for (const note of phrase) {
-      const swingOff = (Math.floor(note.beat * 2) % 2 === 1) ? beat * cfg.swing * 0.5 : 0;
-      const dur = Math.random() < 0.8 ? '16n' : '8n';
+      const swingOff = (Math.floor(note.beat * 2) % 2 === 1) ? beat * session.swingAmount * 0.5 : 0;
+      const dur = note.dur || (chance(0.8) ? '16n' : '8n');
       const noteName = Tone.Frequency(note.midi, 'midi').toNote();
       const octaveUp = Tone.Frequency(note.midi + 12, 'midi').toNote();
       n.melody.triggerAttackRelease(noteName, dur, time + note.beat * beat + swingOff + rand(-0.01, 0.01), 0.55);
-      // Octave double — тише, добавляет «звонкости»
       n.melody.triggerAttackRelease(octaveUp, dur, time + note.beat * beat + swingOff + rand(-0.01, 0.01), 0.18);
+    }
+    // Контрмелодия — иногда
+    if (chance(0.2)) {
+      const lowNote = phrase[0].midi - 12;
+      n.melody.triggerAttackRelease(
+        Tone.Frequency(lowNote, 'midi').toNote(), '2n', time + rand(0, 0.5), 0.25
+      );
     }
   }
 }
@@ -631,7 +718,7 @@ async function autoTransition() {
   engine.startVinyl();
   engine.nodes.masterGain.gain.value = 0;
   Tone.Transport.start('+0.1');
-  engine.nodes.masterGain.gain.rampTo(0.6, 1.8);
+  engine.nodes.masterGain.gain.rampTo(0.65, 1.8);
   transitioning = false;
 }
 
@@ -663,7 +750,7 @@ async function changeGenre(genre) {
   engine.startVinyl();
   engine.nodes.masterGain.gain.value = 0;
   Tone.Transport.start('+0.1');
-  engine.nodes.masterGain.gain.rampTo(0.6, 1.5);
+  engine.nodes.masterGain.gain.rampTo(0.65, 1.5);
   tg?.HapticFeedback?.selectionChanged();
 }
 
@@ -692,9 +779,6 @@ function renderGenres() {
   });
 }
 
-// ============================================================
-// THEME
-// ============================================================
 let theme = 'night';
 $('themeBtn').addEventListener('click', () => {
   theme = theme === 'night' ? 'day' : 'night';
@@ -702,9 +786,6 @@ $('themeBtn').addEventListener('click', () => {
   $('themeBtn').textContent = theme === 'night' ? '🌙' : '☀️';
 });
 
-// ============================================================
-// WIRE UP
-// ============================================================
 $('playBtn').addEventListener('click', togglePlay);
 $('nextBtn').addEventListener('click', nextTrack);
 $('shuffleBtn').addEventListener('click', async () => {
@@ -714,17 +795,13 @@ $('shuffleBtn').addEventListener('click', async () => {
 
 $('volumeSlider').addEventListener('input', e => {
   volume = parseInt(e.target.value, 10) / 100;
-  if (engine?.nodes?.masterGain && !muted) {
-    engine.nodes.masterGain.gain.rampTo(volume, 0.05);
-  }
+  if (engine?.nodes?.masterGain && !muted) engine.nodes.masterGain.gain.rampTo(volume, 0.05);
 });
 
 $('muteBtn').addEventListener('click', () => {
   muted = !muted;
   $('muteBtn').classList.toggle('muted', muted);
-  if (engine?.nodes?.masterGain) {
-    engine.nodes.masterGain.gain.rampTo(muted ? 0 : volume, 0.1);
-  }
+  if (engine?.nodes?.masterGain) engine.nodes.masterGain.gain.rampTo(muted ? 0 : volume, 0.1);
 });
 
 document.addEventListener('keydown', e => {
