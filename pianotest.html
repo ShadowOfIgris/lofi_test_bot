@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midnight FM — Piano Test</title>
+<script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #0c1120;
+    color: #e8e7f0;
+    font-family: Georgia, serif;
+  }
+  main {
+    width: min(400px, calc(100% - 48px));
+    padding: 28px;
+    border: 1px solid #343d54;
+    border-radius: 18px;
+    background: #151b2b;
+    text-align: center;
+  }
+  h1 { font-weight: normal; letter-spacing: 2px; }
+  p { color: #a5aec5; line-height: 1.5; }
+  button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    border: 1px solid #47536f;
+    border-radius: 24px;
+    background: #29344c;
+    color: white;
+    cursor: pointer;
+  }
+  button:disabled { opacity: .5; }
+  #status { margin-top: 20px; font: 12px Arial; color: #a5aec5; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Midnight FM</h1>
+  <p>Проверка меланхоличного акустического пианино</p>
+  <button id="load">Загрузить пианино</button>
+  <button id="chord" disabled>Послушать аккорд</button>
+  <button id="melody" disabled>Послушать мелодию</button>
+  <div id="status">Сначала загрузи звуки</div>
+</main>
+
+<script>
+const status = document.getElementById("status");
+const loadButton = document.getElementById("load");
+const chordButton = document.getElementById("chord");
+const melodyButton = document.getElementById("melody");
+
+let piano;
+let ready = false;
+let busy = false;
+
+loadButton.addEventListener("click", async () => {
+  if (ready || busy) return;
+  busy = true;
+  loadButton.disabled = true;
+  status.textContent = "Загружаем ноты…";
+
+  try {
+    await Tone.start();
+
+    piano = new Tone.Sampler({
+      urls: {
+        C3: "C3.mp3",
+        Ds3: "Ds3.mp3",
+        Fs3: "Fs3.mp3",
+        A3: "A3.mp3",
+        C4: "C4.mp3",
+        Ds4: "Ds4.mp3",
+        Fs4: "Fs4.mp3",
+        A4: "A4.mp3",
+        C5: "C5.mp3",
+        Ds5: "Ds5.mp3",
+        Fs5: "Fs5.mp3",
+        A5: "A5.mp3",
+        C6: "C6.mp3"
+      },
+      baseUrl: "https://tonejs.github.io/audio/salamander/",
+      attack: 0.015,
+      release: 1.8
+    }).toDestination();
+
+    await Tone.loaded();
+
+    piano.volume.value = -5;
+    ready = true;
+    chordButton.disabled = false;
+    melodyButton.disabled = false;
+    status.textContent = "Готово. Можно слушать!";
+  } catch (error) {
+    console.error(error);
+    status.textContent = "Не удалось загрузить звуки. Проверь интернет.";
+    loadButton.disabled = false;
+  } finally {
+    busy = false;
+  }
+});
+
+chordButton.addEventListener("click", async () => {
+  if (!ready) return;
+  await Tone.start();
+
+  const t = Tone.now() + 0.05;
+  piano.triggerAttackRelease(
+    ["C4", "Eb4", "G4", "Bb4"], 3.5, t, 0.65
+  );
+});
+
+melodyButton.addEventListener("click", async () => {
+  if (!ready) return;
+  await Tone.start();
+
+  const notes = [
+    ["G4", 0], ["Eb4", 0.45], ["C4", 1.05],
+    ["D4", 1.65], ["G4", 2.1], ["Bb4", 2.8],
+    ["G4", 3.45], ["Eb4", 4.05], ["D4", 4.8],
+    ["C4", 5.5]
+  ];
+
+  const start = Tone.now() + 0.1;
+
+  notes.forEach(([note, offset], i) => {
+    const duration = i === notes.length - 1 ? 2 : 0.8;
+    const velocity = i % 3 === 0 ? 0.58 : 0.42;
+
+    piano.triggerAttackRelease(
+      note, duration, start + offset, velocity
+    );
+  });
+});
+</script>
+</body>
+</html>
