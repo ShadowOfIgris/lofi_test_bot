@@ -14,7 +14,7 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'SF Mono','Courier New',monospace;overflow:hidden;user-select:none}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(160,130,180,.06),transparent 50%),var(--bg);z-index:-1}
 .app{height:100dvh;display:flex;flex-direction:column;padding:12px 16px;max-width:520px;margin:0 auto;gap:10px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0}
+.header{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .brand{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
 .brand-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
 .icon-btn{background:none;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}
@@ -39,16 +39,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .btn-play{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--btn-primary-text);box-shadow:0 5px 18px var(--accent-glow)}
 .btn-play svg{width:26px;height:26px}
 .btn-ctrl{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1px solid var(--border)}
-.genres{display:flex;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none;justify-content:center;flex-shrink:0}
+.genres{display:flex;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none;justify-content:center}
 .genres::-webkit-scrollbar{display:none}
 .genre{flex-shrink:0;padding:7px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);font-family:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-radius:16px;cursor:pointer}
 .genre.active{background:var(--accent);color:var(--btn-primary-text);border-color:var(--accent)}
-.volume-row{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.volume-row{display:flex;align-items:center;gap:10px}
 .mute-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px}
 .mute-btn.muted{opacity:.35}
 .volume-slider{flex:1;height:3px;-webkit-appearance:none;appearance:none;background:var(--surface);border-radius:2px;outline:none;cursor:pointer}
 .volume-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent)}
-.footer{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);padding-top:8px;border-top:1px solid var(--border);flex-shrink:0}
+.footer{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);padding-top:8px;border-top:1px solid var(--border)}
 .footer-time{color:var(--accent);font-variant-numeric:tabular-nums}
 </style>
 </head>
@@ -78,7 +78,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="genres" id="genresWrap"></div>
     <div class="volume-row">
       <button class="mute-btn" id="muteBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg></button>
-      <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+      <input type="range" min="0" max="100" value="65" class="volume-slider" id="volumeSlider">
     </div>
   </main>
   <footer class="footer"><span id="footerInfo">ready</span><span class="footer-time" id="elapsed">00:00</span></footer>
@@ -104,63 +104,74 @@ const KEY_MIDI = { C:60, 'C#':61, D:62, 'D#':63, E:64, F:65, 'F#':66, G:67, 'G#'
 const CHORD_TONES = {
   maj7: [0,4,7,11], m7: [0,3,7,10], '7': [0,4,7,10],
   maj9: [0,4,7,11,14], m9: [0,3,7,10,14], '9': [0,4,7,10,14],
-  '6': [0,4,7,9], m6: [0,3,7,9], m7b5: [0,3,6,10]
+  '13': [0,4,7,10,21], '6': [0,4,7,9], m6: [0,3,7,9], m7b5: [0,3,6,10]
 };
 
-// Progressions in C/Am — transposed by keyShift
 const PROGRESSIONS = {
   chillhop: [
-    [{r:'D',q:'m7'},{r:'G',q:'7'},{r:'C',q:'maj7'},{r:'A',q:'m7'}],
-    [{r:'C',q:'maj7'},{r:'A',q:'m7'},{r:'D',q:'m7'},{r:'G',q:'7'}],
-    [{r:'A',q:'m7'},{r:'D',q:'m7'},{r:'G',q:'7'},{r:'C',q:'maj7'}],
+    [{r:'D',q:'m9'},{r:'G',q:'13'},{r:'C',q:'maj9'},{r:'A',q:'m9'}],
+    [{r:'C',q:'maj9'},{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'13'}],
+    [{r:'F',q:'maj9'},{r:'E',q:'m7'},{r:'D',q:'m9'},{r:'C',q:'maj9'}],
+    [{r:'A',q:'m9'},{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'13'}],
   ],
   jazzhop: [
-    [{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'9'},{r:'C',q:'maj9'}],
-    [{r:'D',q:'m9'},{r:'G',q:'9'},{r:'C',q:'maj9'},{r:'A',q:'m9'}],
-    [{r:'C',q:'maj9'},{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'9'}],
+    [{r:'D',q:'m9'},{r:'G',q:'13'},{r:'C',q:'maj9'},{r:'A',q:'m9'}],
+    [{r:'C',q:'maj9'},{r:'A',q:'m9'},{r:'D',q:'m9'},{r:'G',q:'13'}],
+    [{r:'E',q:'m7'},{r:'A',q:'7'},{r:'D',q:'m9'},{r:'G',q:'13'}],
+    [{r:'F',q:'maj9'},{r:'E',q:'m7'},{r:'D',q:'m9'},{r:'G',q:'13'}],
   ],
   ambient: [
     [{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'9'},{r:'A',q:'m9'}],
     [{r:'C',q:'maj9'},{r:'F',q:'maj9'},{r:'A',q:'m9'},{r:'G',q:'9'}],
+    [{r:'D',q:'m9'},{r:'F',q:'maj9'},{r:'C',q:'maj9'},{r:'G',q:'9'}],
   ],
   sleepy: [
     [{r:'C',q:'maj7'},{r:'F',q:'maj7'},{r:'D',q:'m7'},{r:'G',q:'7'}],
     [{r:'F',q:'maj7'},{r:'C',q:'maj7'},{r:'A',q:'m7'},{r:'G',q:'7'}],
+    [{r:'D',q:'m7'},{r:'G',q:'7'},{r:'C',q:'maj7'},{r:'A',q:'m7'}],
   ],
 };
 
 // ============================================================
-// GENRES
+// GENRES (более мягкие, тёплые настройки)
 // ============================================================
 const GENRES = {
   chillhop: {
-    label: 'Chillhop', bpm: [76, 86], filter: 5000, satur: 0.05,
-    reverbWet: 0.35, reverbDecay: 2.5,
-    padVol: -20, padRel: 1.5, bassVol: -12, melVol: -20, kickVol: -10, snareVol: -18, hatVol: -26,
-    drumDensity: 0.85, melDensity: 0.55, swing: 0.12,
+    label: 'Chillhop', bpm: [70, 80], masterFilter: 3800, satur: 0.04,
+    reverbDecay: 2.2, reverbWet: 0.35, chorusWet: 0.25, chorusRate: 1.2,
+    padVol: -22, padAttack: 1.5, padRelease: 3.5,
+    bassVol: -14, melVol: -22, melDelay: 0.35,
+    kickVol: -16, snareVol: -22, hatVol: -30,
+    drumDensity: 0.7, melDensity: 0.45, arpChance: 0.2, swing: 0.14,
   },
   jazzhop: {
-    label: 'Jazzhop', bpm: [84, 92], filter: 5800, satur: 0.06,
-    reverbWet: 0.30, reverbDecay: 2.2,
-    padVol: -19, padRel: 1.2, bassVol: -11, melVol: -18, kickVol: -10, snareVol: -17, hatVol: -24,
-    drumDensity: 0.9, melDensity: 0.72, swing: 0.18,
+    label: 'Jazzhop', bpm: [78, 88], masterFilter: 4000, satur: 0.05,
+    reverbDecay: 2.0, reverbWet: 0.30, chorusWet: 0.20, chorusRate: 1.5,
+    padVol: -21, padAttack: 1.2, padRelease: 2.8,
+    bassVol: -13, melVol: -20, melDelay: 0.30,
+    kickVol: -15, snareVol: -21, hatVol: -28,
+    drumDensity: 0.8, melDensity: 0.62, arpChance: 0.3, swing: 0.2,
   },
   ambient: {
-    label: 'Ambient', bpm: [62, 72], filter: 3500, satur: 0.03,
-    reverbWet: 0.55, reverbDecay: 4.5,
-    padVol: -16, padRel: 3.5, bassVol: -16, melVol: -24, kickVol: -22, snareVol: -30, hatVol: -36,
-    drumDensity: 0.15, melDensity: 0.3, swing: 0.05,
+    label: 'Ambient', bpm: [55, 65], masterFilter: 3000, satur: 0.02,
+    reverbDecay: 4.0, reverbWet: 0.55, chorusWet: 0.4, chorusRate: 0.6,
+    padVol: -18, padAttack: 2.5, padRelease: 5.0,
+    bassVol: -18, melVol: -26, melDelay: 0.45,
+    kickVol: -24, snareVol: -32, hatVol: -38,
+    drumDensity: 0.08, melDensity: 0.22, arpChance: 0.1, swing: 0.05,
   },
   sleepy: {
-    label: 'Sleepy', bpm: [66, 74], filter: 4000, satur: 0.04,
-    reverbWet: 0.45, reverbDecay: 3.0,
-    padVol: -18, padRel: 2.5, bassVol: -14, melVol: -22, kickVol: -16, snareVol: -24, hatVol: -30,
-    drumDensity: 0.4, melDensity: 0.42, swing: 0.08,
+    label: 'Sleepy', bpm: [60, 70], masterFilter: 3400, satur: 0.03,
+    reverbDecay: 3.2, reverbWet: 0.45, chorusWet: 0.3, chorusRate: 0.9,
+    padVol: -20, padAttack: 2.0, padRelease: 4.0,
+    bassVol: -16, melVol: -24, melDelay: 0.4,
+    kickVol: -20, snareVol: -28, hatVol: -34,
+    drumDensity: 0.35, melDensity: 0.35, arpChance: 0.15, swing: 0.1,
   },
 };
 
 // ============================================================
-// AUDIO ENGINE
+// STATE
 // ============================================================
 let engine = null;
 let session = null;
@@ -171,22 +182,29 @@ let motif = null;
 let motifBars = 0;
 let elapsedStart = 0;
 let elapsedAccum = 0;
-let volume = 0.7;
+let volume = 0.65;
 let muted = false;
+const state = { currentGenre: 'chillhop' };
 
+// ============================================================
+// CRACKLE BUFFER
+// ============================================================
 function makeCrackleBuffer() {
   const sr = Tone.context.sampleRate;
-  const len = sr * 4;
+  const len = Math.floor(sr * 4);
   const buf = Tone.context.createBuffer(1, len, sr);
   const d = buf.getChannelData(0);
   for (let i = 0; i < len; i++) {
-    d[i] = Math.random() < 0.0004
-      ? (Math.random() * 2 - 1) * 0.5
-      : (Math.random() * 2 - 1) * 0.003;
+    d[i] = Math.random() < 0.0003
+      ? (Math.random() * 2 - 1) * 0.4
+      : (Math.random() * 2 - 1) * 0.002;
   }
   return buf;
 }
 
+// ============================================================
+// ENGINE
+// ============================================================
 class LofiEngine {
   constructor(genre) {
     this.genre = genre;
@@ -198,71 +216,80 @@ class LofiEngine {
     const c = this.cfg;
     const n = this.nodes = {};
 
-    // Master chain
-    n.limiter = new Tone.Limiter(-2).toDestination();
-    n.masterGain = new Tone.Gain(0.7).connect(n.limiter);
-    n.satur = new Tone.Distortion({ distortion: c.satur, wet: 1 }).connect(n.masterGain);
-    n.filter = new Tone.Filter({ frequency: c.filter, type: 'lowpass', rolloff: -24, Q: 0.3 }).connect(n.satur);
+    // Master: filter → soft satur → compressor → gain → limiter → destination
+    n.limiter = new Tone.Limiter(-3).toDestination();
+    n.masterGain = new Tone.Gain(0.55).connect(n.limiter);
+    n.comp = new Tone.Compressor({ threshold: -22, ratio: 2.5, attack: 0.02, release: 0.3 }).connect(n.masterGain);
+    n.satur = new Tone.Chebyshev({ order: 1, wet: c.satur }).connect(n.comp);
+    n.filter = new Tone.Filter({ frequency: c.masterFilter, type: 'lowpass', rolloff: -24, Q: 0.3 }).connect(n.satur);
 
-    // Reverb (send only)
-    n.reverb = new Tone.Reverb({ decay: c.reverbDecay, wet: 1, preDelay: 0.01 }).connect(n.filter);
+    // Reverb send
+    n.reverb = new Tone.Reverb({ decay: c.reverbDecay, wet: 1, preDelay: 0.02 }).connect(n.filter);
     n.reverbSend = new Tone.Gain(c.reverbWet).connect(n.reverb);
 
-    // Pad
-    n.padFilter = new Tone.Filter({ frequency: 2500, type: 'lowpass', rolloff: -12 }).connect(n.filter);
+    // ============ PAD ============
+    // Clean sine + chorus for width + small detune
+    n.chorus = new Tone.Chorus({ frequency: c.chorusRate, delayTime: 3.5, depth: 0.7, wet: c.chorusWet }).start();
+    n.chorus.connect(n.filter);
+    n.chorus.connect(n.reverbSend);
+
+    n.padFilter = new Tone.Filter({ frequency: 2200, type: 'lowpass', rolloff: -12, Q: 0.4 }).connect(n.chorus);
+
     n.pad = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'triangle' },
-      envelope: { attack: 0.5, decay: 0.4, sustain: 0.6, release: c.padRel }
+      oscillator: { type: 'sine' },
+      envelope: { attack: c.padAttack, decay: 0.8, sustain: 0.7, release: c.padRelease }
     }).connect(n.padFilter);
     n.pad.volume.value = c.padVol;
-    n.pad.connect(n.reverbSend);
+    // Slight detune for warmth
+    n.pad.set({ detune: -4 });
 
-    // Bass
+    // ============ BASS ============
     n.bass = new Tone.MonoSynth({
       oscillator: { type: 'sine' },
-      filter: { Q: 0.3, type: 'lowpass', frequency: 120 },
-      filterEnvelope: { attack: 0.01, decay: 0.15, sustain: 0.1, release: 0.3, baseFrequency: 60, octaves: 1.5 },
-      envelope: { attack: 0.02, decay: 0.25, sustain: 0.55, release: 0.35 }
+      filter: { Q: 0.4, type: 'lowpass', frequency: 180 },
+      filterEnvelope: { attack: 0.02, decay: 0.2, sustain: 0.2, release: 0.3, baseFrequency: 80, octaves: 1 },
+      envelope: { attack: 0.05, decay: 0.3, sustain: 0.5, release: 0.5 },
+      portamento: 0.04
     }).connect(n.filter);
     n.bass.volume.value = c.bassVol;
 
-    // Melody (Rhodes-style, DRY, short)
-    n.melFilter = new Tone.Filter({ frequency: 2800, type: 'lowpass', rolloff: -12, Q: 0.5 }).connect(n.filter);
-    n.melody = new Tone.PolySynth(Tone.FMSynth, {
-      harmonicity: 2, modulationIndex: 1.2,
-      oscillator: { type: 'sine' }, modulation: { type: 'sine' },
-      envelope: { attack: 0.005, decay: 0.25, sustain: 0.05, release: 0.2 },
-      modulationEnvelope: { attack: 0.01, decay: 0.1, sustain: 0.05, release: 0.2 }
+    // ============ MELODY ============
+    // Clean sine, short, dry, with tiny delay for space
+    n.melDelay = new Tone.FeedbackDelay({ delayTime: 0.14, feedback: 0.15, wet: c.melDelay }).connect(n.filter);
+    n.melFilter = new Tone.Filter({ frequency: 2400, type: 'lowpass', rolloff: -12, Q: 0.4 }).connect(n.melDelay);
+
+    n.melody = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'sine' },
+      envelope: { attack: 0.015, decay: 0.35, sustain: 0.12, release: 0.8 },
+      portamento: 0.02
     }).connect(n.melFilter);
     n.melody.volume.value = c.melVol;
 
-    // Kick
+    // ============ DRUMS ============
     n.kick = new Tone.MembraneSynth({
-      pitchDecay: 0.05, octaves: 3,
-      envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 }
+      pitchDecay: 0.02, octaves: 2,
+      envelope: { attack: 0.005, decay: 0.45, sustain: 0.01, release: 0.6 }
     }).connect(n.filter);
     n.kick.volume.value = c.kickVol;
 
-    // Snare (with reverb send)
-    n.snareFilter = new Tone.Filter({ frequency: 1500, type: 'bandpass', Q: 1.0 }).connect(n.filter);
+    n.snareFilter = new Tone.Filter({ frequency: 1300, type: 'bandpass', Q: 0.8 }).connect(n.filter);
     n.snare = new Tone.NoiseSynth({
-      noise: { type: 'pink' },
-      envelope: { attack: 0.001, decay: 0.15, sustain: 0 }
+      noise: { type: 'brown' },
+      envelope: { attack: 0.003, decay: 0.1, sustain: 0 }
     }).connect(n.snareFilter);
     n.snare.volume.value = c.snareVol;
     n.snare.connect(n.reverbSend);
 
-    // Hi-hat (dry)
-    n.hatFilter = new Tone.Filter({ frequency: 8000, type: 'highpass' }).connect(n.filter);
+    n.hatFilter = new Tone.Filter({ frequency: 7000, type: 'highpass' }).connect(n.filter);
     n.hat = new Tone.NoiseSynth({
       noise: { type: 'white' },
-      envelope: { attack: 0.001, decay: 0.04, sustain: 0 }
+      envelope: { attack: 0.002, decay: 0.03, sustain: 0 }
     }).connect(n.hatFilter);
     n.hat.volume.value = c.hatVol;
 
     // Vinyl crackle
     n.vinyl = new Tone.Player({ url: new Tone.ToneAudioBuffer(makeCrackleBuffer()), loop: true }).connect(n.filter);
-    n.vinyl.volume.value = -18;
+    n.vinyl.volume.value = -22;
   }
 
   startVinyl() {
@@ -270,11 +297,9 @@ class LofiEngine {
       try { this.nodes.vinyl.start(); } catch(e) {}
     }
   }
-
   stopVinyl() {
     if (this.nodes.vinyl) try { this.nodes.vinyl.stop(); } catch(e) {}
   }
-
   dispose() {
     try { this.stopVinyl(); } catch(e) {}
     Object.values(this.nodes).forEach(n => {
@@ -285,7 +310,7 @@ class LofiEngine {
 }
 
 // ============================================================
-// SESSION GENERATION
+// SESSION
 // ============================================================
 function createSession(genre) {
   const cfg = GENRES[genre];
@@ -293,24 +318,23 @@ function createSession(genre) {
   const key = pick(ALL_KEYS);
   const keyShift = (KEY_MIDI[key] - KEY_MIDI['C'] + 12) % 12;
   const progression = pick(PROGRESSIONS[genre]);
-
-  // Build voicings with voice leading
   const voicings = [];
   let prevMidi = null;
+
   for (const chord of progression) {
     const rootMidi = KEY_MIDI[chord.r] + keyShift;
     let notes = CHORD_TONES[chord.q].map(i => rootMidi + i);
 
-    // Center in [58, 74]
-    while (Math.min(...notes) < 58) notes = notes.map(x => x + 12);
-    while (Math.max(...notes) > 74) notes = notes.map(x => x - 12);
+    // Wrap into [55, 76]
+    while (Math.min(...notes) < 55) notes = notes.map(x => x + 12);
+    while (Math.max(...notes) > 76) notes = notes.map(x => x - 12);
 
-    // Voice leading
+    // Voice leading: find best octave
     if (prevMidi) {
       let best = notes, bestCost = Infinity;
       for (const oct of [-12, 0, 12]) {
         const test = notes.map(x => x + oct);
-        if (Math.min(...test) < 50 || Math.max(...test) > 78) continue;
+        if (Math.min(...test) < 48 || Math.max(...test) > 80) continue;
         const cost = test.reduce((s, x) => s + Math.min(...prevMidi.map(p => Math.abs(p - x))), 0);
         if (cost < bestCost) { bestCost = cost; best = test; }
       }
@@ -330,7 +354,7 @@ function createSession(genre) {
   return {
     genre, bpm, key, keyShift, progression, voicings,
     barCount: 0,
-    maxBars: 32 + Math.floor(Math.random() * 32),  // 32–64
+    maxBars: 64 + Math.floor(Math.random() * 32),
     mode: pick(['minor', 'major']),
   };
 }
@@ -345,13 +369,13 @@ function generateMelody(sess, chord) {
   for (let oct = -1; oct <= 1; oct++) {
     for (const s of penta) {
       const m = rootMidi + s + oct * 12;
-      if (m >= 60 && m <= 74) range.push(m);
+      if (m >= 62 && m <= 74) range.push(m);
     }
   }
   range.sort((a, b) => a - b);
   if (!range.length) return [];
 
-  const chordInRange = chord.midi.filter(m => m >= 60 && m <= 74);
+  const chordInRange = chord.midi.filter(m => m >= 62 && m <= 74);
   let cur = chordInRange.length ? pick(chordInRange) : range[Math.floor(range.length / 2)];
 
   const count = 2 + Math.floor(Math.random() * 3);
@@ -361,11 +385,11 @@ function generateMelody(sess, chord) {
     const idx = range.indexOf(cur);
     if (idx >= 0) {
       const dir = Math.random() < 0.5 ? 1 : -1;
-      const step = Math.random() < 0.7 ? 1 : 2;
+      const step = Math.random() < 0.75 ? 1 : 2;
       cur = range[Math.max(0, Math.min(range.length - 1, idx + dir * step))];
     }
   }
-  // End on chord tone
+
   if (chordInRange.length) {
     const last = phrase[phrase.length - 1];
     let best = chordInRange[0], bestD = Infinity;
@@ -389,51 +413,58 @@ function scheduleBar(time) {
   const beat = 60 / session.bpm;
   const n = engine.nodes;
 
-  // Auto-transition after maxBars
   if (bar > 0 && bar >= session.maxBars) {
-    setTimeout(() => autoTransition(), 200);
+    setTimeout(() => autoTransition(), 100);
     return;
   }
 
-  // Update chord display
-  $('npMeta').textContent = `${session.key} ${session.mode} · ${chord.name}`;
+  $('npMeta').textContent = `${session.key} · ${chord.name}`;
 
-  // Pad
-  n.pad.triggerAttackRelease(chord.notes, '1m', time, 0.5);
-
-  // Bass
-  const bassNote = Tone.Frequency(chord.bassMidi, 'midi').toNote();
-  n.bass.triggerAttackRelease(bassNote, '2n', time);
-  if (Math.random() < 0.4) {
-    n.bass.triggerAttackRelease(bassNote, '4n', time + beat * 2.5);
+  // === PAD ===
+  if (Math.random() < cfg.arpChance) {
+    // Arpeggio: notes one after another with 40ms gaps
+    chord.notes.forEach((note, i) => {
+      n.pad.triggerAttackRelease(note, '2n', time + i * 0.04, 0.45);
+    });
+  } else {
+    n.pad.triggerAttackRelease(chord.notes, '1m', time, 0.5);
   }
 
-  // Drums
-  if (Math.random() < cfg.drumDensity) {
-    n.kick.triggerAttackRelease('C1', '8n', time + rand(-0.005, 0.005));
-    if (Math.random() < 0.5) n.kick.triggerAttackRelease('C1', '8n', time + beat * 2.5 + rand(-0.008, 0.008));
-    if (Math.random() < 0.2) n.kick.triggerAttackRelease('C1', '8n', time + beat * 3.5 + rand(-0.008, 0.008));
+  // === BASS ===
+  const bassNote = Tone.Frequency(chord.bassMidi, 'midi').toNote();
+  n.bass.triggerAttackRelease(bassNote, '2n', time + rand(0, 0.02));
+  if (Math.random() < 0.35) {
+    n.bass.triggerAttackRelease(bassNote, '4n', time + beat * 2.5 + rand(0, 0.03));
+  }
 
-    n.snare.triggerAttackRelease('16n', time + beat + rand(-0.01, 0.01), 0.5);
-    n.snare.triggerAttackRelease('16n', time + beat * 3 + rand(-0.01, 0.01), 0.55);
-    if (Math.random() < 0.25) {
-      n.snare.triggerAttackRelease('32n', time + beat * 2.75 + rand(-0.01, 0.01), 0.15);
+  // === DRUMS ===
+  if (Math.random() < cfg.drumDensity) {
+    n.kick.triggerAttackRelease('C1', '8n', time + rand(-0.008, 0.008));
+    if (Math.random() < 0.45) n.kick.triggerAttackRelease('C1', '8n', time + beat * 2.5 + rand(-0.012, 0.012));
+    if (Math.random() < 0.15) n.kick.triggerAttackRelease('C1', '8n', time + beat * 3.5 + rand(-0.012, 0.012));
+
+    n.snare.triggerAttackRelease('16n', time + beat + rand(-0.015, 0.015), 0.55);
+    n.snare.triggerAttackRelease('16n', time + beat * 3 + rand(-0.015, 0.015), 0.6);
+    if (Math.random() < 0.2) {
+      n.snare.triggerAttackRelease('32n', time + beat * 2.75 + rand(-0.01, 0.01), 0.18);
     }
 
     for (let i = 0; i < 8; i++) {
       const isOff = i % 2 === 1;
       const swingOff = isOff ? beat * cfg.swing * 0.5 : 0;
-      const vel = isOff ? 0.25 : 0.4;
-      n.hat.triggerAttackRelease('32n', time + (i * beat) / 2 + swingOff + rand(-0.005, 0.005), vel);
+      const vel = isOff ? 0.22 : 0.38;
+      if (Math.random() < 0.9) {
+        n.hat.triggerAttackRelease('32n', time + (i * beat) / 2 + swingOff + rand(-0.008, 0.008), vel);
+      }
     }
   }
 
-  // Melody
+  // === MELODY ===
   if (Math.random() < cfg.melDensity) {
     let phrase;
-    if (motif && motifBars < 2 && Math.random() < 0.5) {
+    if (motif && motifBars < 2 && Math.random() < 0.55) {
       phrase = motif.map(p => ({
-        midi: p.midi + (Math.random() < 0.1 ? pick([-2, -1, 1, 2]) : 0),
+        midi: p.midi + (Math.random() < 0.08 ? pick([-2, -1, 1, 2]) : 0),
         beat: p.beat,
       }));
       motifBars++;
@@ -443,39 +474,36 @@ function scheduleBar(time) {
       motifBars = 0;
     }
     for (const note of phrase) {
-      const dur = Math.random() < 0.7 ? '16n' : '8n';
+      const swingOff = (Math.floor(note.beat * 2) % 2 === 1) ? beat * cfg.swing * 0.5 : 0;
+      const dur = Math.random() < 0.8 ? '16n' : '8n';
       n.melody.triggerAttackRelease(
         Tone.Frequency(note.midi, 'midi').toNote(),
-        dur, time + note.beat * beat, 0.5 + Math.random() * 0.2
+        dur, time + note.beat * beat + swingOff + rand(-0.01, 0.01),
+        0.5 + Math.random() * 0.15
       );
     }
   }
 }
 
 // ============================================================
-// PLAYBACK CONTROL
+// PLAYBACK
 // ============================================================
 async function startPlaying() {
   await Tone.start();
-  if (!engine) {
-    engine = new LofiEngine(state.currentGenre);
-  }
+  if (!engine) engine = new LofiEngine(state.currentGenre);
   if (!session) {
     session = createSession(state.currentGenre);
     Tone.Transport.bpm.value = session.bpm;
   }
-
   engine.startVinyl();
   Tone.Transport.cancel();
   if (repeatId !== null) Tone.Transport.clear(repeatId);
   repeatId = Tone.Transport.scheduleRepeat(time => {
     try { scheduleBar(time); } catch(e) { console.error(e); }
   }, '1m');
-
   Tone.Transport.stop();
   Tone.Transport.position = 0;
   Tone.Transport.start('+0.1');
-
   playing = true;
   elapsedStart = Date.now();
   updatePlayUI();
@@ -515,8 +543,8 @@ async function autoTransition() {
   if (transitioning) return;
   transitioning = true;
   const n = engine?.nodes;
-  if (n?.masterGain) n.masterGain.gain.rampTo(0, 1.2);
-  await new Promise(r => setTimeout(r, 1300));
+  if (n?.masterGain) n.masterGain.gain.rampTo(0, 2.0);
+  await new Promise(r => setTimeout(r, 2200));
   Tone.Transport.stop();
   Tone.Transport.cancel();
   engine?.dispose();
@@ -530,15 +558,12 @@ async function autoTransition() {
   engine.startVinyl();
   engine.nodes.masterGain.gain.value = 0;
   Tone.Transport.start('+0.1');
-  engine.nodes.masterGain.gain.rampTo(0.7, 1.2);
+  engine.nodes.masterGain.gain.rampTo(0.55, 1.8);
   transitioning = false;
 }
 
 async function nextTrack() {
-  if (!playing) {
-    await startPlaying();
-    return;
-  }
+  if (!playing) { await startPlaying(); return; }
   await autoTransition();
   tg?.HapticFeedback?.impactOccurred('rigid');
 }
@@ -550,8 +575,8 @@ async function changeGenre(genre) {
   if (!playing) return;
 
   const n = engine?.nodes;
-  if (n?.masterGain) n.masterGain.gain.rampTo(0, 0.8);
-  await new Promise(r => setTimeout(r, 900));
+  if (n?.masterGain) n.masterGain.gain.rampTo(0, 1.5);
+  await new Promise(r => setTimeout(r, 1700));
   Tone.Transport.stop();
   Tone.Transport.cancel();
   engine?.dispose();
@@ -565,26 +590,21 @@ async function changeGenre(genre) {
   engine.startVinyl();
   engine.nodes.masterGain.gain.value = 0;
   Tone.Transport.start('+0.1');
-  engine.nodes.masterGain.gain.rampTo(0.7, 0.8);
+  engine.nodes.masterGain.gain.rampTo(0.55, 1.5);
   tg?.HapticFeedback?.selectionChanged();
 }
 
 // ============================================================
 // UI
 // ============================================================
-const state = { currentGenre: 'chillhop' };
-
 function updatePlayUI() {
   $('vinyl').classList.toggle('spinning', playing);
   $('glow').classList.toggle('active', playing);
   document.querySelector('.icon-play').style.display = playing ? 'none' : 'block';
   document.querySelector('.icon-pause').style.display = playing ? 'block' : 'none';
   $('footerInfo').textContent = playing ? 'generating' : 'paused';
-  if (playing && session) {
-    $('npTitle').textContent = session.genre + ' session';
-  } else {
-    $('npTitle').textContent = 'Press play';
-  }
+  if (playing && session) $('npTitle').textContent = session.genre + ' session';
+  else $('npTitle').textContent = 'Press play';
 }
 
 function renderGenres() {
@@ -654,7 +674,6 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// Init
 renderGenres();
 $('footerInfo').textContent = 'ready';
 </script>
