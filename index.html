@@ -4,391 +4,414 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Midnight FM — Dream City</title>
+<title>Midnight FM — Dream Radio</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  color: #edf1ff;
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(ellipse at top, #293653, #0b1020 65%);
-}
-main { max-width: 760px; margin: auto; padding: 24px 16px 40px; }
-header { display:flex; justify-content:space-between; align-items:center; }
-h1 { font-size: 21px; letter-spacing: 3px; }
-h2 { font-size: clamp(30px, 6vw, 48px); line-height:1.1; margin:24px 0 12px; }
-p { color:#aab6d0; }
-.panel {
-  background:#111a2c; border:1px solid #2a3855;
-  border-radius:22px; padding:22px; margin-top:16px;
-}
-.hero {
-  position:relative; overflow:hidden; min-height:255px;
-  padding:28px; border-radius:24px; margin-top:20px;
-  background:linear-gradient(130deg,#253653,#11192b);
-}
-.moon {
-  position:absolute; right:12%; top:30px; width:65px;height:65px;
-  border-radius:50%; background:#e4e8ff;
-  box-shadow:0 0 55px #c6d1ff55;
-}
-.city { position:absolute; bottom:0; left:0; right:0; height:75px;
-  display:flex; align-items:end; gap:4px; opacity:.8; }
-.building { flex:1; background:#10182b; border-top:1px solid #53678f; }
-.heroText { position:relative; z-index:1; max-width:450px; }
-.pill { color:#bfe9df; font-size:12px; letter-spacing:2px; }
-.grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.moods { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-button {
-  font:inherit; cursor:pointer; border-radius:12px; padding:11px;
-  border:1px solid #354362; background:#19243a; color:#dce4ff;
-}
-.mood { text-align:left; font-size:12px; }
-.mood b { display:block; font-size:13px; margin-bottom:3px; }
-.mood.active { background:#303d5d; border-color:#a6b8ff; }
-.primary { background:#c6ceff; color:#11182a; border:0; font-weight:700; flex:1; }
-.controls { display:flex; gap:10px; margin-top:18px; }
-.row { display:flex; justify-content:space-between; margin:18px 0 7px; font-size:13px; }
-.value { color:#b8c7ff; }
-input[type=range] { width:100%; accent-color:#b8c7ff; }
-.option { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:12px 0; border-bottom:1px solid #29354d; font-size:13px; }
-.option:last-child { border:0; }
-.option small { display:block; color:#9aa8c5; margin-top:4px; }
-.note { font-size:12px; }
-#bars { height:36px; display:flex; align-items:center; gap:3px; margin-top:15px; }
-.bar { flex:1; max-width:5px; height:5px; background:#c5b8ff; border-radius:5px; }
-@media(max-width:600px) {
-  .grid { grid-template-columns:1fr; }
-  .hero { padding:22px; }
-}
+:root{color-scheme:dark;--bg:#090b17;--panel:#15182a;--text:#e8e9ff;--muted:#969bbd;--accent:#a89bff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#29294d 0%,#101326 45%,#080a14 100%);color:var(--text);font:16px system-ui,sans-serif;display:flex;justify-content:center;padding:24px 14px}
+main{width:100%;max-width:650px}
+header{text-align:center;padding:20px 0 25px}
+.logo{font-size:12px;letter-spacing:5px;color:#b9b2ff}
+h1{font-size:clamp(32px,7vw,48px);margin:12px 0 5px;letter-spacing:2px}
+.subtitle{color:var(--muted);font-size:14px}
+.sky{height:155px;position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(#28284a,#6d577b 60%,#25243e);margin-bottom:18px}
+.moon{position:absolute;right:17%;top:20px;width:54px;height:54px;border-radius:50%;background:#fff0d5;box-shadow:0 0 35px #ffe6c588}
+.city{position:absolute;bottom:0;width:100%;height:90px;display:flex;align-items:flex-end;gap:5px;padding:0 8px}
+.building{flex:1;background:#111528;border-radius:3px 3px 0 0;position:relative}
+.building:after{content:"";position:absolute;inset:9px 5px;background:repeating-linear-gradient(0deg,transparent 0 9px,#e8b9ff66 10px 13px);opacity:.65}
+.panel{background:#121629eF;border:1px solid #ffffff13;border-radius:18px;padding:20px;margin:14px 0}
+.label{font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:12px}
+.moods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+button{font:inherit;cursor:pointer;transition:.2s}
+.mood{padding:14px 10px;text-align:left;border:1px solid #ffffff17;background:#1a1d33;color:var(--text);border-radius:12px}
+.mood span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.mood.active{border-color:var(--accent);background:#7770b52b;box-shadow:inset 0 0 0 1px #a89bff22}
+.now{display:flex;align-items:center;gap:14px}
+.disc{width:65px;height:65px;flex-shrink:0;border-radius:50%;background:repeating-radial-gradient(circle,#26283b 0 4px,#101221 5px 8px);display:grid;place-items:center;border:2px solid #656080}
+.disc:after{content:"";width:14px;height:14px;border-radius:50%;background:#c4b9ff}
+.disc.playing{animation:spin 4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.track{font-size:20px;font-weight:600}
+.status{font-size:13px;color:var(--muted);margin-top:5px}
+.controls{display:flex;gap:10px;margin-top:18px}
+.mainbtn{flex:1;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#111126;font-weight:700}
+.stopbtn{padding:14px 20px;border:1px solid #ffffff25;border-radius:12px;background:#20233a;color:var(--text)}
+.setting{margin:19px 0}
+.settingtop{display:flex;justify-content:space-between;gap:12px;font-size:14px;margin-bottom:9px}
+.settingtop output{color:#c3bbff}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.toggles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.toggle{display:flex;gap:9px;align-items:center;color:#d6d7ed;font-size:14px}
+.toggle input{accent-color:var(--accent);width:16px;height:16px}
+footer{text-align:center;color:#747a9b;font-size:12px;padding:15px}
+@media(max-width:420px){.panel{padding:16px}.moods{gap:7px}.mood{padding:12px 8px}.stopbtn{padding:12px}}
 </style>
 </head>
 <body>
 <main>
 <header>
-  <div><div class="pill">ENDLESS PROCEDURAL RADIO</div><h1>MIDNIGHT FM</h1></div>
-  <span>☾ 01:42 AM</span>
+  <div class="logo">YOUR PERSONAL NIGHT RADIO</div>
+  <h1>MIDNIGHT FM</h1>
+  <div class="subtitle">Somewhere between a dream and the city lights.</div>
 </header>
 
-<section class="hero">
+<div class="sky" aria-hidden="true">
   <div class="moon"></div>
   <div class="city" id="city"></div>
-  <div class="heroText">
-    <div class="pill" id="moodLabel">DREAM CITY · 72 BPM</div>
-    <h2>A little music<br>for the hours<br>that belong to you.</h2>
-    <p>Soft keys. Distant lights. Slow thoughts.</p>
-    <div id="bars"></div>
-  </div>
-</section>
-
-<div class="grid">
-<section class="panel">
-  <h3>✦ Choose your night</h3>
-  <div class="moods">
-    <button class="mood active" data-mood="dream"><b>✦ Dream City</b>Мечтательный город</button>
-    <button class="mood" data-mood="rain"><b>☂ Rainy Window</b>Дождь за окном</button>
-    <button class="mood" data-mood="drive"><b>↗ Night Drive</b>Ночной путь</button>
-    <button class="mood" data-mood="cafe"><b>☕ Quiet Cafe</b>Тёплое кафе</button>
-  </div>
-
-  <div class="row"><label for="tempo">Темп</label><span class="value"><span id="tempoValue">72</span> BPM</span></div>
-  <input id="tempo" type="range" min="58" max="92" value="72">
-
-  <div class="row"><label for="noise">Винил и атмосфера</label><span class="value"><span id="noiseValue">45</span>%</span></div>
-  <input id="noise" type="range" min="0" max="100" value="45">
-
-  <div class="controls">
-    <button class="primary" id="play">▶ Включить радио</button>
-    <button id="newTheme" title="Новая мелодическая фраза">↻</button>
-  </div>
-  <p class="note" id="status">Ночь только начинается.</p>
-</section>
-
-<section class="panel">
-  <h3>✦ Звуковая сцена</h3>
-  <div class="option"><div><b>Мягкие ударные</b><small>Ненавязчивый ритм</small></div><input type="checkbox" id="drums" checked></div>
-  <div class="option"><div><b>Мелодия</b><small>Фразы, паузы и вариации</small></div><input type="checkbox" id="melody" checked></div>
-  <div class="option"><div><b>Ночной воздух</b><small>Тихий атмосферный шум</small></div><input type="checkbox" id="air" checked></div>
-  <div class="option"><div><b>Тёплая лента</b><small>Мягкое изменение тембра</small></div><input type="checkbox" id="tape" checked></div>
-  <p class="note">Звук генерируется прямо в браузере. Никаких установок и аккаунтов.</p>
-</section>
 </div>
+
+<section class="panel">
+  <div class="label">CHOOSE YOUR NIGHT</div>
+  <div class="moods">
+    <button class="mood active" data-mood="dream">✦ Dream City<span>Мечтательные клавиши</span></button>
+    <button class="mood" data-mood="rain">☂ Rainy Window<span>Дождь за окном</span></button>
+    <button class="mood" data-mood="drive">⌁ Night Drive<span>Ночная дорога</span></button>
+    <button class="mood" data-mood="cafe">☕ Quiet Cafe<span>Тихое кафе</span></button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="now">
+    <div class="disc" id="disc"></div>
+    <div>
+      <div class="track" id="track">Dream City</div>
+      <div class="status" id="status">Радио выключено · бесконечный эфир</div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="mainbtn" id="play">▶ Включить радио</button>
+    <button class="stopbtn" id="stop">■ Стоп</button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="label">SOUND DESIGN</div>
+  <div class="setting">
+    <div class="settingtop"><label for="tempo">Темп</label><output id="tempoValue">72 BPM</output></div>
+    <input id="tempo" type="range" min="55" max="100" value="72">
+  </div>
+  <div class="setting">
+    <div class="settingtop"><label for="ambience">Атмосфера и дождь</label><output id="ambienceValue">35%</output></div>
+    <input id="ambience" type="range" min="0" max="100" value="35">
+  </div>
+  <div class="toggles">
+    <label class="toggle"><input id="drums" type="checkbox" checked> Мягкий ритм</label>
+    <label class="toggle"><input id="melody" type="checkbox" checked> Мелодия</label>
+    <label class="toggle"><input id="air" type="checkbox" checked> Ночной воздух</label>
+    <label class="toggle"><input id="warm" type="checkbox" checked> Тёплый звук</label>
+  </div>
+</section>
+<footer>GENERATIVE MUSIC · EVERY NIGHT IS DIFFERENT</footer>
 </main>
 
 <script>
+(() => {
+"use strict";
+
 const $ = id => document.getElementById(id);
 
-for (let i=0;i<24;i++) {
-  const b=document.createElement('div');
-  b.className='building';
-  b.style.height=(20+Math.random()*55)+'px';
-  $('city').appendChild(b);
-}
-for(let i=0;i<50;i++){
-  const b=document.createElement('div');
-  b.className='bar'; $('bars').appendChild(b);
-}
-
-let ctx, master, compressor, noiseGain, noiseFilter, noiseSource;
-let running=false, timer=null, step=0, bar=0, nextTime=0;
-let bpm=72, vinyl=45, mood='dream', motifIndex=0;
-
-const scenes={
- dream:{
-  label:'DREAM CITY', root:57, air:.018, brightness:2800,
-  chords:[[0,3,7,10],[5,9,12,16],[3,7,10,14],[4,7,11,14]]
- },
- rain:{
-  label:'RAINY WINDOW', root:53, air:.042, brightness:1900,
-  chords:[[0,3,7,10],[8,12,15,19],[5,8,12,15],[3,7,10,14]]
- },
- drive:{
-  label:'NIGHT DRIVE', root:45, air:.014, brightness:3200,
-  chords:[[0,7,12,16],[5,12,17,21],[3,10,15,19],[8,15,20,24]]
- },
- cafe:{
-  label:'QUIET CAFE', root:55, air:.012, brightness:2300,
-  chords:[[0,4,7,11],[5,9,12,16],[2,5,9,12],[7,11,14,17]]
- }
+const scenes = {
+  dream: {
+    label: "Dream City", bpm: 72, wave: "triangle",
+    chords: [[60,64,67,71],[57,60,64,67],[53,57,60,64],[55,59,62,67]],
+    melody: [76,72,79,76,74,72,67,72,76,79,81,79,76,72,71,67],
+    bass: [36,43,33,38]
+  },
+  rain: {
+    label: "Rainy Window", bpm: 66, wave: "sine",
+    chords: [[60,63,67,70],[56,60,63,67],[53,56,60,63],[58,62,65,69]],
+    melody: [72,75,79,75,72,70,67,70,72,75,77,75,70,67,65,67],
+    bass: [36,32,29,34]
+  },
+  drive: {
+    label: "Night Drive", bpm: 84, wave: "triangle",
+    chords: [[57,60,64,67],[53,57,60,64],[55,59,62,65],[52,55,59,62]],
+    melody: [76,76,72,67,72,76,79,76,74,74,71,67,71,74,79,74],
+    bass: [33,29,31,28]
+  },
+  cafe: {
+    label: "Quiet Cafe", bpm: 68, wave: "sine",
+    chords: [[60,64,67,74],[57,60,64,69],[55,59,62,69],[53,57,60,67]],
+    melody: [72,76,79,76,74,72,69,72,76,79,81,79,76,74,72,69],
+    bass: [36,33,31,29]
+  }
 };
 
-// Пентатоника: ноты подобраны так, чтобы мелодия звучала согласованно.
-const scale=[0,2,3,7,9,12,14,15,19,21];
-const motifs=[
- [4,3,1,3,4,6,4,3],
- [2,4,6,4,3,1,0,1],
- [4,6,7,6,4,3,2,3],
- [6,4,3,1,2,4,3,1],
- [1,3,4,6,4,3,1,0],
- [3,4,6,4,2,3,1,0]
-];
+let mood = "dream";
+let bpm = 72;
+let audio = null;
+let master = null;
+let musicBus = null;
+let ambienceBus = null;
+let timer = null;
+let nextTime = 0;
+let step = 0;
+let bar = 0;
+let noiseSource = null;
+let running = false;
 
-function initAudio(){
- if(ctx) return;
- const AC=window.AudioContext||window.webkitAudioContext;
- ctx=new AC();
-
- master=ctx.createGain();
- master.gain.value=.72;
-
- compressor=ctx.createDynamicsCompressor();
- compressor.threshold.value=-23;
- compressor.knee.value=22;
- compressor.ratio.value=3;
- compressor.attack.value=.015;
- compressor.release.value=.25;
-
- const warmth=ctx.createWaveShaper();
- const curve=new Float32Array(2048);
- for(let i=0;i<curve.length;i++){
-  const x=i*2/curve.length-1;
-  curve[i]=1.12*x/(1+.12*Math.abs(x));
- }
- warmth.curve=curve;
- warmth.oversample='2x';
-
- master.connect(warmth);
- warmth.connect(compressor);
- compressor.connect(ctx.destination);
-
- // Длинный зацикленный шум — основа винила и ночного воздуха.
- const buffer=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);
- const data=buffer.getChannelData(0);
- for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1;
-
- noiseSource=ctx.createBufferSource();
- noiseSource.buffer=buffer;
- noiseSource.loop=true;
- noiseFilter=ctx.createBiquadFilter();
- noiseFilter.type='lowpass';
- noiseFilter.frequency.value=1000;
- noiseGain=ctx.createGain();
- noiseGain.gain.value=0;
-
- noiseSource.connect(noiseFilter);
- noiseFilter.connect(noiseGain);
- noiseGain.connect(master);
- noiseSource.start();
- updateAtmosphere();
-}
-
-function updateAtmosphere(){
- if(!ctx)return;
- const scene=scenes[mood];
- const target=$('air').checked
-   ? (vinyl/100)*.018 + scene.air*.18
-   : 0;
- noiseGain.gain.setTargetAtTime(target,ctx.currentTime,.25);
- noiseFilter.frequency.setTargetAtTime(mood==='rain'?1450:780,ctx.currentTime,.5);
-}
-
-function freq(note){return 440*Math.pow(2,(note-69)/12)}
-
-function piano(note,time,duration,volume=.06){
- const f=freq(note);
- const out=ctx.createGain();
- const pan=ctx.createStereoPanner();
- pan.pan.value=(Math.random()-.5)*.25;
- out.gain.value=1;
- out.connect(pan); pan.connect(master);
-
- // Три гармоники дают мягкий, слегка электрический тембр клавиш.
- [[1,1],[2.01,.20],[3.92,.055]].forEach(([ratio,amp],i)=>{
-  const osc=ctx.createOscillator();
-  const filter=ctx.createBiquadFilter();
-  const gain=ctx.createGain();
-  osc.type=i===0?'triangle':'sine';
-  osc.frequency.setValueAtTime(f*ratio,time);
-  filter.type='lowpass';
-  filter.frequency.setValueAtTime(scenes[mood].brightness,time);
-  filter.frequency.exponentialRampToValueAtTime(750,time+duration);
-  const peak=volume*amp;
-  gain.gain.setValueAtTime(.0001,time);
-  gain.gain.exponentialRampToValueAtTime(peak,time+.018);
-  gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
-  osc.connect(filter);filter.connect(gain);gain.connect(out);
-  osc.start(time);osc.stop(time+duration+.03);
- });
-}
-
-function pad(note,time,duration,volume=.018){
- const f=freq(note);
- [[-5,.56],[5,.5],[0,.11]].forEach(([detune,amp],i)=>{
-  const osc=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
-  osc.type='triangle';osc.frequency.value=f*(i===2?2:1);osc.detune.value=detune;
-  filter.type='lowpass';filter.frequency.value=1150;
-  gain.gain.setValueAtTime(.0001,time);
-  gain.gain.linearRampToValueAtTime(volume*amp,time+.45);
-  gain.gain.setValueAtTime(volume*amp,time+duration-.5);
-  gain.gain.linearRampToValueAtTime(.0001,time+duration);
-  osc.connect(filter);filter.connect(gain);gain.connect(master);
-  osc.start(time);osc.stop(time+duration+.04);
- });
-}
-
-function bass(note,time,duration=.8){
- const osc=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
- osc.type='triangle';osc.frequency.value=freq(note);
- filter.type='lowpass';filter.frequency.value=280;
- gain.gain.setValueAtTime(.0001,time);
- gain.gain.linearRampToValueAtTime(.065,time+.06);
- gain.gain.setTargetAtTime(.0001,time+duration*.5,.16);
- osc.connect(filter);filter.connect(gain);gain.connect(master);
- osc.start(time);osc.stop(time+duration+.1);
-}
-
-function kick(time,volume=.11){
- const osc=ctx.createOscillator(),gain=ctx.createGain();
- osc.type='sine';osc.frequency.setValueAtTime(100,time);
- osc.frequency.exponentialRampToValueAtTime(42,time+.14);
- gain.gain.setValueAtTime(volume,time);
- gain.gain.exponentialRampToValueAtTime(.0001,time+.21);
- osc.connect(gain);gain.connect(master);osc.start(time);osc.stop(time+.22);
-}
-
-function snare(time,volume=.022){
- const length=Math.floor(ctx.sampleRate*.14);
- const buffer=ctx.createBuffer(1,length,ctx.sampleRate);
- const data=buffer.getChannelData(0);
- for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,2);
- const src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
- src.buffer=buffer;filter.type='bandpass';filter.frequency.value=1500;filter.Q.value=.65;
- gain.gain.setValueAtTime(volume,time);
- gain.gain.exponentialRampToValueAtTime(.0001,time+.14);
- src.connect(filter);filter.connect(gain);gain.connect(master);src.start(time);
-}
-
-function beatDuration(){return 60/bpm/2}
-
-function scheduleStep(s,time){
- const scene=scenes[mood];
- const chord=scene.chords[Math.floor(bar/2)%4];
- const root=scene.root;
-
- // Новые аккорды раз в два такта — гармония не скачет случайно.
- if(s===0){
-  chord.forEach((n,i)=>pad(root+n+12,time,beatDuration()*31,.017*(i===0?1.1:.8)));
-  bass(root-12,time,.9);
- }
- // Редкие аккордовые ноты создают ощущение живого пианино.
- if(s===4 || s===12){
-  chord.slice(0,3).forEach((n,i)=>piano(root+n+12,time,.85,.022*(i===0?1.1:.8)));
- }
-
- // Мотив занимает два такта. Повторяется узнаваемо, но не буквально.
- if($('melody').checked && [1,3,5,7,9,11,13,15].includes(s)){
-  const motif=motifs[(motifIndex+Math.floor(bar/2))%motifs.length];
-  const idx=Math.floor(s/2);
-  const degree=motif[idx];
-  const rests=[2,6,11,14];
-  const isRest=rests.includes((s+motifIndex)%16) || Math.random()<.10;
-  if(!isRest){
-   let note=root+24+scale[(degree+motifIndex)%scale.length];
-   if(s===15 && Math.random()<.20)note+=12;
-   piano(note,time,.32+Math.random()*.12,.05);
+function makeCity() {
+  const city = $("city");
+  for (let i = 0; i < 22; i++) {
+    const b = document.createElement("div");
+    b.className = "building";
+    b.style.height = (25 + ((i * 37 + 19) % 65)) + "px";
+    city.appendChild(b);
   }
- }
-
- if($('drums').checked){
-  const amount=mood==='drive'?1:mood==='dream'?.8:.65;
-  if(s===0 || s===8)kick(time,.11*amount);
-  if(s===4 || s===12)snare(time,.022*amount);
-  if([2,6,10,14].includes(s) && Math.random()<.38)snare(time,.006);
- }
 }
 
-function scheduler(){
- if(!running)return;
- while(nextTime<ctx.currentTime+.12){
-  scheduleStep(step,nextTime);
+function noteFrequency(note) {
+  return 440 * Math.pow(2, (note - 69) / 12);
+}
+
+function makeNoiseBuffer(ctx) {
+  const buffer = ctx.createBuffer(1, ctx.sampleRate * 3, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < data.length; i++) {
+    last = last * 0.97 + (Math.random() * 2 - 1) * 0.03;
+    data[i] = last * 4;
+  }
+  return buffer;
+}
+
+function setGain(param, value, time, duration = 0.2) {
+  param.cancelScheduledValues(time);
+  param.setTargetAtTime(value, time, duration);
+}
+
+function playTone(freq, time, duration, volume, wave = "sine", bus = musicBus, endFreq = null) {
+  if (!audio || !bus) return;
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
+  osc.type = wave;
+  osc.frequency.setValueAtTime(freq, time);
+  if (endFreq !== null) {
+    osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), time + duration);
+  }
+  gain.gain.setValueAtTime(0.0001, time);
+  gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, volume), time + 0.025);
+  gain.gain.setTargetAtTime(0.0001, time + duration * 0.65, Math.max(0.03, duration * 0.2));
+  osc.connect(gain);
+  gain.connect(bus);
+  osc.start(time);
+  osc.stop(time + duration + 0.25);
+}
+
+function playPad(notes, time, duration) {
+  notes.forEach((note, index) => {
+    playTone(noteFrequency(note), time, duration, index === 0 ? 0.045 : 0.026, "sine");
+    playTone(noteFrequency(note) * 2, time, duration * 0.8, 0.008, "sine");
+  });
+}
+
+function playBass(note, time, duration) {
+  playTone(noteFrequency(note), time, duration, 0.12, "triangle");
+}
+
+function playKick(time) {
+  playTone(110, time, 0.22, 0.23, "sine", musicBus, 42);
+}
+
+function playSnare(time) {
+  if (!audio) return;
+  playTone(180, time, 0.09, 0.045, "triangle");
+  const noise = audio.createBufferSource();
+  const filter = audio.createBiquadFilter();
+  const gain = audio.createGain();
+  noise.buffer = makeNoiseBuffer(audio);
+  filter.type = "highpass";
+  filter.frequency.value = 1600;
+  gain.gain.setValueAtTime(0.0001, time);
+  gain.gain.linearRampToValueAtTime(0.035, time + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.11);
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(musicBus);
+  noise.start(time);
+  noise.stop(time + 0.12);
+}
+
+function playHat(time) {
+  if (!audio) return;
+  const src = audio.createBufferSource();
+  const filter = audio.createBiquadFilter();
+  const gain = audio.createGain();
+  src.buffer = makeNoiseBuffer(audio);
+  filter.type = "highpass";
+  filter.frequency.value = 6500;
+  gain.gain.setValueAtTime(0.018, time);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.035);
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(musicBus);
+  src.start(time);
+  src.stop(time + 0.04);
+}
+
+function scheduleStep(time) {
+  const scene = scenes[mood];
+  const beat = 60 / bpm;
+  const s = step % 16;
+
+  if (s === 0) {
+    playPad(scene.chords[bar % scene.chords.length], time, beat * 7.5);
+  }
+
+  if (s === 0 || s === 8) {
+    playBass(scene.bass[bar % scene.bass.length], time, beat * 1.7);
+  } else if (s === 6 || s === 14) {
+    playBass(scene.bass[bar % scene.bass.length] + 12, time, beat * 0.65);
+  }
+
+  if ($("drums").checked) {
+    if (s === 0 || s === 8) playKick(time);
+    if (s === 4 || s === 12) playSnare(time);
+    if (s % 2 === 0) playHat(time);
+  }
+
+  if ($("melody").checked && [0,2,3,5,7,8,10,11,13,15].includes(s)) {
+    const note = scene.melody[s];
+    const duration = beat * (s % 4 === 0 ? 1.35 : 0.7);
+    playTone(noteFrequency(note), time, duration, 0.055, scene.wave);
+  }
+
   step++;
-  if(step>=16){step=0;bar++;if(bar%4===0)motifIndex=(motifIndex+1)%motifs.length;}
-  nextTime+=beatDuration();
- }
- timer=setTimeout(scheduler,25);
+  if (step % 16 === 0) bar++;
 }
 
-function start(){
- initAudio();ctx.resume();
- running=true;step=0;bar=0;motifIndex=Math.floor(Math.random()*motifs.length);
- nextTime=ctx.currentTime+.08;
- $('play').textContent='Ⅱ  Пауза';
- $('status').textContent='Сейчас играет · музыка ночного города';
- updateAtmosphere();scheduler();animate();
+function scheduler() {
+  if (!audio || !running) return;
+  while (nextTime < audio.currentTime + 0.12) {
+    scheduleStep(nextTime);
+    nextTime += 30 / bpm;
+  }
 }
-function stop(){
- running=false;clearTimeout(timer);
- $('play').textContent='▶  Включить радио';
- $('status').textContent='Пауза · город никуда не исчезнет';
+
+function updateAtmosphere() {
+  if (!audio || !ambienceBus) return;
+  const level = Number($("ambience").value) / 100;
+  const air = $("air").checked;
+  const amount = air ? level * 0.035 : level * 0.006;
+  setGain(ambienceBus.gain, amount, audio.currentTime);
+  $("ambienceValue").textContent = $("ambience").value + "%";
 }
-function animate(){
- if(!running)return;
- document.querySelectorAll('.bar').forEach((b,i)=>{
-  b.style.height=(5+Math.abs(Math.sin(Date.now()/260+i*.47))*19+Math.random()*6)+'px';
- });
- requestAnimationFrame(animate);
+
+function updateTrack() {
+  $("track").textContent = scenes[mood].label;
+  $("status").textContent = running
+    ? "Сейчас играет · бесконечный эфир"
+    : "Радио выключено · бесконечный эфир";
+  document.querySelectorAll(".mood").forEach(button => {
+    button.classList.toggle("active", button.dataset.mood === mood);
+  });
 }
-$('play').addEventListener('click',()=>running?stop():start());
-$('newTheme').addEventListener('click',()=>{
- motifIndex=(motifIndex+1+Math.floor(Math.random()*3))%motifs.length;
- $('status').textContent='Новая мелодическая фраза готова.';
- if(running){step=0;bar=0;nextTime=ctx.currentTime+.08;}
+
+async function startRadio() {
+  try {
+    if (!audio) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        $("status").textContent = "Браузер не поддерживает Web Audio";
+        return;
+      }
+
+      audio = new AudioContextClass();
+      master = audio.createGain();
+      musicBus = audio.createGain();
+      ambienceBus = audio.createGain();
+
+      const compressor = audio.createDynamicsCompressor();
+      compressor.threshold.value = -22;
+      compressor.knee.value = 18;
+      compressor.ratio.value = 3;
+      compressor.attack.value = 0.01;
+      compressor.release.value = 0.25;
+
+      musicBus.connect(master);
+      ambienceBus.connect(master);
+      master.connect(compressor);
+      compressor.connect(audio.destination);
+      master.gain.value = 0.8;
+
+      const noise = audio.createBufferSource();
+      const filter = audio.createBiquadFilter();
+      noise.buffer = makeNoiseBuffer(audio);
+      noise.loop = true;
+      filter.type = "lowpass";
+      filter.frequency.value = 900;
+      noise.connect(filter);
+      filter.connect(ambienceBus);
+      noise.start();
+      noiseSource = noise;
+    }
+
+    await audio.resume();
+    if (running) return;
+
+    running = true;
+    nextTime = audio.currentTime + 0.08;
+    updateAtmosphere();
+    scheduler();
+    timer = window.setInterval(scheduler, 40);
+    $("disc").classList.add("playing");
+    $("play").textContent = "♫ Радио играет";
+    updateTrack();
+  } catch (error) {
+    console.error(error);
+    $("status").textContent = "Не удалось запустить звук. Попробуй ещё раз.";
+  }
+}
+
+function stopRadio() {
+  running = false;
+  if (timer !== null) {
+    clearInterval(timer);
+    timer = null;
+  }
+  if (audio && master) {
+    setGain(master.gain, 0.0001, audio.currentTime, 0.04);
+    window.setTimeout(() => {
+      if (!running && audio && master) master.gain.setTargetAtTime(0.8, audio.currentTime, 0.03);
+    }, 100);
+  }
+  $("disc").classList.remove("playing");
+  $("play").textContent = "▶ Включить радио";
+  updateTrack();
+}
+
+document.querySelectorAll(".mood").forEach(button => {
+  button.addEventListener("click", () => {
+    mood = button.dataset.mood;
+    bpm = Number($("tempo").value);
+    updateTrack();
+  });
 });
-$('tempo').addEventListener('input',e=>{
- bpm=Number(e.target.value);$('tempoValue').textContent=bpm;
- $('moodLabel').textContent=scenes[mood].label+' · '+bpm+' BPM';
+
+$("play").addEventListener("click", startRadio);
+$("stop").addEventListener("click", stopRadio);
+
+$("tempo").addEventListener("input", event => {
+  bpm = Number(event.target.value);
+  $("tempoValue").textContent = bpm + " BPM";
 });
-$('noise').addEventListener('input',e=>{
- vinyl=Number(e.target.value);$('noiseValue').textContent=vinyl;updateAtmosphere();
+
+$("ambience").addEventListener("input", updateAtmosphere);
+["air","drums","melody","warm"].forEach(id => {
+  $(id).addEventListener("change", () => {
+    if (audio) updateAtmosphere();
+    if (audio && musicBus) {
+      musicBus.gain.setTargetAtTime(
+        $("warm").checked ? 1 : 0.7,
+        audio.currentTime,
+        0.15
+      );
+    }
+  });
 });
-document.querySelectorAll('.mood').forEach(btn=>btn.addEventListener('click',()=>{
- document.querySelectorAll('.mood').forEach(b=>b.classList.remove('active'));
- btn.classList.add('active');mood=btn.dataset.mood;
- $('moodLabel').textContent=scenes[mood].label+' · '+bpm+' BPM';
- updateAtmosphere();
-}));
-['air','drums','melody','tape'].forEach(id=>$(id).addEventListener('change',updateAtmosphere));
+
+makeCity();
+updateTrack();
 })();
 </script>
 </body>
