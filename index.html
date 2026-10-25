@@ -7,436 +7,190 @@
 <title>Midnight FM — Piano Test</title>
 <script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
 <style>
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: #0c1120;
-    color: #e8e7f0;
-    font-family: Georgia, serif;
-  }
-  main {
-    width: min(400px, calc(100% - 48px));
-    padding: 28px;
-    border: 1px solid #343d54;
-    border-radius: 18px;
-    background: #151b2b;
-    text-align: center;
-  }
-  h1 { font-weight: normal; letter-spacing: 2px; }
-  p { color: #a5aec5; line-height: 1.5; }
-  button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 13px;
-    border: 1px solid #47536f;
-    border-radius: 24px;
-    background: #29344c;
-    color: white;
-    cursor: pointer;
-  }
-  button:disabled { opacity: .5; }
-  #status { margin-top: 20px; font: 12px Arial; color: #a5aec5; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; display: grid; place-items: center;
+  padding: 20px; background: #0c1120; color: #e8e7f0;
+  font-family: Georgia, serif;
+}
+main {
+  width: min(420px, 100%); padding: 28px;
+  border: 1px solid #343d54; border-radius: 18px;
+  background: #151b2b; text-align: center;
+}
+h1 { font-weight: normal; letter-spacing: 3px; }
+p { color: #a5aec5; line-height: 1.5; }
+button {
+  width: 100%; margin-top: 12px; padding: 14px;
+  border: 1px solid #47536f; border-radius: 24px;
+  background: #29344c; color: white; cursor: pointer;
+}
+button:disabled { opacity: .45; cursor: wait; }
+#status {
+  margin-top: 20px; color: #a5aec5;
+  font: 12px/1.6 Arial, sans-serif; overflow-wrap: anywhere;
+}
 </style>
 </head>
 <body>
 <main>
   <h1>Midnight FM</h1>
-  <p>Проверка меланхоличного акустического пианино</p>
+  <p>Проверяем меланхоличное акустическое пианино</p>
   <button id="load">Загрузить пианино</button>
   <button id="chord" disabled>Послушать аккорд</button>
   <button id="melody" disabled>Послушать мелодию</button>
-  <div id="status">Сначала загрузи звуки</div>
-</main>
-
-<script>
-const status = document.getElementById("status");
-const loadButton = document.getElementById("load");
-const chordButton = document.getElementById("chord");
-const melodyButton = document.getElementById("melody");
-
-let piano;
-let ready = false;
-let busy = false;
-
-loadButton.addEventListener("click", async () => {
-  if (ready || busy) return;
-  busy = true;
-  loadButton.disabled = true;
-  status.textContent = "Загружаем ноты…";
-
-  try {
-    await Tone.start();
-
-    piano = new Tone.Sampler({
-      urls: {
-        C3: "C3.mp3",
-        Ds3: "Ds3.mp3",
-        Fs3: "Fs3.mp3",
-        A3: "A3.mp3",
-        C4: "C4.mp3",
-        Ds4: "Ds4.mp3",
-        Fs4: "Fs4.mp3",
-        A4: "A4.mp3",
-        C5: "C5.mp3",
-        Ds5: "Ds5.mp3",
-        Fs5: "Fs5.mp3",
-        A5: "A5.mp3",
-        C6: "C6.mp3"
-      },
-      baseUrl: "https://tonejs.github.io/audio/salamander/",
-      attack: 0.015,
-      release: 1.8
-    }).toDestination();
-
-    await Tone.loaded();
-
-    piano.volume.value = -5;
-    ready = true;
-    chordButton.disabled = false;
-    melodyButton.disabled = false;
-    status.textContent = "Готово. Можно слушать!";
-  } catch (error) {
-    console.error(error);
-    status.textContent = "Не удалось загрузить звуки. Проверь интернет.";
-    loadButton.disabled = false;
-  } finally {
-    busy = false;
-  }
-});
-
-chordButton.addEventListener("click", async () => {
-  if (!ready) return;
-  await Tone.start();
-
-  const t = Tone.now() + 0.05;
-  piano.triggerAttackRelease(
-    ["C4", "Eb4", "G4", "Bb4"], 3.5, t, 0.65
-  );
-});
-
-melodyButton.addEventListener("click", async () => {
-  if (!ready) return;
-  await Tone.start();
-
-  const notes = [
-    ["G4", 0], ["Eb4", 0.45], ["C4", 1.05],
-    ["D4", 1.65], ["G4", 2.1], ["Bb4", 2.8],
-    ["G4", 3.45], ["Eb4", 4.05], ["D4", 4.8],
-    ["C4", 5.5]
-  ];
-
-  const start = Tone.now() + 0.1;
-
-  notes.forEach(([note, offset], i) => {
-    const duration = i === notes.length - 1 ? 2 : 0.8;
-    const velocity = i % 3 === 0 ? 0.58 : 0.42;
-
-    piano.triggerAttackRelease(
-      note, duration, start + offset, velocity
-    );
-  });
-});
-</script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Midnight FM — Piano Test</title>
-
-<script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
-
-<style>
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 20px;
-    background: #0c1120;
-    color: #e8e7f0;
-    font-family: Georgia, serif;
-  }
-
-  main {
-    width: min(420px, 100%);
-    padding: 28px;
-    border: 1px solid #343d54;
-    border-radius: 18px;
-    background: #151b2b;
-    text-align: center;
-    box-shadow: 0 20px 70px #0005;
-  }
-
-  h1 {
-    font-weight: normal;
-    letter-spacing: 3px;
-  }
-
-  p {
-    color: #a5aec5;
-    line-height: 1.5;
-  }
-
-  button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 14px;
-    border: 1px solid #47536f;
-    border-radius: 24px;
-    background: #29344c;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  button:hover { background: #384662; }
-  button:disabled { opacity: .45; cursor: wait; }
-
-  #status {
-    margin-top: 20px;
-    color: #a5aec5;
-    font: 12px/1.6 Arial, sans-serif;
-    overflow-wrap: anywhere;
-  }
-
-  .hint {
-    margin-top: 18px;
-    font: 11px/1.5 Arial, sans-serif;
-    color: #7885a3;
-  }
-</style>
-</head>
-
-<body>
-<main>
-  <h1>Midnight FM</h1>
-  <p>Проверяем настоящее акустическое пианино</p>
-
-  <button id="load">Загрузить пианино</button>
-  <button id="chord" disabled>Послушать аккорд</button>
-  <button id="melody" disabled>Послушать мелодию</button>
-
   <div id="status">Нажми «Загрузить пианино»</div>
-
-  <div class="hint">
-    Для первой загрузки требуется интернет.
-    После загрузки подожди секунду перед прослушиванием.
-  </div>
 </main>
 
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-
   const loadButton = $("load");
   const chordButton = $("chord");
   const melodyButton = $("melody");
   const status = $("status");
 
   let piano = null;
-  let loading = false;
+  let reverb = null;
   let ready = false;
+  let loading = false;
   let playingDemo = false;
 
-  function showStatus(message) {
-    status.textContent = message;
-  }
-
-  function waitForSampler(sampler, timeoutMs = 45000) {
-    return new Promise((resolve, reject) => {
-      const started = Date.now();
-
-      const timer = setInterval(() => {
-        if (sampler.loaded) {
-          clearInterval(timer);
-          resolve();
-          return;
-        }
-
-        if (Date.now() - started > timeoutMs) {
-          clearInterval(timer);
-          reject(new Error(
-            "Загрузка заняла слишком много времени. Попробуй ещё раз."
-          ));
-        }
-      }, 150);
-    });
+  function message(text) {
+    status.textContent = text;
   }
 
   async function loadPiano() {
     if (loading || ready) return;
 
     if (typeof Tone === "undefined") {
-      showStatus("Ошибка: Tone.js не загрузился. Обнови страницу.");
+      message("Tone.js не загрузился. Обнови страницу.");
       return;
     }
 
     loading = true;
     loadButton.disabled = true;
-    showStatus("Подключаем аудио…");
+    message("Загружаем записи пианино…");
 
     try {
       await Tone.start();
 
-      showStatus("Загружаем записи пианино. Это может занять время…");
+      reverb = new Tone.Reverb({
+        decay: 3,
+        wet: 0.16
+      });
+      await reverb.generate();
+      reverb.toDestination();
 
       piano = new Tone.Sampler({
         urls: {
           C3: "C3.mp3",
-          Ds3: "Ds3.mp3",
-          Fs3: "Fs3.mp3",
+          "D#3": "Ds3.mp3",
+          "F#3": "Fs3.mp3",
           A3: "A3.mp3",
           C4: "C4.mp3",
-          Ds4: "Ds4.mp3",
-          Fs4: "Fs4.mp3",
+          "D#4": "Ds4.mp3",
+          "F#4": "Fs4.mp3",
           A4: "A4.mp3",
           C5: "C5.mp3",
-          Ds5: "Ds5.mp3",
-          Fs5: "Fs5.mp3",
+          "D#5": "Ds5.mp3",
+          "F#5": "Fs5.mp3",
           A5: "A5.mp3",
           C6: "C6.mp3"
         },
-
         baseUrl: "https://tonejs.github.io/audio/salamander/",
-
-        onload: () => {
-          console.log("Все сэмплы пианино загружены");
-        },
-
-        onerror: error => {
-          console.error("Ошибка загрузки сэмпла:", error);
-        },
-
         attack: 0.02,
         release: 2
       });
 
-      const reverb = new Tone.Reverb({
-        decay: 3.2,
-        wet: 0.18
-      });
-
-      await reverb.generate();
-
       piano.connect(reverb);
-      reverb.toDestination();
       piano.volume.value = -5;
 
-      await waitForSampler(piano);
+      await Tone.loaded();
 
       ready = true;
-
       chordButton.disabled = false;
       melodyButton.disabled = false;
-
-      showStatus("Пианино готово. Выбирай, что послушать!");
+      message("Пианино готово! Выбирай, что послушать.");
     } catch (error) {
       console.error(error);
-
-      if (piano) {
-        try { piano.dispose(); } catch (_) {}
-        piano = null;
-      }
-
-      showStatus("Не удалось загрузить пианино: " + error.message);
+      if (piano) piano.dispose();
+      if (reverb) reverb.dispose();
+      piano = null;
+      reverb = null;
       loadButton.disabled = false;
+      message("Ошибка загрузки: " + error.message);
     } finally {
       loading = false;
     }
   }
 
+  function setDemoBusy(busy) {
+    playingDemo = busy;
+    chordButton.disabled = busy || !ready;
+    melodyButton.disabled = busy || !ready;
+  }
+
   async function playChord() {
     if (!ready || playingDemo) return;
 
-    playingDemo = true;
-    chordButton.disabled = true;
-    melodyButton.disabled = true;
-
     try {
       await Tone.start();
-
-      const start = Tone.now() + 0.1;
-
+      setDemoBusy(true);
       piano.triggerAttackRelease(
-        ["C4", "Eb4", "G4", "Bb4"],
+        ["C4", "D#4", "G4", "A#4"],
         3.5,
-        start,
+        Tone.now() + 0.1,
         0.55
       );
-
-      showStatus("Звучит меланхоличный аккорд…");
-
+      message("Звучит меланхоличный аккорд…");
       setTimeout(() => {
-        playingDemo = false;
-        chordButton.disabled = false;
-        melodyButton.disabled = false;
-        showStatus("Готово. Можешь послушать мелодию.");
+        setDemoBusy(false);
+        message("Готово! Попробуй мелодию.");
       }, 4500);
     } catch (error) {
       console.error(error);
-      playingDemo = false;
-      chordButton.disabled = false;
-      melodyButton.disabled = false;
-      showStatus("Ошибка воспроизведения.");
+      setDemoBusy(false);
+      message("Ошибка воспроизведения: " + error.message);
     }
   }
 
   async function playMelody() {
     if (!ready || playingDemo) return;
 
-    playingDemo = true;
-    chordButton.disabled = true;
-    melodyButton.disabled = true;
-
     try {
       await Tone.start();
+      setDemoBusy(true);
 
       const notes = [
         ["G4", 0, 0.48],
-        ["Eb4", 0.55, 0.42],
+        ["D#4", 0.55, 0.42],
         ["C4", 1.2, 0.58],
         ["D4", 1.95, 0.38],
         ["G4", 2.45, 0.48],
-        ["Bb4", 3.15, 0.42],
+        ["A#4", 3.15, 0.42],
         ["G4", 3.85, 0.48],
-        ["Eb4", 4.5, 0.4],
+        ["D#4", 4.5, 0.4],
         ["D4", 5.15, 0.36],
         ["C4", 5.85, 0.52]
       ];
 
       const start = Tone.now() + 0.1;
-
       notes.forEach(([note, offset, velocity]) => {
         piano.triggerAttackRelease(
-          note,
-          1.1,
-          start + offset,
-          velocity
+          note, 1.1, start + offset, velocity
         );
       });
 
-      showStatus("Звучит маленькая ночная мелодия…");
-
+      message("Звучит ночная мелодия…");
       setTimeout(() => {
-        playingDemo = false;
-        chordButton.disabled = false;
-        melodyButton.disabled = false;
-        showStatus("Готово. Как тебе тембр?");
+        setDemoBusy(false);
+        message("Как тебе тембр пианино?");
       }, 8500);
     } catch (error) {
       console.error(error);
-      playingDemo = false;
-      chordButton.disabled = false;
-      melodyButton.disabled = false;
-      showStatus("Ошибка воспроизведения.");
+      setDemoBusy(false);
+      message("Ошибка воспроизведения: " + error.message);
     }
   }
 
