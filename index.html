@@ -14,7 +14,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'SF Mon
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(160,130,180,.06),transparent 50%),var(--bg);z-index:-1}
 .app{height:100dvh;display:flex;flex-direction:column;padding:12px 16px 12px;max-width:520px;margin:0 auto;gap:10px}
 
-/* Header */
 .header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);cursor:default}
 .brand-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
@@ -22,7 +21,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .icon-btn{background:none;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
 .hidden{display:none !important}
 
-/* Main */
 .main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
 .vinyl-wrap{position:relative;width:clamp(160px,46vw,210px);height:clamp(160px,46vw,210px);margin:0 auto}
 .vinyl{width:100%;height:100%;border-radius:50%;position:relative;background:radial-gradient(circle at center,#0a0a0a 0%,#0a0a0a 12%,transparent 12%),radial-gradient(circle at center,var(--accent-2) 12%,var(--accent-2) 32%,transparent 32%),repeating-radial-gradient(circle at center,#0a0a0a 0px,#0a0a0a 1px,#1a1a1a 1px,#1a1a1a 2.5px,#151515 2.5px,#151515 3px);box-shadow:0 16px 40px rgba(0,0,0,.5);animation:spin 6s linear infinite;animation-play-state:paused}
@@ -62,12 +60,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .footer{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);padding-top:8px;border-top:1px solid var(--border);flex-shrink:0}
 .footer-time{color:var(--accent);font-variant-numeric:tabular-nums}
 
-/* Admin panel */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;z-index:100}
 .modal.open{display:flex}
 .panel{width:100%;max-width:520px;max-height:85vh;background:var(--bg);border-radius:16px 16px 0 0;border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .panel-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
-.panel-title{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
+.panel-title{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
 .panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
 .tab{flex:1;padding:12px 8px;background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent}
@@ -75,23 +72,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .panel-body{flex:1;overflow-y:auto;padding:16px 18px 24px}
 .panel-body::-webkit-scrollbar{width:4px}
 .panel-body::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:2px}
-
 .add-row{display:flex;gap:8px;margin-bottom:16px}
 .add-input{flex:1;padding:10px 12px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:inherit;font-size:12px;outline:none}
 .add-input:focus{border-color:var(--accent)}
 .add-btn{padding:10px 16px;background:var(--accent);color:var(--btn-primary-text);border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}
-
 .admin-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:12px}
-.admin-item-name{flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .admin-item-count{font-size:10px;color:var(--text-dim);flex-shrink:0}
 .admin-item-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;color:var(--text-muted);flex-shrink:0}
-.admin-item-btn:hover{color:var(--accent)}
-
-.track-admin{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
-.track-admin-title{flex:1;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.track-admin-sel{background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:10px;flex-shrink:0;max-width:110px}
-.track-admin.warn{border-color:#7A3A3A}
-
 .empty-hint{text-align:center;color:var(--text-dim);padding:24px 12px;font-size:11px;line-height:1.7}
 </style>
 </head>
@@ -138,7 +126,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <footer class="footer"><span id="footerInfo">ready</span><span class="footer-time" id="elapsed">00:00</span></footer>
 </div>
 
-<!-- Admin panel -->
 <div class="modal" id="adminModal">
   <div class="panel">
     <div class="panel-header">
@@ -172,36 +159,26 @@ const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('#121212'); tg.setBackgroundColor('#121212'); } catch(e){} }
 
 // ============================================================
-//  ⚙️ КОНФИГ — ТРЕКИ
-//  Формат: { src: 'путь/к/файлу.mp3', name: 'Название', genre: 'Жанр' }
-//  mp3-файлы кладите в папку music/ рядом с index.html
+//  🔐 КОНФИГ
 // ============================================================
-const TRACKS = [
-  { src: 'music/Norma Tale.mp3', name: 'Rainy Window',   genre: 'Chillhop' },
-
-];
-
-// ============================================================
-//  🔐 КОНФИГ — АДМИН
-// ============================================================
-const ADMIN_TG_IDS = []; // Свой Telegram ID сюда, например: [123456789]
-const ADMIN_PASSWORD = 'admin'; // Пароль для теста в браузере (зажать логотип 1.5 сек)
-
-// ============================================================
-//  КОНСТАНТЫ
-// ============================================================
-const CROSSFADE_MS = 2000; // длительность кроссфейда между треками
+const ADMIN_TG_IDS = [];
+const ADMIN_PASSWORD = 'admin';
+const MANIFEST_URL = 'tracks.json';
 
 // ============================================================
 //  УТИЛИТЫ
 // ============================================================
 const $ = id => document.getElementById(id);
 const pick = a => a[Math.floor(Math.random() * a.length)];
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 // ============================================================
 //  СОСТОЯНИЕ
 // ============================================================
 const state = {
+  tracks: [],
   genres: [],
   currentGenre: null,
   playing: false,
@@ -210,159 +187,296 @@ const state = {
   volume: 0.7,
   muted: false,
   devAdmin: false,
-  tgAdmin: false,
 };
 
 // ============================================================
 //  ХРАНИЛИЩЕ
 // ============================================================
-function loadGenresFromStorage() {
-  const configGenres = [...new Set(TRACKS.map(t => t.genre))];
+function getGenreOverrides() {
+  try { return JSON.parse(localStorage.getItem('lofi_track_genres') || '{}'); } catch(e) { return {}; }
+}
+function setTrackGenreOverride(src, genre) {
+  const o = getGenreOverrides();
+  if (genre) o[src] = genre; else delete o[src];
+  try { localStorage.setItem('lofi_track_genres', JSON.stringify(o)); } catch(e){}
+}
+function getTrackGenre(track) {
+  const o = getGenreOverrides();
+  return o[track.src] || track.genre || '';
+}
+function saveGenres() {
+  try { localStorage.setItem('lofi_genres', JSON.stringify(state.genres)); } catch(e){}
+}
+function loadGenreNames() {
   try {
     const raw = localStorage.getItem('lofi_genres');
     if (raw) {
       const arr = JSON.parse(raw);
-      if (Array.isArray(arr) && arr.length) {
-        state.genres = arr;
-        return;
-      }
+      if (Array.isArray(arr) && arr.length) return arr;
     }
   } catch(e){}
-  state.genres = configGenres.length ? configGenres : ['Chillhop'];
-}
-
-function saveGenres() {
-  try { localStorage.setItem('lofi_genres', JSON.stringify(state.genres)); } catch(e){}
-}
-
-function getGenreOverrides() {
-  try { return JSON.parse(localStorage.getItem('lofi_track_genres') || '{}'); } catch(e) { return {}; }
-}
-
-function setTrackGenre(src, genre) {
-  const o = getGenreOverrides();
-  if (genre) o[src] = genre;
-  else delete o[src];
-  try { localStorage.setItem('lofi_track_genres', JSON.stringify(o)); } catch(e){}
-}
-
-function getTrackGenre(track) {
-  const overrides = getGenreOverrides();
-  return overrides[track.src] || track.genre || (state.genres[0] || '');
+  return null;
 }
 
 // ============================================================
-//  АУДИО
+//  ЗАГРУЗКА МАНИФЕСТА
 // ============================================================
-const players = [new Audio(), new Audio()];
-players.forEach(p => { p.preload = 'auto'; p.volume = 0; });
+async function loadTracksManifest() {
+  try {
+    const res = await fetch(MANIFEST_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('не массив');
+    state.tracks = data;
+  } catch (e) {
+    console.error('tracks.json:', e);
+    state.tracks = [];
+  }
+}
+
+// ============================================================
+//  🎛️ WEB AUDIO ENGINE
+// ============================================================
+let ctx = null;
+let master = null;
+let players = [];
 let activeIdx = 0;
+let transitionScheduled = false;
 
-players.forEach((el, i) => {
-  el.addEventListener('ended', () => {
-    if (i === activeIdx && state.playing) playNext();
-  });
-});
-
-// ============================================================
-//  ВОСПРОИЗВЕДЕНИЕ
-// ============================================================
-function getTracksForCurrentGenre() {
-  const genre = state.currentGenre;
-  const filtered = TRACKS.filter(t => getTrackGenre(t) === genre);
-  return filtered.length ? filtered : TRACKS;
+function makeCrackle(seconds) {
+  const sr = ctx.sampleRate;
+  const len = Math.floor(sr * seconds);
+  const buf = ctx.createBuffer(1, len, sr);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) {
+    d[i] = Math.random() < 0.0005
+      ? (Math.random() * 2 - 1) * 0.4
+      : (Math.random() * 2 - 1) * 0.004;
+  }
+  return buf;
 }
 
+class WPlayer {
+  constructor() {
+    this.el = new Audio();
+    this.el.preload = 'auto';
+    this.el.crossOrigin = 'anonymous';
+    this.srcNode = ctx.createMediaElementSource(this.el);
+    this.filter = ctx.createBiquadFilter();
+    this.filter.type = 'lowpass';
+    this.filter.frequency.value = 20000;
+    this.filter.Q.value = 0.5;
+    this.gain = ctx.createGain();
+    this.gain.gain.value = 0;
+    this.srcNode.connect(this.filter);
+    this.filter.connect(this.gain);
+    this.gain.connect(master);
+  }
+  
+  async playTrack(track, fadeMs) {
+    this.el.src = track.src;
+    this.el.currentTime = 0;
+    const t = ctx.currentTime;
+    const d = fadeMs / 1000;
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.setValueAtTime(0, t);
+    this.gain.gain.linearRampToValueAtTime(1, t + d);
+    this.filter.frequency.cancelScheduledValues(t);
+    this.filter.frequency.setValueAtTime(20000, t);
+    try { await this.el.play(); } catch(e) { console.warn('play', e); }
+  }
+  
+  fadeOut(fadeMs, filterTo = null) {
+    const t = ctx.currentTime;
+    const d = fadeMs / 1000;
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.setValueAtTime(this.gain.gain.value, t);
+    this.gain.gain.linearRampToValueAtTime(0, t + d);
+    if (filterTo) {
+      this.filter.frequency.cancelScheduledValues(t);
+      this.filter.frequency.setValueAtTime(this.filter.frequency.value, t);
+      this.filter.frequency.exponentialRampToValueAtTime(filterTo, t + d);
+    }
+    setTimeout(() => {
+      try { this.el.pause(); this.el.src = ''; } catch(e){}
+      this.filter.frequency.value = 20000;
+    }, fadeMs + 300);
+  }
+  
+  layer(freqHz, gainLevel, durMs = 1500) {
+    const t = ctx.currentTime;
+    const d = durMs / 1000;
+    this.gain.gain.cancelScheduledValues(t);
+    this.gain.gain.linearRampToValueAtTime(gainLevel, t + d);
+    this.filter.frequency.cancelScheduledValues(t);
+    this.filter.frequency.setValueAtTime(this.filter.frequency.value, t);
+    this.filter.frequency.exponentialRampToValueAtTime(freqHz, t + d);
+  }
+  
+  fadeOutLater(delayMs, fadeMs) {
+    setTimeout(() => this.fadeOut(fadeMs), delayMs);
+  }
+  
+  isNearEnd(sec) {
+    if (!this.el.duration || !isFinite(this.el.duration)) return false;
+    return (this.el.duration - this.el.currentTime) <= sec;
+  }
+}
+
+async function initAudio() {
+  if (ctx) {
+    if (ctx.state === 'suspended') await ctx.resume();
+    return;
+  }
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === 'suspended') await ctx.resume();
+  
+  master = ctx.createGain();
+  master.gain.value = state.volume;
+  
+  const warmth = ctx.createBiquadFilter();
+  warmth.type = 'lowpass';
+  warmth.frequency.value = 5200;
+  warmth.Q.value = 0.4;
+  
+  master.connect(warmth);
+  warmth.connect(ctx.destination);
+  
+  const vinylSrc = ctx.createBufferSource();
+  vinylSrc.buffer = makeCrackle(4);
+  vinylSrc.loop = true;
+  const vinylGain = ctx.createGain();
+  vinylGain.gain.value = 0.01;
+  vinylSrc.connect(vinylGain);
+  vinylGain.connect(master);
+  vinylSrc.start();
+  
+  players = [new WPlayer(), new WPlayer()];
+}
+
+// ============================================================
+//  ВЫБОР И ПЕРЕХОДЫ
+// ============================================================
 function pickRandomTrack() {
-  const pool = getTracksForCurrentGenre();
+  const g = state.currentGenre;
+  const pool = state.tracks.filter(t => getTrackGenre(t) === g);
   if (!pool.length) return null;
   const candidates = pool.filter(t => t.src !== state.lastTrackSrc);
-  const chosen = (candidates.length ? candidates : pool);
-  return pick(chosen);
+  return pick(candidates.length ? candidates : pool);
 }
 
-async function crossfadeTo(track, fadeMs = CROSSFADE_MS) {
-  const fromEl = players[activeIdx];
-  const toEl = players[1 - activeIdx];
-  const nextIdx = 1 - activeIdx;
+function updateTrackUI(track) {
+  $('npTitle').textContent = track.name || track.src.split('/').pop();
+  $('npMeta').textContent = getTrackGenre(track) + (track.artist ? ' · ' + track.artist : '') + ' · lofi';
+}
 
-  toEl.src = track.src;
-  toEl.currentTime = 0;
-  toEl.volume = 0;
-
-  try {
-    await toEl.play();
-  } catch (e) {
-    $('footerInfo').textContent = 'не удалось загрузить трек';
-    console.warn('play fail', e, track.src);
-    return;
-  }
-
-  activeIdx = nextIdx;
+async function startPlayback() {
+  await initAudio();
+  const track = pickRandomTrack();
+  if (!track) { $('footerInfo').textContent = 'нет треков'; return; }
+  activeIdx = 0;
+  await players[0].playTrack(track, 800);
   state.currentTrack = track;
   state.lastTrackSrc = track.src;
-
-  $('npTitle').textContent = track.name;
-  $('npMeta').textContent = getTrackGenre(track) + ' · lofi stream';
-
-  const start = performance.now();
-  const fromVolStart = fromEl.volume;
-
-  const step = () => {
-    const p = Math.min(1, (performance.now() - start) / fadeMs);
-    if (!state.muted) {
-      const target = state.volume;
-      toEl.volume = target * p;
-      fromEl.volume = fromVolStart * (1 - p);
-    }
-    if (p < 1) {
-      requestAnimationFrame(step);
-    } else {
-      try { fromEl.pause(); fromEl.src = ''; } catch(e){}
-    }
-  };
-  step();
+  state.playing = true;
+  updateTrackUI(track);
+  updatePlayUI();
+  scheduleTransition();
 }
 
-async function playNext() {
+async function doTransition() {
+  const oldPlayer = players[activeIdx];
+  const newIdx = 1 - activeIdx;
+  const newPlayer = players[newIdx];
+  
   const track = pickRandomTrack();
-  if (!track) {
-    $('footerInfo').textContent = 'нет треков в этой категории';
-    return;
+  if (!track) { scheduleTransition(); return; }
+  
+  const crossfadeMs = 2000 + Math.random() * 2000;
+  const style = Math.random();
+  
+  await newPlayer.playTrack(track, crossfadeMs);
+  activeIdx = newIdx;
+  state.currentTrack = track;
+  state.lastTrackSrc = track.src;
+  updateTrackUI(track);
+  
+  if (style < 0.3) {
+    // Layering: старый трек остаётся как «бас-слой»
+    oldPlayer.layer(250, 0.55, 1500);
+    const holdMs = 8000 + Math.random() * 8000;
+    oldPlayer.fadeOutLater(holdMs, 1500);
+  } else if (style < 0.5) {
+    // Фильтр-свип
+    oldPlayer.fadeOut(crossfadeMs, 400);
+  } else {
+    // Обычный кроссфейд
+    oldPlayer.fadeOut(crossfadeMs);
   }
-  await crossfadeTo(track);
+  
+  scheduleTransition();
 }
 
-async function playPrev() {
-  // Просто случайный трек — но не тот же самый, что играет
-  await playNext();
+function scheduleTransition() {
+  if (transitionScheduled) return;
+  transitionScheduled = true;
+  
+  const check = () => {
+    if (!state.playing) { transitionScheduled = false; return; }
+    const p = players[activeIdx];
+    if (!p || !p.el) { transitionScheduled = false; return; }
+    if (p.isNearEnd(3.5)) {
+      transitionScheduled = false;
+      doTransition();
+      return;
+    }
+    setTimeout(check, 500);
+  };
+  setTimeout(check, 1000);
+}
+
+async function skipTrack() {
+  if (!state.playing) { await startPlayback(); return; }
+  const oldPlayer = players[activeIdx];
+  const newIdx = 1 - activeIdx;
+  const newPlayer = players[newIdx];
+  const track = pickRandomTrack();
+  if (!track) return;
+  await newPlayer.playTrack(track, 1200);
+  activeIdx = newIdx;
+  state.currentTrack = track;
+  state.lastTrackSrc = track.src;
+  updateTrackUI(track);
+  oldPlayer.fadeOut(1200, 500);
+  scheduleTransition();
+}
+
+async function pausePlayback() {
+  const p = players[activeIdx];
+  if (p) try { p.el.pause(); } catch(e){}
+  state.playing = false;
+  updatePlayUI();
+}
+
+async function resumePlayback() {
+  await initAudio();
+  const p = players[activeIdx];
+  if (p) {
+    try {
+      await p.el.play();
+      p.gain.gain.cancelScheduledValues(ctx.currentTime);
+      p.gain.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.3);
+      state.playing = true;
+      updatePlayUI();
+      scheduleTransition();
+    } catch(e) { console.warn(e); }
+  }
 }
 
 async function togglePlay() {
-  if (state.playing) {
-    players[activeIdx].pause();
-    state.playing = false;
-    updatePlayUI();
-  } else {
-    if (!state.currentTrack) {
-      const track = pickRandomTrack();
-      if (!track) {
-        $('footerInfo').textContent = 'нет треков';
-        return;
-      }
-      state.playing = true;
-      await crossfadeTo(track, 500);
-      updatePlayUI();
-    } else {
-      try {
-        await players[activeIdx].play();
-        state.playing = true;
-        updatePlayUI();
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-  }
+  if (state.playing) await pausePlayback();
+  else if (state.currentTrack && players[activeIdx]) await resumePlayback();
+  else await startPlayback();
   tg?.HapticFeedback?.impactOccurred('light');
 }
 
@@ -375,7 +489,7 @@ function updatePlayUI() {
 }
 
 // ============================================================
-//  ЖАНРЫ (UI)
+//  ЖАНРЫ
 // ============================================================
 function renderGenres() {
   const wrap = $('genresWrap');
@@ -393,34 +507,26 @@ async function switchGenre(g) {
   if (g === state.currentGenre) return;
   state.currentGenre = g;
   renderGenres();
-  if (state.playing) {
-    // Плавно переключаемся на трек из нового жанра
-    const track = pickRandomTrack();
-    if (track) await crossfadeTo(track, 800);
-  } else if (state.currentTrack) {
-    state.currentTrack = null;
-  }
+  if (state.playing) await skipTrack();
+  else state.currentTrack = null;
   tg?.HapticFeedback?.selectionChanged();
 }
 
 // ============================================================
-//  АДМИН — авторизация
+//  АДМИН
 // ============================================================
 function checkAdmin() {
   if (state.devAdmin) return true;
   const user = tg?.initDataUnsafe?.user;
-  if (user && ADMIN_TG_IDS.includes(user.id)) return true;
-  return false;
+  return user && ADMIN_TG_IDS.includes(user.id);
 }
-
 function applyAdminUI() {
   $('adminBtn').classList.toggle('hidden', !checkAdmin());
 }
 
-// Долгое нажатие на логотип — ввод пароля (для теста в браузере)
 let pressTimer = null;
 const brandEl = $('brand');
-function startPress() {
+brandEl.addEventListener('pointerdown', () => {
   if (checkAdmin()) return;
   pressTimer = setTimeout(() => {
     const pwd = prompt('Пароль админа:');
@@ -429,67 +535,46 @@ function startPress() {
       applyAdminUI();
       $('footerInfo').textContent = 'admin mode';
       setTimeout(() => { $('footerInfo').textContent = 'ready'; }, 2000);
-    } else if (pwd !== null) {
-      $('footerInfo').textContent = 'неверный пароль';
-      setTimeout(() => { $('footerInfo').textContent = 'ready'; }, 2000);
     }
   }, 1500);
-}
-function cancelPress() {
-  if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-}
-brandEl.addEventListener('pointerdown', startPress);
-brandEl.addEventListener('pointerup', cancelPress);
-brandEl.addEventListener('pointerleave', cancelPress);
-brandEl.addEventListener('pointercancel', cancelPress);
+});
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev =>
+  brandEl.addEventListener(ev, () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } })
+);
 
-// ============================================================
-//  АДМИН — панель
-// ============================================================
 function openAdminPanel() {
   if (!checkAdmin()) return;
   $('adminModal').classList.add('open');
   renderAdminGenres();
   renderAdminTracks();
 }
-function closeAdminPanel() {
-  $('adminModal').classList.remove('open');
-}
+function closeAdminPanel() { $('adminModal').classList.remove('open'); }
 
 function renderAdminGenres() {
   const list = $('genreList');
   list.innerHTML = '';
   state.genres.forEach(g => {
-    const count = TRACKS.filter(t => getTrackGenre(t) === g).length;
+    const count = state.tracks.filter(t => getTrackGenre(t) === g).length;
     const el = document.createElement('div');
     el.className = 'admin-item';
     el.innerHTML = `
       <span class="admin-item-name">${escapeHtml(g)}</span>
       <span class="admin-item-count">${count} тр.</span>
-      <button class="admin-item-btn" data-action="rename" title="Переименовать">✎</button>
-      <button class="admin-item-btn" data-action="delete" title="Удалить">✕</button>
+      <button class="admin-item-btn" data-act="rename">✎</button>
+      <button class="admin-item-btn" data-act="delete">✕</button>
     `;
-    el.querySelector('[data-action="rename"]').addEventListener('click', () => renameGenre(g));
-    el.querySelector('[data-action="delete"]').addEventListener('click', () => deleteGenre(g));
+    el.querySelector('[data-act="rename"]').addEventListener('click', () => renameGenre(g));
+    el.querySelector('[data-act="delete"]').addEventListener('click', () => deleteGenre(g));
     list.appendChild(el);
   });
-  if (!state.genres.length) {
-    list.innerHTML = '<div class="empty-hint">Нет жанров. Добавьте первый.</div>';
-  }
 }
 
 function addGenre() {
-  const input = $('newGenreInput');
-  const name = input.value.trim();
-  if (!name) return;
-  if (state.genres.includes(name)) {
-    $('footerInfo').textContent = 'такой жанр уже есть';
-    setTimeout(() => { $('footerInfo').textContent = 'ready'; }, 1500);
-    return;
-  }
+  const name = $('newGenreInput').value.trim();
+  if (!name || state.genres.includes(name)) return;
   state.genres.push(name);
   saveGenres();
-  input.value = '';
+  $('newGenreInput').value = '';
   renderAdminGenres();
   renderGenres();
 }
@@ -498,40 +583,26 @@ function renameGenre(oldName) {
   const newName = prompt('Новое название:', oldName);
   if (!newName || newName.trim() === oldName) return;
   const trimmed = newName.trim();
-  if (state.genres.includes(trimmed)) {
-    alert('Такой жанр уже есть');
-    return;
-  }
+  if (state.genres.includes(trimmed)) { alert('Такой жанр уже есть'); return; }
   const idx = state.genres.indexOf(oldName);
   if (idx === -1) return;
   state.genres[idx] = trimmed;
-  // Обновляем у треков
-  const overrides = getGenreOverrides();
-  Object.keys(overrides).forEach(k => {
-    if (overrides[k] === oldName) overrides[k] = trimmed;
-  });
-  TRACKS.forEach(t => {
-    if (getTrackGenre(t) === oldName) setTrackGenre(t.src, trimmed);
+  state.tracks.forEach(t => {
+    if (getTrackGenre(t) === oldName) setTrackGenreOverride(t.src, trimmed);
   });
   saveGenres();
-  if (state.currentGenre === oldName) {
-    state.currentGenre = trimmed;
-    renderGenres();
-  }
+  if (state.currentGenre === oldName) { state.currentGenre = trimmed; renderGenres(); }
   renderAdminGenres();
   renderAdminTracks();
 }
 
 function deleteGenre(name) {
-  if (state.genres.length <= 1) {
-    alert('Должен остаться хотя бы один жанр');
-    return;
-  }
+  if (state.genres.length <= 1) { alert('Должен остаться хотя бы один жанр'); return; }
   const fallback = state.genres.find(g => g !== name);
-  const count = TRACKS.filter(t => getTrackGenre(t) === name).length;
+  const count = state.tracks.filter(t => getTrackGenre(t) === name).length;
   if (count > 0 && !confirm(`В жанре «${name}» ${count} треков. Перенести в «${fallback}»?`)) return;
-  TRACKS.forEach(t => {
-    if (getTrackGenre(t) === name) setTrackGenre(t.src, fallback);
+  state.tracks.forEach(t => {
+    if (getTrackGenre(t) === name) setTrackGenreOverride(t.src, fallback);
   });
   state.genres = state.genres.filter(g => g !== name);
   if (state.currentGenre === name) state.currentGenre = fallback;
@@ -544,34 +615,34 @@ function deleteGenre(name) {
 function renderAdminTracks() {
   const list = $('trackListAdmin');
   list.innerHTML = '';
-  if (!TRACKS.length) {
-    list.innerHTML = '<div class="empty-hint">Треков нет. Добавьте их в конфиг TRACKS в коде.</div>';
+  if (!state.tracks.length) {
+    list.innerHTML = '<div class="empty-hint">Треков нет. Запустите generate-tracks.js</div>';
     return;
   }
-  TRACKS.forEach(t => {
+  state.tracks.slice(0, 500).forEach(t => {
     const g = getTrackGenre(t);
     const exists = state.genres.includes(g);
     const el = document.createElement('div');
-    el.className = 'track-admin' + (exists ? '' : ' warn');
+    el.className = 'admin-item';
+    if (!exists) el.style.borderColor = '#7A3A3A';
     el.innerHTML = `
-      <span class="track-admin-title" title="${escapeHtml(t.src)}">${escapeHtml(t.name)}</span>
-      <select class="track-admin-sel" data-src="${escapeHtml(t.src)}">
+      <span class="admin-item-name" title="${escapeHtml(t.src)}">${escapeHtml(t.name || t.src)}</span>
+      <select class="add-input" style="flex:0 0 auto;padding:4px 6px;font-size:10px" data-src="${escapeHtml(t.src)}">
         ${state.genres.map(gn => `<option value="${escapeHtml(gn)}"${gn === g ? ' selected' : ''}>${escapeHtml(gn)}</option>`).join('')}
       </select>
     `;
     el.querySelector('select').addEventListener('change', e => {
-      setTrackGenre(t.src, e.target.value);
+      setTrackGenreOverride(t.src, e.target.value);
       renderAdminGenres();
     });
     list.appendChild(el);
   });
-}
-
-// ============================================================
-//  ХЕЛПЕРЫ
-// ============================================================
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  if (state.tracks.length > 500) {
+    const more = document.createElement('div');
+    more.className = 'empty-hint';
+    more.textContent = `…и ещё ${state.tracks.length - 500} треков`;
+    list.appendChild(more);
+  }
 }
 
 // ============================================================
@@ -594,25 +665,11 @@ $('themeBtn').addEventListener('click', () => {
 //  WIRE UP
 // ============================================================
 $('playBtn').addEventListener('click', togglePlay);
-$('nextBtn').addEventListener('click', playNext);
-$('prevBtn').addEventListener('click', playPrev);
-
-$('volumeSlider').addEventListener('input', e => {
-  state.volume = parseInt(e.target.value, 10) / 100;
-  if (!state.muted) players[activeIdx].volume = state.volume;
-});
-
-$('muteBtn').addEventListener('click', () => {
-  state.muted = !state.muted;
-  $('muteBtn').classList.toggle('muted', state.muted);
-  players.forEach(p => p.volume = state.muted ? 0 : state.volume);
-});
-
+$('nextBtn').addEventListener('click', skipTrack);
+$('prevBtn').addEventListener('click', skipTrack);
 $('adminBtn').addEventListener('click', openAdminPanel);
 $('panelClose').addEventListener('click', closeAdminPanel);
-$('adminModal').addEventListener('click', e => {
-  if (e.target === $('adminModal')) closeAdminPanel();
-});
+$('adminModal').addEventListener('click', e => { if (e.target === $('adminModal')) closeAdminPanel(); });
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -625,42 +682,61 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 $('addGenreBtn').addEventListener('click', addGenre);
-$('newGenreInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addGenre();
+$('newGenreInput').addEventListener('keydown', e => { if (e.key === 'Enter') addGenre(); });
+
+$('volumeSlider').addEventListener('input', e => {
+  state.volume = parseInt(e.target.value, 10) / 100;
+  if (master && !state.muted) master.gain.linearRampToValueAtTime(state.volume, ctx.currentTime + 0.05);
+});
+
+$('muteBtn').addEventListener('click', () => {
+  state.muted = !state.muted;
+  $('muteBtn').classList.toggle('muted', state.muted);
+  if (master) master.gain.linearRampToValueAtTime(state.muted ? 0 : state.volume, ctx.currentTime + 0.1);
 });
 
 document.addEventListener('keydown', e => {
   if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
-    e.preventDefault();
-    togglePlay();
+    e.preventDefault(); togglePlay();
   }
 });
 
-// Таймер
 setInterval(() => {
-  const el = players[activeIdx];
-  const t = el && !isNaN(el.currentTime) ? el.currentTime : 0;
+  const p = players[activeIdx];
+  const t = p && p.el && isFinite(p.el.currentTime) ? p.el.currentTime : 0;
   const m = Math.floor(t / 60).toString().padStart(2, '0');
   const s = Math.floor(t % 60).toString().padStart(2, '0');
   $('elapsed').textContent = `${m}:${s}`;
 }, 500);
 
-// Восстановление AudioContext после возврата из фона
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && state.playing) {
-    const el = players[activeIdx];
-    if (el.paused) el.play().catch(() => {});
+  if (!document.hidden && state.playing && ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
   }
 });
 
 // ============================================================
 //  СТАРТ
 // ============================================================
-loadGenresFromStorage();
-if (!state.genres.length) state.genres = ['Chillhop'];
-state.currentGenre = state.genres[0];
-applyAdminUI();
-renderGenres();
+(async function init() {
+  $('footerInfo').textContent = 'loading tracks…';
+  await loadTracksManifest();
+
+  const fromTracks = [...new Set(state.tracks.map(t => getTrackGenre(t)).filter(Boolean))];
+  const savedGenres = loadGenreNames();
+  if (savedGenres && savedGenres.length) state.genres = savedGenres;
+  else if (fromTracks.length) state.genres = fromTracks;
+  else state.genres = ['Chillhop'];
+
+  state.currentGenre = state.genres[0];
+  applyAdminUI();
+  renderGenres();
+
+  $('footerInfo').textContent = state.tracks.length
+    ? `${state.tracks.length} треков ready`
+    : 'нет треков — запустите generate-tracks.js';
+  setTimeout(() => { if (state.tracks.length) $('footerInfo').textContent = 'ready'; }, 2500);
+})();
 </script>
 </body>
 </html>
