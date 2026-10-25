@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -193,7 +192,10 @@ input[type="range"] {
   let ready = false;
   let loading = false;
   let playing = false;
+
   let piano = null;
+  let pad = null;
+  let padGain = null;
   let bass = null;
   let kick = null;
   let snare = null;
@@ -275,27 +277,35 @@ input[type="range"] {
     try {
       await Tone.start();
 
-      // Пианино: сохраняем тёплую обработку из предыдущей версии.
+      // Тёплая обработка пианино.
       pianoGain = new Tone.Gain(0.8);
+
       pianoFilter = new Tone.Filter({
         type: "lowpass",
         frequency: 6200,
         rolloff: -12
       });
+
       const pianoHighpass = new Tone.Filter({
         type: "highpass",
         frequency: 85,
         rolloff: -12
       });
+
       pianoCompressor = new Tone.Compressor({
         threshold: -25,
         ratio: 2,
         attack: 0.025,
         release: 0.25
       });
+
       saturation = new Tone.Distortion(0.07);
       saturation.wet.value = 0.16;
-      reverb = new Tone.Reverb({ decay: 3.2, wet: 0.2 });
+
+      reverb = new Tone.Reverb({
+        decay: 3.2,
+        wet: 0.2
+      });
 
       pianoGain.connect(pianoHighpass);
       pianoHighpass.connect(pianoFilter);
@@ -305,8 +315,12 @@ input[type="range"] {
       reverb.toDestination();
 
       effects.push(
-        pianoGain, pianoHighpass, pianoFilter,
-        pianoCompressor, saturation, reverb
+        pianoGain,
+        pianoHighpass,
+        pianoFilter,
+        pianoCompressor,
+        saturation,
+        reverb
       );
 
       await reverb.generate();
@@ -331,18 +345,49 @@ input[type="range"] {
         attack: 0.025,
         release: 2.2
       });
+
       piano.connect(pianoGain);
       piano.volume.value = -4;
 
-      // Бас: мягкий треугольный синтезатор с низким фильтром.
+      // Мягкий атмосферный синтезатор под пианино.
+      padGain = createGain(0.055);
+
+      const padFilter = new Tone.Filter({
+        type: "lowpass",
+        frequency: 1100,
+        rolloff: -12
+      });
+
+      pad = new Tone.PolySynth(Tone.Synth, {
+        oscillator: {
+          type: "triangle"
+        },
+        envelope: {
+          attack: 0.65,
+          decay: 1.2,
+          sustain: 0.22,
+          release: 2.8
+        }
+      });
+
+      pad.volume.value = -17;
+      pad.connect(padFilter);
+      padFilter.connect(padGain);
+      effects.push(padFilter);
+
+      // Мягкий низкий бас.
       bassGain = createGain(0.12);
+
       const bassFilter = new Tone.Filter({
         type: "lowpass",
         frequency: 155,
         rolloff: -24
       });
+
       bass = new Tone.Synth({
-        oscillator: { type: "triangle" },
+        oscillator: {
+          type: "triangle"
+        },
         envelope: {
           attack: 0.055,
           decay: 0.28,
@@ -350,16 +395,20 @@ input[type="range"] {
           release: 0.32
         }
       });
+
       bass.connect(bassFilter);
       bassFilter.connect(bassGain);
       effects.push(bassFilter);
 
-      // Kick: округлый и негромкий.
+      // Округлый бас-барабан.
       drumsGain = createGain(0.35);
+
       kick = new Tone.MembraneSynth({
         pitchDecay: 0.04,
         octaves: 3,
-        oscillator: { type: "sine" },
+        oscillator: {
+          type: "sine"
+        },
         envelope: {
           attack: 0.001,
           decay: 0.28,
@@ -367,12 +416,15 @@ input[type="range"] {
           release: 0.12
         }
       });
+
       kick.volume.value = -3;
       kick.connect(drumsGain);
 
-      // Snare: короткий шумовой щелчок с мягким телом.
+      // Мягкий шумовой малый барабан.
       snare = new Tone.NoiseSynth({
-        noise: { type: "pink" },
+        noise: {
+          type: "pink"
+        },
         envelope: {
           attack: 0.002,
           decay: 0.13,
@@ -380,10 +432,11 @@ input[type="range"] {
           release: 0.025
         }
       });
+
       snare.volume.value = -13;
       snare.connect(drumsGain);
 
-      // Hats: короткие и тихие металлические шорохи.
+      // Приглушённые хэты.
       hats = new Tone.MetalSynth({
         frequency: 220,
         envelope: {
@@ -396,20 +449,24 @@ input[type="range"] {
         resonance: 3200,
         octaves: 1.5
       });
+
       hats.volume.value = -25;
       hats.connect(drumsGain);
 
-      // Тихий розовый шум для ощущения старой записи.
+      // Тихая текстура старой записи.
       textureGain = createGain(0.012);
+
       noiseHighpass = new Tone.Filter({
         type: "highpass",
         frequency: 1800,
         rolloff: -12
       });
+
       noiseLowpass = new Tone.Filter({
         type: "lowpass",
         frequency: 6500
       });
+
       noise = new Tone.Noise("pink");
       noise.connect(noiseHighpass);
       noiseHighpass.connect(noiseLowpass);
@@ -423,6 +480,7 @@ input[type="range"] {
       ready = true;
       setControls();
       updateMix();
+
       say("Готово! Послушай пианино или запускай радио.");
     } catch (error) {
       console.error(error);
@@ -445,14 +503,26 @@ input[type="range"] {
     $("drumsOut").textContent = d + "%";
     $("textureOut").textContent = t + "%";
 
-    if (pianoGain) pianoGain.gain.rampTo(p / 100, 0.08);
-    if (bassGain) bassGain.gain.rampTo((b / 100) * 0.35, 0.08);
-    if (drumsGain) drumsGain.gain.rampTo(d / 100, 0.08);
-    if (textureGain) textureGain.gain.rampTo((t / 100) * 0.048, 0.08);
+    if (pianoGain) {
+      pianoGain.gain.rampTo(p / 100, 0.08);
+    }
+
+    if (bassGain) {
+      bassGain.gain.rampTo((b / 100) * 0.35, 0.08);
+    }
+
+    if (drumsGain) {
+      drumsGain.gain.rampTo(d / 100, 0.08);
+    }
+
+    if (textureGain) {
+      textureGain.gain.rampTo((t / 100) * 0.048, 0.08);
+    }
   }
 
   function testPiano() {
     if (!ready || playing) return;
+
     const now = Tone.now() + 0.1;
 
     piano.triggerAttackRelease(
@@ -461,12 +531,14 @@ input[type="range"] {
       now,
       0.48
     );
+
     piano.triggerAttackRelease(
       ["G3", "C4"],
       3.5,
       now + 0.08,
       0.24
     );
+
     say("Тест пианино: тёплый аккорд.");
   }
 
@@ -483,8 +555,7 @@ input[type="range"] {
       previousNote = "G4";
       currentProgression = choose(progressions);
 
-      // Событие повторяется раз в такт. Все звуки назначаются
-      // по времени Transport, поэтому ритм не зависит от задержек JS.
+      // Генерация музыки каждый такт.
       repeatId = Tone.Transport.scheduleRepeat((time) => {
         generateBar(time);
       }, "1m");
@@ -492,7 +563,8 @@ input[type="range"] {
       playing = true;
       Tone.Transport.start("+0.1");
       setControls();
-      say("Midnight FM играет: пианино, бас и мягкий бит.");
+
+      say("Midnight FM играет: пианино, атмосферный фон, бас и бит.");
     } catch (error) {
       console.error(error);
       playing = false;
@@ -506,8 +578,7 @@ input[type="range"] {
     const phrasePosition = barNumber % 16;
     const section = Math.floor(phrasePosition / 4);
 
-    // Гармония держится четыре такта, а обновляется раз в 16 тактов.
-    // Так музыка развивается, но не перескакивает между случайными аккордами.
+    // Меняем гармонию раз в 16 тактов.
     if (barNumber > 0 && phrasePosition === 0) {
       currentProgression = choose(progressions);
     }
@@ -516,55 +587,112 @@ input[type="range"] {
     const breakdown = section === 3;
     const lightSection = section === 1;
 
-    // Аккорды: иногда полный аккорд, иногда более редкое и лёгкое звучание.
-    const chordVelocity = breakdown ? 0.18 : (lightSection ? 0.21 : 0.27);
-    if (!breakdown || position % 2 === 0) {
-      piano.triggerAttackRelease(
-        chord.notes,
-        (breakdown ? 2.6 : 3.4) * beat,
+    // Аккорд пианино звучит в каждом такте.
+    const chordVelocity = breakdown
+      ? 0.15
+      : lightSection
+        ? 0.21
+        : 0.27;
+
+    piano.triggerAttackRelease(
+      chord.notes,
+      (breakdown ? 2.8 : 3.4) * beat,
+      time,
+      chordVelocity
+    );
+
+    // Длинные ноты атмосферного пэда связывают аккорды между собой.
+    pad.triggerAttackRelease(
+      chord.notes.map(note =>
+        Tone.Frequency(note).transpose(-12).toNote()
+      ),
+      "1m",
+      time,
+      breakdown ? 0.10 : lightSection ? 0.12 : 0.15
+    );
+
+    // Бас поддерживает гармонию.
+    if (!breakdown && (position === 0 || position === 2)) {
+      bass.triggerAttackRelease(
+        chord.root,
+        "2n",
         time,
-        chordVelocity
+        0.24
+      );
+    } else if (breakdown && position === 0) {
+      bass.triggerAttackRelease(
+        chord.root,
+        "2n",
+        time,
+        0.16
       );
     }
 
-    // Бас остаётся фоном: короткий, тёплый и не в каждом такте.
-    if (!breakdown && (position === 0 || position === 2)) {
-      bass.triggerAttackRelease(chord.root, "2n", time, 0.24);
-    } else if (breakdown && position === 0) {
-      bass.triggerAttackRelease(chord.root, "2n", time, 0.16);
-    }
-
-    // Ударные меняют плотность между частями 16-тактового цикла.
+    // Ударные: полная, облегчённая и спокойная секции.
     if (!breakdown && !lightSection) {
       if (Math.random() > 0.08) {
         kick.triggerAttackRelease("C1", "8n", time, 0.42);
       }
+
       if (Math.random() > 0.28) {
-        kick.triggerAttackRelease("C1", "8n", time + 2 * beat, 0.29);
+        kick.triggerAttackRelease(
+          "C1",
+          "8n",
+          time + 2 * beat,
+          0.29
+        );
       }
+
       if (Math.random() > 0.12) {
-        snare.triggerAttackRelease("8n", time + beat, 0.20);
+        snare.triggerAttackRelease(
+          "8n",
+          time + beat,
+          0.20
+        );
       }
+
       if (Math.random() > 0.15) {
-        snare.triggerAttackRelease("8n", time + 3 * beat, 0.19);
+        snare.triggerAttackRelease(
+          "8n",
+          time + 3 * beat,
+          0.19
+        );
       }
     } else if (lightSection) {
-      // Вторая часть тише по активности: оставляем редкие акценты.
       if (position % 2 === 0) {
-        kick.triggerAttackRelease("C1", "8n", time, 0.28);
+        kick.triggerAttackRelease(
+          "C1",
+          "8n",
+          time,
+          0.28
+        );
       }
+
       if (position === 3 && Math.random() > 0.35) {
-        snare.triggerAttackRelease("8n", time + 3 * beat, 0.13);
+        snare.triggerAttackRelease(
+          "8n",
+          time + 3 * beat,
+          0.13
+        );
       }
     } else {
-      // В конце цикла почти убираем бит, чтобы было ощущение передышки.
       if (position === 0 && Math.random() > 0.45) {
-        kick.triggerAttackRelease("C1", "8n", time, 0.20);
+        kick.triggerAttackRelease(
+          "C1",
+          "8n",
+          time,
+          0.20
+        );
       }
     }
 
-    // Хэты с разной плотностью и небольшими паузами.
-    const hatChance = breakdown ? 0.12 : (lightSection ? 0.24 : 0.48);
+    // Хэты меняют плотность в зависимости от секции.
+    const hatChance = breakdown
+      ? 0.12
+      : lightSection
+        ? 0.24
+        : 0.48;
+
     for (let i = 0; i < 8; i++) {
       if (Math.random() < hatChance) {
         hats.triggerAttackRelease(
@@ -575,64 +703,93 @@ input[type="range"] {
       }
     }
 
-    // Мелодия строится из небольших фраз: мотив повторяется с изменениями,
-    // а не выбирается полностью случайный набор нот каждый такт.
+    // Мелодические мотивы с небольшими вариациями.
     const motifs = [
       [0, 2, 4, 2],
       [4, 3, 2, 1],
       [0, 2, 3, 4],
       [4, 2, 1, 0]
     ];
+
     const motif = motifs[position];
+
     const slotsByBar = [
       [0.5, 1.5, 2.5, 3.5],
       [0.5, 1, 2.5, 3.5],
       [1, 1.5, 2.5, 3],
       [0.5, 2, 3.5]
     ];
+
     const slots = slotsByBar[position];
-    const chordTonePool = chord.notes.filter(note => scale.includes(note));
-    const safePool = chordTonePool.length ? chordTonePool : scale;
+    const chordTonePool = chord.notes.filter(
+      note => scale.includes(note)
+    );
+    const safePool = chordTonePool.length
+      ? chordTonePool
+      : scale;
 
-    if (!breakdown || position % 2 === 0) {
-      for (let i = 0; i < slots.length; i++) {
-        // Часть нот приходит из мотива, часть — из аккорда.
-        let note;
-        if (i < motif.length && Math.random() < 0.68) {
-          note = scale[motif[i]];
-        } else {
-          note = choose(safePool);
-        }
+    let notesScheduled = 0;
 
-        // Вариации сохраняют фразу узнаваемой, но не полностью одинаковой.
-        if (Math.random() < 0.22) {
-          const idx = scale.indexOf(note);
-          if (idx >= 0) {
-            const step = choose([-1, 1]);
-            note = scale[Math.max(0, Math.min(scale.length - 1, idx + step))];
-          }
-        }
+    for (let i = 0; i < slots.length; i++) {
+      let note;
 
-        if (Math.random() < (breakdown ? 0.32 : 0.12)) continue;
-
-        const velocity = breakdown
-          ? 0.10 + Math.random() * 0.05
-          : (lightSection ? 0.11 + Math.random() * 0.07 : 0.14 + Math.random() * 0.10);
-
-        piano.triggerAttackRelease(
-          note,
-          choose([0.45, 0.7, 1.0, 1.3]),
-          time + slots[i] * beat,
-          velocity
-        );
-        previousNote = note;
+      if (i < motif.length && Math.random() < 0.68) {
+        note = scale[motif[i]];
+      } else {
+        note = choose(safePool);
       }
+
+      // Небольшие отклонения от мотива, чтобы мелодия жила.
+      if (Math.random() < 0.22) {
+        const idx = scale.indexOf(note);
+
+        if (idx >= 0) {
+          const step = choose([-1, 1]);
+          note = scale[
+            Math.max(0, Math.min(scale.length - 1, idx + step))
+          ];
+        }
+      }
+
+      // Паузы короткие и не должны убирать всю мелодию из такта.
+      if (Math.random() < (breakdown ? 0.20 : 0.09)) {
+        continue;
+      }
+
+      const velocity = breakdown
+        ? 0.10 + Math.random() * 0.05
+        : lightSection
+          ? 0.11 + Math.random() * 0.07
+          : 0.14 + Math.random() * 0.10;
+
+      piano.triggerAttackRelease(
+        note,
+        choose([0.45, 0.7, 1.0, 1.3]),
+        time + slots[i] * beat,
+        velocity
+      );
+
+      previousNote = note;
+      notesScheduled++;
     }
 
-    // Иногда добавляем тихое арпеджио в конце такта — музыкальный ответ.
+    // Страховка: если случайные паузы съели мелодию,
+    // добавляем тихую ноту в середине такта.
+    if (notesScheduled < 2) {
+      const note = choose(safePool);
+
+      piano.triggerAttackRelease(
+        note,
+        0.7,
+        time + 2.5 * beat,
+        breakdown ? 0.09 : 0.13
+      );
+    }
+
+    // Иногда пианино отвечает короткой нотой из текущего аккорда.
     if (!breakdown && Math.random() > 0.55) {
-      const arpeggio = chord.notes;
-      const note = choose(arpeggio);
+      const note = choose(chord.notes);
+
       piano.triggerAttackRelease(
         note,
         "8n",
@@ -649,8 +806,10 @@ input[type="range"] {
 
     Tone.Transport.stop();
     Tone.Transport.cancel();
+
     repeatId = null;
     playing = false;
+
     setControls();
     say("Радио остановлено.");
   }
@@ -661,18 +820,26 @@ input[type="range"] {
       Tone.Transport.cancel();
     } catch (_) {}
 
-    for (const instrument of [piano, bass, kick, snare, hats, noise]) {
+    for (const instrument of [
+      piano, pad, bass, kick, snare, hats, noise
+    ]) {
       if (instrument) {
-        try { instrument.dispose(); } catch (_) {}
+        try {
+          instrument.dispose();
+        } catch (_) {}
       }
     }
 
     for (const effect of effects) {
-      try { effect.dispose(); } catch (_) {}
+      try {
+        effect.dispose();
+      } catch (_) {}
     }
 
     effects.length = 0;
-    piano = bass = kick = snare = hats = noise = null;
+
+    piano = pad = bass = kick = snare = hats = noise = null;
+    padGain = null;
     ready = false;
   }
 
