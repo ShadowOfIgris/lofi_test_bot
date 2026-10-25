@@ -6,559 +6,537 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Midnight FM</title>
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #090b14;
-  --panel: #111522;
-  --text: #e8e8f1;
-  --muted: #858ba5;
-  --accent: #aaa2ff;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0; min-height: 100vh; padding: 24px;
-  display: flex; justify-content: center; align-items: center;
-  background: radial-gradient(ellipse at 50% 0%, #222440, var(--bg) 68%);
-  color: var(--text); font-family: Inter, system-ui, sans-serif;
-}
-.app { width: min(100%, 560px); }
-header { text-align: center; margin-bottom: 25px; }
-.logo { font-size: 11px; letter-spacing: 5px; color: var(--accent); }
-h1 { font-weight: 300; font-size: clamp(34px, 8vw, 48px); letter-spacing: 2px; margin: 12px 0 7px; }
-.subtitle { font-size: 13px; color: var(--muted); }
-.scene {
-  height: 190px; position: relative; overflow: hidden;
-  border-radius: 12px; margin-bottom: 16px;
-  background: linear-gradient(#171a32, #30314b 65%, #151827);
-}
-.moon {
-  position: absolute; width: 52px; height: 52px; top: 25px; right: 20%;
-  border-radius: 50%; background: #e5e1ff;
-  box-shadow: 0 0 38px #b1a8ff55;
-}
-.skyline {
-  position: absolute; inset: auto 0 0; height: 105px;
-  display: flex; align-items: end; justify-content: space-around; gap: 4px;
-}
-.building { flex: 1; max-width: 58px; background: #101321; position: relative; }
-.building:after {
-  content: ""; position: absolute; inset: 10px 7px;
-  background: repeating-linear-gradient(0deg, transparent 0 10px, #aaa5e525 10px 13px);
-}
-.now {
-  padding: 21px 16px; text-align: center; background: var(--panel);
-  border: 1px solid #ffffff0d; border-radius: 12px; margin-bottom: 12px;
-}
-.label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
-#trackName { font-size: 19px; margin-top: 9px; }
-#trackDesc { font-size: 12px; color: var(--muted); margin-top: 5px; }
-.controls {
-  background: var(--panel); border: 1px solid #ffffff0d;
-  border-radius: 12px; padding: 20px;
-}
-.buttons { display: flex; gap: 10px; }
-button {
-  flex: 1; border: 0; border-radius: 8px; padding: 14px 10px;
-  font: inherit; font-weight: 600; cursor: pointer;
-  color: #111323; background: var(--accent);
-}
-#next { background: #252941; color: var(--text); }
-button:disabled { opacity: .6; cursor: wait; }
-.volume { margin-top: 18px; }
-.volume-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-input { width: 100%; margin-top: 9px; accent-color: var(--accent); }
-#status { text-align: center; color: var(--muted); font-size: 11px; margin-top: 15px; min-height: 14px; }
-footer { text-align: center; color: #686e86; font-size: 10px; letter-spacing: 2px; margin-top: 18px; }
-@media(max-width:430px) {
-  body { padding: 14px; }
-  .scene { height: 160px; }
-  .buttons { flex-direction: column; }
-}
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #090d18;
+    color: #e9e7f2;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .radio {
+    width: min(100%, 470px);
+    text-align: center;
+    padding: 34px 28px;
+    border: 1px solid rgba(177, 190, 230, .15);
+    border-radius: 22px;
+    background: linear-gradient(180deg, #151b2b, #0c1120);
+    box-shadow: 0 25px 90px #0008;
+  }
+
+  .sky {
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #202d49, #101729 75%);
+  }
+
+  .moon {
+    position: absolute;
+    top: 23px;
+    right: 24%;
+    width: 39px;
+    height: 39px;
+    border-radius: 50%;
+    background: #e3e0d2;
+    box-shadow: 0 0 28px #d9d9e455;
+  }
+
+  .stars {
+    position: absolute;
+    inset: 0;
+    opacity: .65;
+    background-image:
+      radial-gradient(1px 1px at 15% 22%, #fff, transparent),
+      radial-gradient(1px 1px at 35% 48%, #fff, transparent),
+      radial-gradient(1px 1px at 70% 19%, #fff, transparent),
+      radial-gradient(1px 1px at 82% 54%, #fff, transparent),
+      radial-gradient(1px 1px at 52% 15%, #fff, transparent),
+      radial-gradient(1px 1px at 25% 68%, #fff, transparent);
+  }
+
+  .buildings {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 76px;
+    background:
+      linear-gradient(90deg,
+        #0a1020 0 8%, transparent 8% 10%,
+        #0a1020 10% 19%, transparent 19% 22%,
+        #0a1020 22% 34%, transparent 34% 36%,
+        #0a1020 36% 43%, transparent 43% 46%,
+        #0a1020 46% 59%, transparent 59% 62%,
+        #0a1020 62% 70%, transparent 70% 73%,
+        #0a1020 73% 87%, transparent 87% 90%,
+        #0a1020 90% 100%);
+    clip-path: polygon(
+      0 35%, 8% 35%, 8% 15%, 19% 15%, 19% 44%,
+      27% 44%, 27% 0, 35% 0, 35% 38%, 45% 38%,
+      45% 20%, 55% 20%, 55% 48%, 64% 48%, 64% 9%,
+      74% 9%, 74% 34%, 84% 34%, 84% 18%,
+      100% 18%, 100% 100%, 0 100%);
+  }
+
+  h1 {
+    font-weight: normal;
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin: 0 0 8px;
+  }
+
+  .subtitle {
+    color: #929bb5;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+  }
+
+  .track {
+    min-height: 25px;
+    color: #c7cbe0;
+    font-size: 17px;
+    margin-bottom: 24px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 27px;
+  }
+
+  button {
+    border: 1px solid #65708d66;
+    border-radius: 30px;
+    padding: 13px 20px;
+    background: #222c43;
+    color: #f0eff8;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+  }
+
+  button:hover {
+    background: #34415f;
+    transform: translateY(-1px);
+  }
+
+  button:disabled {
+    opacity: .5;
+    cursor: wait;
+  }
+
+  #play {
+    min-width: 125px;
+    background: #d5d5df;
+    color: #101523;
+    border-color: transparent;
+  }
+
+  .volume {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: #9ca5bd;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #b8c1dd;
+    cursor: pointer;
+  }
+
+  .status {
+    min-height: 18px;
+    margin-top: 22px;
+    color: #7986a5;
+    font: 12px Arial, sans-serif;
+  }
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="logo">INDEPENDENT RADIO</div>
-    <h1>Midnight FM</h1>
-    <div class="subtitle">somewhere between yesterday and tomorrow</div>
-  </header>
 
-  <div class="scene" aria-hidden="true">
+<main class="radio">
+  <div class="sky">
+    <div class="stars"></div>
     <div class="moon"></div>
-    <div class="skyline">
-      <div class="building" style="height:48%"></div>
-      <div class="building" style="height:76%"></div>
-      <div class="building" style="height:57%"></div>
-      <div class="building" style="height:90%"></div>
-      <div class="building" style="height:64%"></div>
-      <div class="building" style="height:80%"></div>
-      <div class="building" style="height:52%"></div>
-      <div class="building" style="height:68%"></div>
-      <div class="building" style="height:43%"></div>
-    </div>
+    <div class="buildings"></div>
   </div>
 
-  <div class="now">
-    <div class="label">NOW PLAYING</div>
-    <div id="trackName">Midnight memories</div>
-    <div id="trackDesc">a little music for the hours that belong to you</div>
-  </div>
+  <h1>Midnight FM</h1>
+  <div class="subtitle">late night radio</div>
+
+  <div class="track" id="track">A quiet night somewhere</div>
 
   <div class="controls">
-    <div class="buttons">
-      <button id="toggle">▶ Start radio</button>
-      <button id="next">⏭ Следующий трек</button>
-    </div>
-    <div class="volume">
-      <div class="volume-head"><label for="volume">Volume</label><span id="volumeValue">70%</span></div>
-      <input id="volume" type="range" min="0" max="100" value="70">
-    </div>
-    <div id="status">Radio is sleeping.</div>
+    <button id="play">▶ Play</button>
+    <button id="next">Next Track ↗</button>
   </div>
-  <footer>24 HOURS · AFTER DARK · ALWAYS ON</footer>
-</div>
+
+  <div class="volume">
+    <span>VOL</span>
+    <input id="volume" type="range" min="0" max="1"
+           step="0.01" value="0.65">
+  </div>
+
+  <div class="status" id="status">Нажми Play, чтобы начать</div>
+</main>
 
 <script>
 (() => {
-  "use strict";
+  const FILES = {
+    piano: "Presets/piano.wav",
+    drums: "Presets/drums.wav",
+    bass: "Presets/bass.wav",
+    ambience: "Presets/ambience.mp3"
+  };
 
   const $ = id => document.getElementById(id);
+  const playButton = $("play");
+  const nextButton = $("next");
+  const volumeSlider = $("volume");
+  const status = $("status");
+  const trackTitle = $("track");
 
-  const TITLES = [
-    ["Midnight memories", "somewhere you used to know"],
-    ["Rain on the window", "the city never really sleeps"],
-    ["Last train home", "one more stop before tomorrow"],
-    ["Blue hour", "nothing urgent, nowhere to be"],
-    ["Empty streets", "let the night take its time"],
-    ["Almost morning", "just a little longer"],
-    ["Distant lights", "the world feels softer from here"],
-    ["After the rain", "everything is quiet again"],
-    ["No destination", "it's about the road, not the end"],
-    ["Sleepless", "thoughts drifting past the window"],
-    ["Neon dreams", "somewhere far from the noise"],
-    ["Slow motion", "there's no need to hurry"],
-    ["Window seat", "watching the world go by"],
-    ["Soft focus", "nothing needs an answer tonight"],
-    ["City lights", "a thousand lives passing by"]
+  let ctx = null;
+  let buffers = {};
+  let master = null;
+  let currentTrack = null;
+  let playing = false;
+  let loading = false;
+  let variationTimer = null;
+  let trackNumber = 0;
+  let requestId = 0;
+
+  const titles = [
+    "A quiet night somewhere",
+    "Rain on the window",
+    "Last train home",
+    "Blue lights, empty streets",
+    "Nothing to hurry for",
+    "The city after midnight",
+    "One more hour awake",
+    "Somewhere in the distance",
+    "Lights across the river",
+    "A familiar kind of silence",
+    "Walking without a destination",
+    "Until the morning comes"
   ];
 
-  let ctx, master, musicBus, ambientBus, ambientBuffer, ambientSource;
-  let playing = false;
-  let schedulerTimer = null;
-  let nextTime = 0;
-  let bar = 0;
-  let bpm = 70;
-  let keyRoot = 45;
-  let scale = [0, 3, 5, 7, 10];
-  let progression = [0, 3, 5, 4];
-  let groove = {};
-  let lastTitle = -1;
-  let activeNodes = new Set();
-  let barDuration = 60 / bpm * 4;
-  let nextTrackRequested = false;
-  let fadeGeneration = 0;
+  const random = (min, max) =>
+    min + Math.random() * (max - min);
 
-  const rand = (a, b) => a + Math.random() * (b - a);
-  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  const chance = p => Math.random() < p;
-  const midiHz = n => 440 * Math.pow(2, (n - 69) / 12);
-
-  function setStatus(s) { $("status").textContent = s; }
-
-  function init() {
-    if (ctx) return;
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) throw new Error("Web Audio is not supported");
-
-    ctx = new AC();
-    master = ctx.createGain();
-    musicBus = ctx.createGain();
-    ambientBus = ctx.createGain();
-
-    const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -22;
-    comp.knee.value = 20;
-    comp.ratio.value = 3;
-    comp.attack.value = 0.015;
-    comp.release.value = 0.3;
-
-    musicBus.connect(master);
-    ambientBus.connect(master);
-    master.connect(comp);
-    comp.connect(ctx.destination);
-    setVolume();
+  function setStatus(message) {
+    status.textContent = message;
   }
 
-  function setVolume() {
-    const v = Number($("volume").value) / 100;
-    $("volumeValue").textContent = Math.round(v * 100) + "%";
-    if (ctx && master) master.gain.setTargetAtTime(v, ctx.currentTime, 0.08);
-  }
-
-  async function loadAmbience() {
-    if (ambientBuffer) return;
-    const res = await fetch("Presets/ambience.mp3");
-    if (!res.ok) throw new Error("Can't load Presets/ambience.mp3");
-    ambientBuffer = await ctx.decodeAudioData(await res.arrayBuffer());
-  }
-
-  function trackNode(node) {
-    activeNodes.add(node);
-    node.addEventListener("ended", () => activeNodes.delete(node), { once: true });
-  }
-
-  function chooseTitle() {
-    let i = Math.floor(Math.random() * TITLES.length);
-    if (i === lastTitle) i = (i + 1) % TITLES.length;
-    lastTitle = i;
-    $("trackName").textContent = TITLES[i][0];
-    $("trackDesc").textContent = TITLES[i][1];
-  }
-
-  function newTrack() {
-    fadeGeneration++;
-    bpm = pick([66, 68, 70, 72, 74, 76, 78]);
-    keyRoot = pick([43, 45, 48, 50, 52, 55]);
-    scale = pick([
-      [0, 3, 5, 7, 10],
-      [0, 2, 3, 7, 9],
-      [0, 3, 5, 8, 10]
-    ]);
-    progression = pick([
-      [0, 3, 5, 4], [0, 5, 3, 4], [0, 3, 1, 4],
-      [0, 4, 5, 3], [5, 3, 0, 4], [0, 2, 5, 4],
-      [0, 4, 1, 3], [3, 5, 0, 4], [0, 3, 4, 5]
-    ]);
-
-    groove = {
-      drumStyle: pick(["soft", "dusty", "sparse", "steady", "broken"]),
-      bassStyle: pick(["root", "walking", "sparse"]),
-      pianoStyle: pick(["melodic", "arpeggio", "spacious", "fragments"]),
-      density: rand(0.48, 0.78),
-      swing: rand(0.01, 0.12),
-      tone: rand(0.7, 1.0)
-    };
-
-    bar = 0;
-    barDuration = 60 / bpm * 4;
-    chooseTitle();
-    setStatus("On air · " + bpm + " BPM");
-  }
-
-  function pluck(midi, when, duration, velocity, pan = 0) {
-    const f = midiHz(midi);
-    const osc = ctx.createOscillator();
-    const overtone = ctx.createOscillator();
-    const lowpass = ctx.createBiquadFilter();
-    const envelope = ctx.createGain();
-    const panNode = ctx.createStereoPanner();
-    const overtoneGain = ctx.createGain();
-
-    // Rounded, muted tone rather than a bright arcade-like beep.
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(f, when);
-    overtone.type = "sine";
-    overtone.frequency.setValueAtTime(f * 2.002, when);
-    overtoneGain.gain.value = 0.10;
-
-    lowpass.type = "lowpass";
-    lowpass.frequency.setValueAtTime(rand(800, 1450), when);
-    lowpass.frequency.exponentialRampToValueAtTime(450, when + duration);
-
-    envelope.gain.setValueAtTime(0.0001, when);
-    envelope.gain.linearRampToValueAtTime(velocity, when + 0.025);
-    envelope.gain.exponentialRampToValueAtTime(0.0001, when + duration);
-
-    panNode.pan.setValueAtTime(pan, when);
-    osc.connect(lowpass);
-    overtone.connect(overtoneGain);
-    overtoneGain.connect(lowpass);
-    lowpass.connect(envelope);
-    envelope.connect(panNode);
-    panNode.connect(musicBus);
-
-    osc.start(when);
-    overtone.start(when);
-    osc.stop(when + duration + 0.05);
-    overtone.stop(when + duration + 0.05);
-    trackNode(osc);
-    trackNode(overtone);
-
-    osc.onended = () => {
-      osc.disconnect(); overtone.disconnect(); overtoneGain.disconnect();
-      lowpass.disconnect(); envelope.disconnect(); panNode.disconnect();
-    };
-  }
-
-  function bassNote(midi, when, duration, velocity) {
-    const osc = ctx.createOscillator();
-    const filter = ctx.createBiquadFilter();
-    const gain = ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(midiHz(midi), when);
-    filter.type = "lowpass";
-    filter.frequency.value = 150;
-    gain.gain.setValueAtTime(0.0001, when);
-    gain.gain.linearRampToValueAtTime(velocity, when + 0.035);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
-
-    osc.connect(filter); filter.connect(gain); gain.connect(musicBus);
-    osc.start(when); osc.stop(when + duration + 0.05);
-    trackNode(osc);
-    osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); };
-  }
-
-  function kick(when, vol = 0.09) {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(88, when);
-    osc.frequency.exponentialRampToValueAtTime(39, when + 0.14);
-    gain.gain.setValueAtTime(vol, when);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.17);
-    osc.connect(gain); gain.connect(musicBus);
-    osc.start(when); osc.stop(when + 0.18);
-    trackNode(osc);
-    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
-  }
-
-  function noiseHit(when, type, volume) {
-    const dur = type === "hat" ? 0.035 : 0.09;
-    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
-    }
-    const src = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
-    const gain = ctx.createGain();
-    src.buffer = buf;
-    filter.type = type === "hat" ? "highpass" : "bandpass";
-    filter.frequency.value = type === "hat" ? 6800 : 1600;
-    gain.gain.setValueAtTime(volume, when);
-    gain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-    src.connect(filter); filter.connect(gain); gain.connect(musicBus);
-    src.start(when);
-    trackNode(src);
-    src.onended = () => { src.disconnect(); filter.disconnect(); gain.disconnect(); };
-  }
-
-  function makeMelody(chordRoot) {
-    const notes = [];
-    let cursor = pick([0, 0.5, 1]);
-    let prev = chordRoot + 12 + pick([0, 3, 7, 10]);
-    const targetCount = pick([3, 4, 5, 6, 7]);
-
-    for (let i = 0; i < targetCount && cursor < 4; i++) {
-      let candidate = prev + pick([-7, -5, -3, -2, 0, 2, 3, 5, 7]);
-      candidate = Math.max(keyRoot + 12, Math.min(keyRoot + 28, candidate));
-
-      const allowed = scale.map(s => ((keyRoot + s) % 12));
-      if (!allowed.includes(candidate % 12)) {
-        candidate = pick([
-          chordRoot + 12,
-          chordRoot + 12 + scale[2],
-          chordRoot + 12 + scale[3]
-        ]);
-      }
-
-      if (chance(0.18)) candidate += 12;
-      notes.push({
-        beat: cursor,
-        midi: candidate,
-        duration: rand(0.45, 1.45),
-        velocity: rand(0.035, 0.07) * groove.tone,
-        pan: rand(-0.45, 0.45)
-      });
-      prev = candidate;
-      cursor += pick([0.5, 0.5, 1, 1, 1.5, 2]);
-    }
-    return notes;
-  }
-
-  function scheduleBar(when) {
-    const beatLen = 60 / bpm;
-    const chordDegree = progression[bar % progression.length];
-    const chordRoot = keyRoot + scale[chordDegree % scale.length];
-    const chordNotes = [
-      chordRoot + 12,
-      chordRoot + 12 + scale[2],
-      chordRoot + 12 + scale[4],
-      chordRoot + 24
-    ];
-
-    const melody = makeMelody(chordRoot);
-
-    // Occasional gentle chord bed, not a constant wall of sound.
-    if (groove.pianoStyle === "spacious" && chance(0.5)) {
-      chordNotes.slice(0, 3).forEach((n, i) => {
-        pluck(n, when + i * 0.045, rand(1.3, 2.1), 0.014, (i - 1) * 0.35);
-      });
-    }
-
-    for (const n of melody) {
-      if (!chance(groove.density)) continue;
-      const noteTime = when + n.beat * beatLen;
-      pluck(n.midi, noteTime, n.duration, n.velocity, n.pan);
-
-      if (groove.pianoStyle === "arpeggio" && chance(0.38)) {
-        pluck(n.midi + 12, noteTime + beatLen * 0.5,
-          n.duration * 0.65, n.velocity * 0.48, -n.pan);
-      }
-      if (groove.pianoStyle === "fragments" && chance(0.18)) {
-        pluck(n.midi - 12, noteTime + beatLen * 0.75,
-          n.duration * 0.55, n.velocity * 0.5, -n.pan);
-      }
-    }
-
-    // Bass rhythm changes between tracks.
-    if (groove.bassStyle !== "sparse" || chance(0.55)) {
-      bassNote(chordRoot - 12, when, beatLen * 1.5, 0.09);
-      if (groove.bassStyle === "walking" && chance(0.75)) {
-        const passing = chordRoot - 12 + pick([2, 3, 5, 7]);
-        bassNote(passing, when + beatLen * 2.5, beatLen * 0.65, 0.05);
-      } else if (groove.bassStyle === "root" && chance(0.55)) {
-        bassNote(chordRoot - 12, when + beatLen * 2, beatLen, 0.055);
-      }
-    }
-
-    // Softer, less frequent drums.
-    const drum = groove.drumStyle;
-    if (drum !== "sparse" && chance(drum === "steady" ? 0.9 : 0.7)) {
-      kick(when, drum === "soft" ? 0.055 : 0.075);
-    }
-    if (drum !== "sparse" && chance(0.48)) {
-      kick(when + beatLen * 2, 0.055);
-    }
-    if (drum === "steady" || (drum !== "sparse" && chance(0.45))) {
-      noiseHit(when + beatLen, "snare", 0.013);
-      noiseHit(when + beatLen * 3, "snare", 0.015);
-    } else if (chance(0.22)) {
-      noiseHit(when + beatLen * pick([1, 2, 3]), "snare", 0.012);
-    }
-    for (let i = 0; i < 8; i++) {
-      if (chance(drum === "dusty" ? 0.32 : 0.42)) {
-        noiseHit(when + i * beatLen * 0.5, "hat", rand(0.003, 0.007));
-      }
-    }
-
-    bar++;
-    return beatLen * 4;
-  }
-
-  function scheduler() {
-    if (!playing) return;
-    const horizon = ctx.currentTime + 0.22;
-
-    while (nextTime < horizon) {
-      if (nextTrackRequested) {
-        nextTrackRequested = false;
-        newTrack();
-      }
-
-      // Change musical language every few bars, not just the displayed title.
-      if (bar > 0 && bar % 8 === 0) {
-        groove.density = rand(0.42, 0.8);
-        groove.pianoStyle = pick(["melodic", "arpeggio", "spacious", "fragments"]);
-        groove.bassStyle = pick(["root", "walking", "sparse"]);
-        groove.drumStyle = pick(["soft", "dusty", "sparse", "steady", "broken"]);
-      }
-
-      nextTime += scheduleBar(nextTime);
-    }
-  }
-
-  async function start() {
-    if (playing) return;
-    $("toggle").disabled = true;
-    setStatus("Tuning in...");
-
-    try {
-      init();
-      await ctx.resume();
-      await loadAmbience();
-
-      if (!ambientSource) {
-        ambientSource = ctx.createBufferSource();
-        ambientSource.buffer = ambientBuffer;
-        ambientSource.loop = true;
-        ambientSource.connect(ambientBus);
-        ambientSource.start();
-      }
-
-      const now = ctx.currentTime;
-      ambientBus.gain.cancelScheduledValues(now);
-      ambientBus.gain.setTargetAtTime(0.035, now, 0.5);
-      musicBus.gain.cancelScheduledValues(now);
-      musicBus.gain.setTargetAtTime(1.0, now, 0.6);
-
-      playing = true;
-      newTrack();
-      nextTime = ctx.currentTime + 0.15;
-      schedulerTimer = setInterval(scheduler, 25);
-      $("toggle").textContent = "Ⅱ Pause radio";
-      setStatus("On air · new melodies, endlessly");
-    } catch (e) {
-      console.error(e);
-      setStatus("Couldn't load Presets/ambience.mp3. Check the folder.");
-      playing = false;
-    } finally {
-      $("toggle").disabled = false;
-    }
-  }
-
-  function stop() {
-    playing = false;
-    clearInterval(schedulerTimer);
-    schedulerTimer = null;
-
+  async function initialize() {
     if (ctx) {
-      const now = ctx.currentTime;
-      musicBus.gain.cancelScheduledValues(now);
-      musicBus.gain.setTargetAtTime(0, now, 0.08);
-      ambientBus.gain.cancelScheduledValues(now);
-      ambientBus.gain.setTargetAtTime(0, now, 0.08);
-    }
-
-    setTimeout(() => {
-      if (playing) return;
-      try {
-        if (ambientSource) {
-          ambientSource.stop();
-          ambientSource.disconnect();
-          ambientSource = null;
-        }
-        for (const node of activeNodes) {
-          try { node.stop(); } catch (_) {}
-        }
-        activeNodes.clear();
-      } catch (_) {}
-    }, 400);
-
-    $("toggle").textContent = "▶ Start radio";
-    setStatus("Radio is sleeping.");
-  }
-
-  $("toggle").addEventListener("click", () => {
-    if (playing) stop();
-    else start();
-  });
-
-  $("next").addEventListener("click", () => {
-    if (!playing) {
-      start().then(() => {
-        nextTrackRequested = true;
-      });
+      if (ctx.state === "suspended") await ctx.resume();
       return;
     }
-    nextTrackRequested = true;
-    setStatus("Finding another little world...");
+
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    master = ctx.createGain();
+    master.gain.value = Number(volumeSlider.value);
+    master.connect(ctx.destination);
+
+    setStatus("Загружаем аудиозаписи…");
+
+    const entries = Object.entries(FILES);
+
+    const loaded = await Promise.all(entries.map(async ([name, url]) => {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Не удалось загрузить " + url);
+      }
+
+      const data = await response.arrayBuffer();
+      const decoded = await ctx.decodeAudioData(data);
+      return [name, decoded];
+    }));
+
+    buffers = Object.fromEntries(loaded);
+  }
+
+  function stopGroup(group, fadeSeconds = 1.5) {
+    if (!group) return;
+
+    const now = ctx.currentTime;
+    const end = now + fadeSeconds;
+
+    group.layers.forEach(layer => {
+      try {
+        layer.gain.gain.cancelScheduledValues(now);
+        layer.gain.gain.setValueAtTime(
+          layer.gain.gain.value, now
+        );
+        layer.gain.gain.linearRampToValueAtTime(0, end);
+      } catch (_) {}
+
+      try {
+        layer.source.stop(end + 0.08);
+      } catch (_) {}
+    });
+  }
+
+  function makeLayer(name, group, options) {
+    const buffer = buffers[name];
+    if (!buffer) return null;
+
+    const source = ctx.createBufferSource();
+    const gain = ctx.createGain();
+
+    source.buffer = buffer;
+    source.loop = true;
+
+    // Pick a new section on each track. Use the same relative
+    // position for the musical layers to help preserve alignment.
+    const segmentLength = Math.min(
+      options.segmentLength || 16,
+      buffer.duration
+    );
+
+    const maxStart = Math.max(0, buffer.duration - segmentLength);
+    const start = maxStart * options.startFraction;
+
+    source.loopStart = start;
+    source.loopEnd = start + segmentLength;
+
+    // Tiny changes only: enough to refresh the texture, not
+    // enough to make the recordings sound unnaturally pitched.
+    source.playbackRate.value = options.rate || 1;
+
+    gain.gain.value = 0;
+    source.connect(gain);
+    gain.connect(group.bus);
+
+    source.start(0, start);
+    return { source, gain, name };
+  }
+
+  function chooseSection() {
+    const musicalNames = ["piano", "drums", "bass"];
+    const shortest = Math.min(
+      ...musicalNames.map(name => buffers[name].duration)
+    );
+
+    const segmentLength = Math.min(18, shortest);
+    const maxStart = Math.max(0, shortest - segmentLength);
+
+    return {
+      segmentLength,
+      startFraction: Math.random(),
+      maxStart
+    };
+  }
+
+  function startTrack(fadeIn = 2.5) {
+    const now = ctx.currentTime;
+    const section = chooseSection();
+
+    const bus = ctx.createGain();
+    bus.gain.value = 1;
+    bus.connect(master);
+
+    const group = { bus, layers: [] };
+
+    const rate = random(0.985, 1.015);
+
+    // Recorded samples stay at the centre of the sound.
+    // Gains are deliberately restrained so the rain won't
+    // drown out the music.
+    const settings = {
+      piano: random(0.32, 0.47),
+      drums: random(0.12, 0.22),
+      bass: random(0.16, 0.27)
+    };
+
+    ["piano", "drums", "bass"].forEach(name => {
+      const layer = makeLayer(name, group, {
+        segmentLength: section.segmentLength,
+        startFraction: section.startFraction,
+        rate
+      });
+
+      if (layer) {
+        layer.gain.gain.setValueAtTime(0, now);
+        layer.gain.gain.linearRampToValueAtTime(
+          settings[name], now + fadeIn
+        );
+        group.layers.push(layer);
+      }
+    });
+
+    // Ambient audio is much quieter than the instruments.
+    const ambience = makeLayer("ambience", group, {
+      segmentLength: buffers.ambience.duration,
+      startFraction: 0,
+      rate: 1
+    });
+
+    if (ambience) {
+      ambience.gain.gain.setValueAtTime(0, now);
+      ambience.gain.gain.linearRampToValueAtTime(
+        0.035, now + fadeIn + 1
+      );
+      group.layers.push(ambience);
+    }
+
+    return { ...group, settings };
+  }
+
+  function varyArrangement() {
+    if (!playing || !currentTrack) return;
+
+    const now = ctx.currentTime;
+    const group = currentTrack;
+
+    // Small arrangement changes: a layer can briefly soften,
+    // then return. No abrupt cuts.
+    group.layers.forEach(layer => {
+      let target;
+
+      if (layer.name === "ambience") {
+        target = random(0.018, 0.038);
+      } else {
+        const base = group.settings[layer.name] || 0.2;
+        const drop = Math.random() < 0.22;
+        target = drop ? base * random(0.12, 0.35)
+                      : base * random(0.75, 1.08);
+      }
+
+      const param = layer.gain.gain;
+      param.cancelScheduledValues(now);
+      param.setValueAtTime(param.value, now);
+      param.linearRampToValueAtTime(target, now + random(2, 4));
+    });
+
+    // The next small change comes after a variable interval.
+    clearTimeout(variationTimer);
+    variationTimer = setTimeout(
+      varyArrangement,
+      random(9000, 18000)
+    );
+  }
+
+  async function play() {
+    if (loading) return;
+    loading = true;
+    playButton.disabled = true;
+
+    const thisRequest = ++requestId;
+
+    try {
+      await initialize();
+      if (thisRequest !== requestId) return;
+
+      if (!playing) {
+        playing = true;
+        currentTrack = startTrack(3);
+        trackNumber++;
+
+        trackTitle.textContent = titles[
+          Math.floor(Math.random() * titles.length)
+        ];
+
+        playButton.textContent = "Ⅱ Pause";
+        setStatus("Playing · midnight mood");
+
+        clearTimeout(variationTimer);
+        variationTimer = setTimeout(varyArrangement, 12000);
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("Ошибка загрузки. Проверь папку Presets и имена файлов.");
+      playing = false;
+    } finally {
+      loading = false;
+      playButton.disabled = false;
+    }
+  }
+
+  function pause() {
+    playing = false;
+    clearTimeout(variationTimer);
+
+    if (currentTrack) {
+      stopGroup(currentTrack, 1.2);
+      currentTrack = null;
+    }
+
+    playButton.textContent = "▶ Play";
+    setStatus("Paused");
+  }
+
+  async function nextTrack() {
+    if (loading) return;
+    loading = true;
+    nextButton.disabled = true;
+
+    try {
+      await initialize();
+
+      if (!playing) {
+        playing = true;
+        currentTrack = startTrack(2.5);
+        playButton.textContent = "Ⅱ Pause";
+      } else {
+        const oldTrack = currentTrack;
+        const newTrack = startTrack(3.5);
+
+        currentTrack = newTrack;
+        stopGroup(oldTrack, 3.5);
+      }
+
+      trackNumber++;
+      trackTitle.textContent = titles[
+        Math.floor(Math.random() * titles.length)
+      ];
+
+      setStatus("New mix · take your time");
+
+      clearTimeout(variationTimer);
+      variationTimer = setTimeout(varyArrangement, 12000);
+    } catch (error) {
+      console.error(error);
+      setStatus("Не удалось загрузить музыку. Проверь файлы в Presets.");
+    } finally {
+      loading = false;
+      nextButton.disabled = false;
+    }
+  }
+
+  playButton.addEventListener("click", () => {
+    if (playing) pause();
+    else play();
   });
 
-  $("volume").addEventListener("input", setVolume);
-  setStatus("Radio is sleeping.");
+  nextButton.addEventListener("click", nextTrack);
+
+  volumeSlider.addEventListener("input", () => {
+    if (master && ctx) {
+      master.gain.setTargetAtTime(
+        Number(volumeSlider.value),
+        ctx.currentTime,
+        0.04
+      );
+    }
+  });
 })();
 </script>
 </body>
