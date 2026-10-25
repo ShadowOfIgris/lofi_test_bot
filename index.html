@@ -4,717 +4,418 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Midnight FM — Dream Composer</title>
+<title>Midnight FM — v6</title>
 <style>
 :root {
   color-scheme: dark;
-  --text:#ecebff;
-  --muted:#a1a3c4;
-  --accent:#b7a5ff;
-  --panel:#15172a;
+  --bg: #090b16;
+  --panel: rgba(25, 29, 54, .8);
+  --line: #ffffff18;
+  --text: #eff0ff;
+  --muted: #9da5c4;
+  --accent: #aaa1ff;
+  --teal: #82d9d0;
 }
-* { box-sizing:border-box }
+* { box-sizing: border-box; }
 body {
-  margin:0; min-height:100vh; padding:24px 14px;
-  display:flex; justify-content:center;
-  background:radial-gradient(ellipse at 50% 0%,#343052 0%,#15172b 48%,#080a14 100%);
-  color:var(--text); font:15px system-ui,sans-serif;
+  margin: 0; min-height: 100vh; color: var(--text);
+  background: radial-gradient(ellipse at 50% 0%, #282448, #11152b 48%, #080a13);
+  font: 15px/1.5 system-ui, sans-serif;
 }
-main { width:100%; max-width:660px }
-header { text-align:center; padding:20px 0 25px }
-.logo { color:#c4b8ff; font-size:11px; letter-spacing:5px }
-h1 { font-size:clamp(34px,8vw,49px); margin:12px 0 5px; letter-spacing:2px }
-.subtitle { color:var(--muted); font-size:14px }
-.sky {
-  height:165px; position:relative; overflow:hidden; border-radius:18px;
-  margin-bottom:16px;
-  background:linear-gradient(#252644,#6d5a7c 62%,#29263f);
+.wrap { max-width: 1000px; margin: auto; padding: 28px 18px 45px; }
+header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:22px; }
+.brand { display:flex; gap:12px; align-items:center; }
+.logo { display:grid; place-items:center; width:44px;height:44px;border:1px solid #aaa1ff55;border-radius:15px;font-size:24px;background:#aaa1ff14; }
+.eyebrow { color:var(--teal); font-size:10px; letter-spacing:.2em; text-transform:uppercase; }
+h1 { font-size:20px; margin:0; letter-spacing:.04em; }
+.status { font-size:11px;color:var(--muted); }
+.dot { display:inline-block;width:7px;height:7px;border-radius:50%;background:#6d7592;margin-right:6px; }
+.dot.on { background:var(--teal);box-shadow:0 0 10px var(--teal); }
+.hero {
+  min-height:280px; padding:28px; border:1px solid var(--line);border-radius:24px;
+  position:relative;overflow:hidden;margin-bottom:18px;
+  background:linear-gradient(110deg,#12172bed,#171a35b5);
 }
-.moon {
-  position:absolute; width:52px; height:52px; top:22px; right:18%;
-  border-radius:50%; background:#fff0d8; box-shadow:0 0 40px #ffe6d577;
-}
-.city { position:absolute; inset:auto 0 0; height:105px; display:flex; gap:5px; padding:0 8px; align-items:flex-end }
-.building { flex:1; background:#111426; position:relative; border-radius:3px 3px 0 0 }
-.building:after {
-  content:""; position:absolute; inset:9px 5px;
-  background:repeating-linear-gradient(0deg,transparent 0 10px,#e6c1ff55 11px 14px);
-}
-.panel {
-  padding:19px; margin:13px 0; border-radius:18px;
-  background:#121529ed; border:1px solid #ffffff12;
-}
-.label { font-size:10px; letter-spacing:2px; color:var(--muted); margin-bottom:13px }
-.moods { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px }
-button { font:inherit; cursor:pointer; transition:.2s }
-.mood {
-  padding:13px 10px; text-align:left; color:var(--text);
-  background:#1b1d33; border:1px solid #ffffff16; border-radius:12px;
-}
-.mood span { display:block; margin-top:5px; font-size:12px; color:var(--muted) }
-.mood.active { border-color:var(--accent); background:#8273c52d }
-.now { display:flex; align-items:center; gap:15px }
-.disc {
-  flex-shrink:0; width:65px; height:65px; border-radius:50%;
-  display:grid; place-items:center; border:2px solid #777090;
-  background:repeating-radial-gradient(circle,#27283c 0 4px,#101221 5px 8px);
-}
-.disc:after { content:""; width:14px; height:14px; border-radius:50%; background:#c4b8ff }
-.disc.playing { animation:spin 4s linear infinite }
-@keyframes spin { to { transform:rotate(360deg) } }
-.track { font-size:19px; font-weight:650; overflow-wrap:anywhere }
-.status { color:var(--muted); font-size:12px; margin-top:5px }
-.controls { display:flex; gap:9px; margin-top:18px }
-.mainbtn {
-  flex:1; border:0; border-radius:12px; padding:14px;
-  color:#111126; background:var(--accent); font-weight:700;
-}
-.stopbtn { padding:14px 18px; border:1px solid #ffffff20; border-radius:12px; background:#22243a; color:var(--text) }
-.setting { margin:20px 0 }
-.setting:last-child { margin-bottom:0 }
-.settingtop { display:flex; justify-content:space-between; margin-bottom:9px; gap:12px; font-size:14px }
-.settingtop output { color:#c8bdff; font-variant-numeric:tabular-nums }
-input[type=range] { width:100%; accent-color:var(--accent) }
-.info { color:var(--muted); font-size:12px; line-height:1.6 }
-footer { text-align:center; color:#8587a8; font-size:11px; padding:16px }
-@media(max-width:420px) {
-  .panel { padding:15px }
-  .mood { padding:12px 8px }
-  .stopbtn { padding:12px }
-}
+.moon { position:absolute;right:13%;top:30px;width:85px;height:85px;border-radius:50%;background:linear-gradient(135deg,#fff4db,#b7b8e8);box-shadow:0 0 60px #aaa1ff40; }
+.skyline { position:absolute;bottom:0;left:0;right:0;height:100px;display:flex;align-items:flex-end;justify-content:flex-end;gap:5px;opacity:.55;pointer-events:none; }
+.building { width:5%;min-width:18px;background:linear-gradient(#41456c,#171a32);border:1px solid #ffffff0c;position:relative; }
+.building:after { content:"";position:absolute;inset:8px 4px;background:repeating-linear-gradient(0deg,transparent 0 12px,#a6baff27 13px 15px),repeating-linear-gradient(90deg,transparent 0 10px,#a6baff1b 11px 12px); }
+.heroCopy { position:relative;z-index:1;max-width:560px; }
+.tag { display:inline-block;border:1px solid #aaa1ff45;color:#d9d5ff;border-radius:30px;padding:5px 10px;font-size:10px;letter-spacing:.12em; }
+h2 { font-size:clamp(30px,5vw,44px);line-height:1.1;letter-spacing:-.04em;margin:18px 0 10px; }
+p { color:#bbc1db; }
+.now { position:relative;z-index:1;margin-top:24px; }
+.small { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.16em; }
+.track { font-size:17px;font-weight:700;margin-top:3px; }
+.sub { font-size:12px;color:var(--muted); }
+.grid { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+.panel { min-width:0;padding:21px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(12px); }
+h3 { margin:0 0 4px;font-size:15px; }
+.desc { font-size:12px;color:var(--muted);margin:0 0 18px; }
+.buttons { display:flex;flex-wrap:wrap;gap:9px; }
+button { cursor:pointer;border:1px solid var(--line);border-radius:11px;padding:11px 14px;background:#ffffff08;color:var(--text);font-weight:650; }
+button:hover { border-color:#aaa1ff99; }
+button.primary { background:linear-gradient(135deg,#b0a7ff,#8278db);color:#111224;border:0; }
+button:disabled { opacity:.4;cursor:not-allowed; }
+.meter { height:4px;background:#ffffff12;border-radius:9px;overflow:hidden;margin-top:19px; }
+.meterFill { height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--teal)); }
+.hint { padding:12px;border-radius:12px;border:1px solid #aaa1ff26;background:#aaa1ff0a;color:#c5c9e2;font-size:12px;margin-top:14px; }
+.sliders { display:grid;gap:17px; }
+.sliderHead { display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px; }
+.sliderHead span { color:#c8c4ff; }
+input[type=range] { width:100%;accent-color:var(--accent); }
+.layer { display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #ffffff0c; }
+.layer:last-of-type { border:0; }
+.layer strong { display:block;font-size:13px; }
+.layer small { display:block;color:var(--muted);font-size:11px;overflow-wrap:anywhere; }
+.fileState { font-size:11px;color:var(--teal); }
+.error { white-space:pre-wrap;color:#ffb7c3;font-size:12px;margin-top:10px; }
+.footer { color:#7e87a9;font-size:11px;text-align:center;margin-top:20px; }
+@media(max-width:700px) { .grid{grid-template-columns:1fr}.hero{padding:22px}.moon{width:65px;height:65px;right:7%}.status{font-size:0}.wrap{padding:18px 12px 32px} }
 </style>
 </head>
 <body>
-<main>
+<div class="wrap">
 <header>
-  <div class="logo">YOUR PERSONAL NIGHT RADIO</div>
-  <h1>MIDNIGHT FM</h1>
-  <div class="subtitle">A little dream in a city that never sleeps.</div>
+  <div class="brand">
+    <div class="logo">☾</div>
+    <div><div class="eyebrow">Endless night radio</div><h1>MIDNIGHT FM <span style="color:var(--accent)">/ v6</span></h1></div>
+  </div>
+  <div class="status"><span class="dot" id="dot"></span><span id="status">РАДИО ОСТАНОВЛЕНО</span></div>
 </header>
 
-<div class="sky" aria-hidden="true">
-  <div class="moon"></div>
-  <div class="city" id="city"></div>
-</div>
-
-<section class="panel">
-  <div class="label">CHOOSE YOUR NIGHT</div>
-  <div class="moods">
-    <button class="mood active" data-mood="dream">✦ Dream City<span>Мечты и огни</span></button>
-    <button class="mood" data-mood="rain">☂ Rainy Window<span>Дождь за стеклом</span></button>
-    <button class="mood" data-mood="drive">⌁ Night Drive<span>Дорога без цели</span></button>
-    <button class="mood" data-mood="cafe">☕ Quiet Cafe<span>Последний посетитель</span></button>
+<section class="hero">
+  <div class="moon"></div><div class="skyline" id="skyline"></div>
+  <div class="heroCopy">
+    <span class="tag">DREAM CITY · NO VOCALS</span>
+    <h2>Музыка для тех,<br>кто ещё не спит.</h2>
+    <p>Тихие мелодии, дождливые окна и огни города далеко внизу.</p>
   </div>
-</section>
-
-<section class="panel">
   <div class="now">
-    <div class="disc" id="disc"></div>
-    <div>
-      <div class="track" id="track">A City Made of Dreams</div>
-      <div class="status" id="status">Радио выключено · бесконечный эфир</div>
+    <div class="small">Сейчас в эфире</div>
+    <div class="track" id="track">Ночная сторона города</div>
+    <div class="sub" id="trackSub">Подключение аудиослоёв…</div>
+  </div>
+</section>
+
+<div class="grid">
+  <section class="panel">
+    <h3>Эфир</h3><p class="desc">Плавное включение и вариации аранжировки</p>
+    <div class="buttons">
+      <button class="primary" id="play">▶ Начать эфир</button>
+      <button id="stop" disabled>Ⅱ Пауза</button>
+      <button id="variation">↻ Новая вариация</button>
     </div>
-  </div>
-  <div class="controls">
-    <button class="mainbtn" id="play">▶ Включить радио</button>
-    <button class="stopbtn" id="stop">■ Стоп</button>
-  </div>
-</section>
+    <div class="meter"><div class="meterFill" id="meter"></div></div>
+    <div class="hint" id="message">Загружаем файлы из папки Presets…</div>
+    <div class="error" id="error"></div>
+  </section>
 
-<section class="panel">
-  <div class="label">STUDIO MIXER</div>
-  <div class="setting">
-    <div class="settingtop"><label for="musicVolume">Музыка</label><output id="musicValue">75%</output></div>
-    <input id="musicVolume" type="range" min="0" max="100" value="75">
-  </div>
-  <div class="setting">
-    <div class="settingtop"><label for="ambienceVolume">Ночная атмосфера</label><output id="ambienceValue">30%</output></div>
-    <input id="ambienceVolume" type="range" min="0" max="100" value="30">
-  </div>
-  <div class="setting">
-    <div class="settingtop"><label for="masterVolume">Общая громкость</label><output id="masterValue">80%</output></div>
-    <input id="masterVolume" type="range" min="0" max="100" value="80">
-  </div>
-</section>
+  <section class="panel">
+    <h3>Микшер</h3><p class="desc">Громкость каждого слоя отдельно</p>
+    <div class="sliders">
+      <div><div class="sliderHead"><label for="music">Музыка</label><span id="musicVal">78%</span></div><input id="music" type="range" min="0" max="100" value="78"></div>
+      <div><div class="sliderHead"><label for="beat">Ритм</label><span id="beatVal">42%</span></div><input id="beat" type="range" min="0" max="100" value="42"></div>
+      <div><div class="sliderHead"><label for="bass">Бас</label><span id="bassVal">36%</span></div><input id="bass" type="range" min="0" max="100" value="36"></div>
+      <div><div class="sliderHead"><label for="amb">Атмосфера</label><span id="ambVal">32%</span></div><input id="amb" type="range" min="0" max="100" value="32"></div>
+      <div><div class="sliderHead"><label for="master">Общая громкость</label><span id="masterVal">70%</span></div><input id="master" type="range" min="0" max="100" value="70"></div>
+    </div>
+  </section>
 
-<section class="panel">
-  <div class="label">TONIGHT'S NOTE</div>
-  <div class="info" id="note">Неспешная музыка для прогулки, когда город кажется немного нереальным.</div>
-</section>
+  <section class="panel">
+    <h3>Аудиослои</h3><p class="desc">Автоматически загружаются из папки Presets</p>
+    <div class="layer"><div><strong>01 · Пианино</strong><small id="pianoState">Presets/piano.wav</small></div><span class="fileState" id="pianoOK">Загрузка…</span></div>
+    <div class="layer"><div><strong>02 · Мягкий бит</strong><small id="drumsState">Presets/drums.wav</small></div><span class="fileState" id="drumsOK">Загрузка…</span></div>
+    <div class="layer"><div><strong>03 · Бас</strong><small id="bassState">Presets/bass.wav</small></div><span class="fileState" id="bassOK">Загрузка…</span></div>
+    <div class="layer"><div><strong>04 · Атмосфера</strong><small id="ambState">Presets/ambience.mp3</small></div><span class="fileState" id="ambOK">Загрузка…</span></div>
+    <div class="hint">Если файл не загрузится при открытии HTML двойным щелчком, запусти проект через локальный сервер или размести его на Vercel.</div>
+  </section>
 
-<footer>GENERATIVE DREAM MUSIC · TAKE YOUR TIME</footer>
-</main>
+  <section class="panel">
+    <h3>О радио</h3><p class="desc">Ночная музыка без вокала</p>
+    <p style="font-size:13px">Каждый слой играет отдельно. Громкость меняется плавно, а аранжировка периодически становится тише или плотнее.</p>
+    <p style="font-size:13px">Для более интересного результата используй совместимые лупы одного темпа. Четыре разных лупа сами по себе не гарантируют музыкальной гармонии.</p>
+    <div class="hint">Версия v6 использует реальные аудиофайлы. Это основа для дальнейшего процедурного секвенсора.</div>
+  </section>
+</div>
+<div class="footer">MIDNIGHT FM · A small radio for a very large night</div>
+</div>
 
 <script>
 (() => {
-"use strict";
+  const $ = id => document.getElementById(id);
 
-const $ = id => document.getElementById(id);
-const BPM = 72;
-const STEP = 60 / BPM / 2;
+  const defs = [
+    {id:'piano', path:'Presets/piano.wav', slider:'music', label:'pianoOK', title:'Пианино'},
+    {id:'drums', path:'Presets/drums.wav', slider:'beat', label:'drumsOK', title:'Бит'},
+    {id:'bass', path:'Presets/bass.wav', slider:'bass', label:'bassOK', title:'Бас'},
+    {id:'amb', path:'Presets/ambience.mp3', slider:'amb', label:'ambOK', title:'Атмосфера'}
+  ];
 
-const scenes = {
-  dream: {
-    label:"Dream City",
-    note:"Неоновые отражения, далёкие окна и мысли, которые не хочется заканчивать.",
-    wave:"triangle",
-    chords:[[0,3,7,10],[0,3,7,14],[-2,2,5,9],[-4,0,3,7]],
-    roots:[48,45,41,43],
-    motifs:[
-      [0,3,7,5,3,0,-2,0],
-      [7,10,12,10,7,5,3,0],
-      [3,7,10,7,5,3,0,-2],
-      [0,5,7,10,7,5,3,null]
-    ],
-    scale:[0,2,3,5,7,9,10],
-    ambience:"rain"
-  },
-  rain: {
-    label:"Rainy Window",
-    note:"Капли на стекле, тёплый свет и мелодии, которые почти растворяются в воздухе.",
-    wave:"sine",
-    chords:[[0,3,7,10],[0,3,7,14],[-2,1,5,8],[-4,0,3,7]],
-    roots:[48,44,41,46],
-    motifs:[
-      [0,3,7,10,7,3,2,null],
-      [7,10,12,10,7,5,3,null],
-      [3,5,7,10,7,5,3,0],
-      [0,3,5,7,5,3,null,null]
-    ],
-    scale:[0,2,3,5,7,8,10],
-    ambience:"rain"
-  },
-  drive: {
-    label:"Night Drive",
-    note:"Мокрый асфальт, пустые перекрёстки и ощущение, что можно ехать куда угодно.",
-    wave:"triangle",
-    chords:[[0,3,7,10],[0,3,7,12],[-2,2,5,9],[-5,-1,2,7]],
-    roots:[45,41,43,40],
-    motifs:[
-      [0,3,7,10,7,3,5,7],
-      [7,10,12,10,7,5,3,5],
-      [3,7,10,12,10,7,5,3],
-      [0,5,7,10,12,10,7,null]
-    ],
-    scale:[0,2,3,5,7,9,10],
-    ambience:"road"
-  },
-  cafe: {
-    label:"Quiet Cafe",
-    note:"Чашка уже остыла, за окном тихо, а домой пока не хочется.",
-    wave:"sine",
-    chords:[[0,4,7,11],[0,4,7,14],[-2,2,5,9],[-4,0,4,7]],
-    roots:[48,45,43,41],
-    motifs:[
-      [0,4,7,11,7,4,2,null],
-      [7,11,12,11,7,4,2,0],
-      [4,7,11,7,5,4,2,null],
-      [0,2,4,7,11,7,4,null]
-    ],
-    scale:[0,2,4,5,7,9,11],
-    ambience:"cafe"
+  const titles = [
+    'Ночная сторона города','Окна напротив','Последний автобус',
+    'Дождь на стекле','Свет в пустой комнате','Пока город спит',
+    'Письма без адреса','Тихие огни','Никто не ждёт звонка',
+    'Синие отражения','Улицы после полуночи'
+  ];
+
+  const state = {
+    ctx:null, master:null, compressor:null,
+    layers:{}, playing:false, timer:null,
+    cycle:0, variation:0, titleIndex:-1
+  };
+
+  for(let i=0;i<18;i++){
+    const b=document.createElement('div');
+    b.className='building';
+    b.style.height=(20+Math.random()*75)+'px';
+    $('skyline').appendChild(b);
   }
-};
 
-const titles = [
-  "Neon Afterglow","Letters Never Sent","The Last Blue Hour",
-  "Somewhere Between Us","Windows in the Rain","A City Made of Dreams",
-  "Empty Streets, Warm Lights","When the World Slows Down",
-  "Midnight on the Rooftop","Softly, the City Sleeps",
-  "One More Train Home","Clouds Over Yesterday","A Place I Almost Remember",
-  "Lights Across the River","The Long Way Home","Nobody Knows It's Late",
-  "A Dream with Open Windows","Blue Lights and Quiet Hearts",
-  "Nothing Urgent Tonight","The Hours Between","A Small Forgotten Summer",
-  "Falling Asleep in Transit","The Other Side of Midnight",
-  "Rain on an Empty Avenue","A Memory Without a Name",
-  "Distant Rooms","The Last Cafe Open","Almost Home",
-  "The Moon Above the Overpass","A Night That Stayed"
-];
+  function message(text){ $('message').textContent=text; }
+  function error(text){ $('error').textContent=text||''; }
 
-let audio = null;
-let master = null;
-let musicBus = null;
-let ambienceBus = null;
-let musicFilter = null;
-let timer = null;
-let running = false;
-let nextTime = 0;
-let stepCount = 0;
-let currentMood = "dream";
-let trackTitle = "";
-let lastTitle = "";
-let phraseNumber = 0;
-let songNumber = 0;
-let currentSection = "intro";
-let noiseSource = null;
-let ambienceFilter = null;
-let ambienceGain = null;
-
-const rand = arr => arr[Math.floor(Math.random() * arr.length)];
-const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-const midi = n => 440 * Math.pow(2, (n - 69) / 12);
-
-function makeCity() {
-  for (let i = 0; i < 24; i++) {
-    const b = document.createElement("div");
-    b.className = "building";
-    b.style.height = (25 + ((i * 37 + 19) % 72)) + "px";
-    $("city").appendChild(b);
+  function updateStatus(on){
+    $('dot').classList.toggle('on',on);
+    $('status').textContent=on?'ЭФИР ИДЁТ':'РАДИО ОСТАНОВЛЕНО';
   }
-}
 
-function chooseTitle() {
-  let title = rand(titles);
-  if (titles.length > 1) {
-    while (title === lastTitle) title = rand(titles);
+  function volume(layer){
+    return Number($(layer.def.slider).value)/100;
   }
-  lastTitle = title;
-  return title;
-}
 
-function updateUI() {
-  $("track").textContent = trackTitle;
-  $("status").textContent = running
-    ? "Сейчас играет · " + scenes[currentMood].label
-    : "Радио выключено · бесконечный эфир";
-  $("note").textContent = scenes[currentMood].note;
+  async function initAudio(){
+    if(!state.ctx){
+      const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContextClass) throw new Error('Браузер не поддерживает Web Audio API.');
+      state.ctx=new AudioContextClass();
+      state.master=state.ctx.createGain();
+      state.master.gain.value=Number($('master').value)/100;
 
-  document.querySelectorAll(".mood").forEach(b => {
-    b.classList.toggle("active", b.dataset.mood === currentMood);
-  });
-}
+      state.compressor=state.ctx.createDynamicsCompressor();
+      state.compressor.threshold.value=-18;
+      state.compressor.knee.value=18;
+      state.compressor.ratio.value=3;
+      state.compressor.attack.value=.015;
+      state.compressor.release.value=.25;
 
-function setSmooth(param, value, time, duration = 0.12) {
-  param.cancelScheduledValues(time);
-  param.setTargetAtTime(Math.max(0.0001, value), time, duration);
-}
+      state.master.connect(state.compressor);
+      state.compressor.connect(state.ctx.destination);
 
-function makeNoise(ctx, seconds = 3) {
-  const buffer = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  let previous = 0;
-
-  for (let i = 0; i < data.length; i++) {
-    previous = previous * 0.96 + (Math.random() * 2 - 1) * 0.04;
-    data[i] = previous * 3.5;
+      defs.forEach(def=>{
+        const gain=state.ctx.createGain();
+        gain.gain.value=0;
+        gain.connect(state.master);
+        state.layers[def.id]={def,buffer:null,source:null,gain,loaded:false};
+      });
+    }
+    if(state.ctx.state==='suspended') await state.ctx.resume();
   }
-  return buffer;
-}
 
-function tone(freq, time, duration, volume, wave = "sine", options = {}) {
-  if (!audio || !musicBus) return;
+  function rampGain(layer,value,seconds=1.5){
+    if(!state.ctx||!layer)return;
+    const param=layer.gain.gain;
+    const now=state.ctx.currentTime;
+    param.cancelScheduledValues(now);
+    param.setValueAtTime(param.value,now);
+    param.linearRampToValueAtTime(Math.max(0,value),now+seconds);
+  }
 
-  const osc = audio.createOscillator();
-  const gain = audio.createGain();
-  const filter = audio.createBiquadFilter();
+  async function loadLayer(def){
+    const label=$(def.label);
+    try{
+      const response=await fetch(def.path,{cache:'no-store'});
+      if(!response.ok) throw new Error('HTTP '+response.status);
+      const data=await response.arrayBuffer();
+      const buffer=await state.ctx.decodeAudioData(data);
+      const layer=state.layers[def.id];
+      layer.buffer=buffer;
+      layer.loaded=true;
+      label.textContent='Готово';
+      label.style.color='var(--teal)';
+      $(def.id+'State').textContent=def.path+' · '+Math.round(buffer.duration)+' сек.';
+      return true;
+    }catch(e){
+      label.textContent='Не найден';
+      label.style.color='#ffb7c3';
+      error(
+        'Не удалось загрузить '+def.path+'.\n'+
+        'Проверь имя файла и его расширение.\n'+
+        'Подробности: '+e.message
+      );
+      return false;
+    }
+  }
 
-  osc.type = wave;
-  osc.frequency.setValueAtTime(freq, time);
-  filter.type = "lowpass";
-  filter.frequency.value = options.cutoff || 4500;
-  filter.Q.value = 0.5;
+  function makeSource(layer,fadeIn=true){
+    if(!layer.buffer||!state.ctx)return;
+    if(layer.source){
+      try{layer.source.stop();}catch(e){}
+      layer.source=null;
+    }
+    const source=state.ctx.createBufferSource();
+    source.buffer=layer.buffer;
+    source.loop=true;
+    source.connect(layer.gain);
+    layer.source=source;
 
-  const attack = options.attack || 0.025;
-  gain.gain.setValueAtTime(0.0001, time);
-  gain.gain.linearRampToValueAtTime(Math.max(0.0002, volume), time + attack);
-  gain.gain.setTargetAtTime(
-    0.0001,
-    time + Math.max(attack + 0.02, duration * (options.releasePoint || 0.7)),
-    options.release || Math.max(0.05, duration * 0.25)
-  );
+    const target=volume(layer);
+    const now=state.ctx.currentTime;
+    layer.gain.gain.cancelScheduledValues(now);
+    layer.gain.gain.setValueAtTime(0,now);
+    if(fadeIn)layer.gain.gain.linearRampToValueAtTime(target,now+2.8);
+    else layer.gain.gain.setValueAtTime(target,now);
 
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(musicBus);
-  osc.start(time);
-  osc.stop(time + duration + 0.4);
-}
+    source.start(0,Math.random()*Math.max(0,layer.buffer.duration*.15));
+  }
 
-function piano(note, time, velocity = 0.07, length = 1.2) {
-  const f = midi(note);
-  tone(f, time, length, velocity, "triangle", {cutoff:2800, attack:0.008, release:0.18, releasePoint:0.32});
-  tone(f * 2, time + 0.006, length * 0.55, velocity * 0.22, "sine", {cutoff:5000, attack:0.008, release:0.12});
-  tone(f * 3, time + 0.009, length * 0.32, velocity * 0.055, "sine", {cutoff:6000, attack:0.006, release:0.08});
-}
-
-function pad(note, time, length, volume) {
-  const f = midi(note);
-  tone(f, time, length, volume, "sine", {cutoff:1600, attack:0.8, release:0.8, releasePoint:0.78});
-  tone(f * 1.003, time + 0.015, length, volume * 0.38, "triangle", {cutoff:1900, attack:1.1, release:0.8, releasePoint:0.8});
-}
-
-function bass(note, time, length = 0.8, volume = 0.10) {
-  tone(midi(note), time, length, volume, "triangle", {cutoff:650, attack:0.018, release:0.14});
-}
-
-function kick(time, quiet = false) {
-  tone(105, time, 0.20, quiet ? 0.065 : 0.14, "sine", {cutoff:250, attack:0.003, release:0.05, releasePoint:0.2});
-  if (audio) tone(48, time + 0.008, 0.13, quiet ? 0.02 : 0.055, "sine", {cutoff:120, attack:0.004, release:0.04});
-}
-
-function snare(time) {
-  if (!audio) return;
-  const src = audio.createBufferSource();
-  const filter = audio.createBiquadFilter();
-  const gain = audio.createGain();
-
-  src.buffer = makeNoise(audio, 1);
-  filter.type = "highpass";
-  filter.frequency.value = 1700;
-  gain.gain.setValueAtTime(0.0001, time);
-  gain.gain.linearRampToValueAtTime(0.025, time + 0.008);
-  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.13);
-
-  src.connect(filter);
-  filter.connect(gain);
-  gain.connect(musicBus);
-  src.start(time);
-  src.stop(time + 0.14);
-}
-
-function hat(time, volume = 0.009) {
-  if (!audio) return;
-  const src = audio.createBufferSource();
-  const filter = audio.createBiquadFilter();
-  const gain = audio.createGain();
-
-  src.buffer = makeNoise(audio, 1);
-  filter.type = "highpass";
-  filter.frequency.value = 6500;
-  gain.gain.setValueAtTime(volume, time);
-  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.045);
-
-  src.connect(filter);
-  filter.connect(gain);
-  gain.connect(musicBus);
-  src.start(time);
-  src.stop(time + 0.05);
-}
-
-function startAudio() {
-  const AudioClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioClass) throw new Error("Web Audio is not supported");
-
-  audio = new AudioClass();
-
-  master = audio.createGain();
-  musicBus = audio.createGain();
-  ambienceBus = audio.createGain();
-  musicFilter = audio.createBiquadFilter();
-
-  const compressor = audio.createDynamicsCompressor();
-  compressor.threshold.value = -23;
-  compressor.knee.value = 18;
-  compressor.ratio.value = 2.5;
-  compressor.attack.value = 0.02;
-  compressor.release.value = 0.3;
-
-  musicFilter.type = "lowpass";
-  musicFilter.frequency.value = 6500;
-  musicFilter.Q.value = 0.4;
-
-  musicBus.connect(musicFilter);
-  musicFilter.connect(master);
-  ambienceBus.connect(master);
-  master.connect(compressor);
-  compressor.connect(audio.destination);
-
-  musicBus.gain.value = Number($("musicVolume").value) / 100;
-  master.gain.value = Number($("masterVolume").value) / 100;
-  ambienceBus.gain.value = 0.0001;
-
-  // Continuous soft city/rain texture.
-  noiseSource = audio.createBufferSource();
-  noiseSource.buffer = makeNoise(audio, 4);
-  noiseSource.loop = true;
-
-  ambienceFilter = audio.createBiquadFilter();
-  ambienceFilter.type = "lowpass";
-  ambienceFilter.frequency.value = 850;
-
-  ambienceGain = audio.createGain();
-  ambienceGain.gain.value = 0.7;
-
-  noiseSource.connect(ambienceFilter);
-  ambienceFilter.connect(ambienceGain);
-  ambienceGain.connect(ambienceBus);
-  noiseSource.start();
-
-  updateAmbience();
-}
-
-function updateAmbience() {
-  updateMixerLabels();
-  if (!audio || !ambienceBus) return;
-
-  const level = Number($("ambienceVolume").value) / 100;
-  setSmooth(ambienceBus.gain, level * 0.07, audio.currentTime, 0.15);
-}
-
-function updateMixerLabels() {
-  $("musicValue").textContent = $("musicVolume").value + "%";
-  $("ambienceValue").textContent = $("ambienceVolume").value + "%";
-  $("masterValue").textContent = $("masterVolume").value + "%";
-}
-
-function switchMood(nextMood) {
-  currentMood = nextMood;
-  trackTitle = chooseTitle();
-  phraseNumber = 0;
-  songNumber = 0;
-  currentSection = "intro";
-  updateUI();
-}
-
-function sectionFor(bar) {
-  // A 32-bar arrangement cycle, with different density through each part.
-  const position = bar % 32;
-  if (position < 4) return "intro";
-  if (position < 12) return "main";
-  if (position < 16) return "breath";
-  if (position < 24) return "main2";
-  if (position < 28) return "bridge";
-  return "outro";
-}
-
-function chordAt(bar) {
-  const scene = scenes[currentMood];
-  return scene.chords[Math.floor(bar / 2) % scene.chords.length];
-}
-
-function rootAt(bar) {
-  const scene = scenes[currentMood];
-  return scene.roots[Math.floor(bar / 2) % scene.roots.length];
-}
-
-function playChord(bar, time, section) {
-  const scene = scenes[currentMood];
-  const chord = chordAt(bar);
-  const root = rootAt(bar);
-  const duration = STEP * 15.5;
-
-  const padLevel = section === "breath" ? 0.020 : 0.027;
-  const inversion = Math.random() < 0.30 ? 12 : 0;
-
-  // Smooth sustained harmony.
-  chord.forEach((interval, i) => {
-    pad(root + interval + inversion, time, duration, padLevel * (i === 0 ? 1.2 : 0.8));
-  });
-
-  // A quiet piano chord, with varied voicing.
-  if (section !== "breath" && Math.random() > 0.25) {
-    const order = Math.random() < 0.5 ? [0, 2, 1, 3] : [0, 1, 2, 3];
-    order.forEach((index, i) => {
-      if (Math.random() < 0.18 && i > 0) return;
-      const octave = Math.random() < 0.16 ? 12 : 0;
-      piano(root + chord[index] + 12 + octave, time + i * STEP * 0.13, 0.024, 1.1);
+  function updateMixer(){
+    defs.forEach(def=>{
+      const value=$(def.slider).value;
+      $(def.slider+'Val').textContent=value+'%';
+      const layer=state.layers[def.id];
+      if(layer&&state.playing){
+        let multiplier=1;
+        if(def.id==='drums'&&state.variation%4===2) multiplier=.45;
+        rampGain(layer,Number(value)/100*multiplier,.45);
+      }
     });
-  }
-}
-
-function motifForPhrase() {
-  const scene = scenes[currentMood];
-  const motif = rand(scene.motifs);
-  const variation = Math.floor(Math.random() * 5);
-  const direction = Math.random() < 0.5 ? -1 : 1;
-  return motif.map((n, i) => {
-    if (n === null) return null;
-    if (variation === 1 && i === 2) return n + 2;
-    if (variation === 2 && i === 5) return n - 2;
-    if (variation === 3 && i === 0) return n + 7;
-    if (variation === 4 && i === 6) return n + direction * 2;
-    return n;
-  });
-}
-
-let currentMotif = motifForPhrase();
-let previousMotif = currentMotif;
-
-function nextPhrase() {
-  const scene = scenes[currentMood];
-  previousMotif = currentMotif;
-  currentMotif = motifForPhrase();
-
-  // Occasionally return to a familiar motif so the music feels composed.
-  if (Math.random() < 0.28) currentMotif = previousMotif;
-
-  phraseNumber++;
-}
-
-function playMelody(bar, time, section) {
-  if (section === "intro" && Math.random() < 0.45) return;
-  if (section === "breath" && Math.random() < 0.70) return;
-  if (section === "outro" && Math.random() < 0.55) return;
-
-  const scene = scenes[currentMood];
-  const stepInBar = stepCount % 16;
-  const index = Math.floor(stepInBar / 2);
-
-  // Melodic notes are sparse, with space between phrases.
-  if (stepInBar % 2 !== 0) return;
-  if (index >= currentMotif.length) return;
-  if (Math.random() < 0.18) return;
-
-  const offset = currentMotif[index];
-  if (offset === null || offset === undefined) return;
-
-  const root = rootAt(bar);
-  const chord = chordAt(bar);
-  const chordTone = chord[Math.floor(Math.random() * chord.length)];
-  const useChord = Math.random() < 0.28;
-  let note = useChord ? root + chordTone + 12 : root + 12 + offset;
-
-  // Keep the notes in a gentle register.
-  while (note < 60) note += 12;
-  while (note > 84) note -= 12;
-
-  const velocity = section === "main2" ? 0.044 : 0.035;
-  const length = STEP * (Math.random() < 0.25 ? 3.2 : 1.8);
-  piano(note, time, velocity, length);
-
-  // Occasionally add a soft answer note, never on every beat.
-  if (Math.random() < 0.17 && index < 6) {
-    const answer = clamp(note + (Math.random() < 0.5 ? 3 : -2), 60, 84);
-    piano(answer, time + STEP * 1.35, velocity * 0.48, length * 0.8);
-  }
-}
-
-function schedule(time) {
-  const bar = Math.floor(stepCount / 16);
-  const s = stepCount % 16;
-  const section = sectionFor(bar);
-  const sectionChanged = section !== currentSection;
-
-  if (sectionChanged) {
-    currentSection = section;
-    if (bar % 32 === 0 && bar > 0) {
-      trackTitle = chooseTitle();
-      songNumber++;
-      updateUI();
+    $('masterVal').textContent=$('master').value+'%';
+    if(state.master&&state.ctx){
+      state.master.gain.setTargetAtTime(
+        Number($('master').value)/100,state.ctx.currentTime,.07
+      );
     }
   }
 
-  // A new phrase every four bars; not every note is random.
-  if (bar % 4 === 0 && s === 0 && stepCount > 0) nextPhrase();
-
-  if (s === 0) playChord(bar, time, section);
-
-  const beat = s % 2 === 0;
-  const halfBar = s === 0 || s === 8;
-
-  if (halfBar && section !== "intro" && section !== "breath") {
-    const bassRoot = rootAt(bar) - 12;
-    bass(bassRoot, time, STEP * 3.5, section === "main2" ? 0.09 : 0.075);
-  }
-
-  // Soft beat: the groove is deliberately not constant.
-  if (section === "main" || section === "main2") {
-    if (s === 0 || s === 8) kick(time, true);
-    if (s === 4 || s === 12) {
-      if (Math.random() > 0.22) snare(time);
-    }
-    if (beat && Math.random() > 0.38) hat(time, 0.006);
-  } else if (section === "bridge") {
-    if (s === 0) kick(time, true);
-    if (s === 12 && Math.random() > 0.5) hat(time, 0.004);
-  } else if (section === "outro") {
-    if (s === 0 && Math.random() > 0.5) kick(time, true);
-  }
-
-  if (s % 2 === 0) playMelody(bar, time, section);
-
-  // Slow arrangement movement: the sound opens and softens over time.
-  if (audio && musicFilter && s === 0) {
-    const open = section === "main2" ? 5200 :
-                 section === "bridge" ? 3600 :
-                 section === "breath" ? 2600 : 4300;
-    musicFilter.frequency.setTargetAtTime(open, time, 1.5);
-  }
-
-  stepCount++;
-}
-
-function scheduler() {
-  if (!running || !audio) return;
-  while (nextTime < audio.currentTime + 0.14) {
-    schedule(nextTime);
-    nextTime += STEP;
-  }
-}
-
-async function startRadio() {
-  try {
-    if (!audio) startAudio();
-    await audio.resume();
-    if (running) return;
-
-    running = true;
-    nextTime = audio.currentTime + 0.08;
-
-    setSmooth(master.gain, Number($("masterVolume").value) / 100, audio.currentTime, 0.04);
-    setSmooth(musicBus.gain, Number($("musicVolume").value) / 100, audio.currentTime, 0.04);
-
-    updateAmbience();
-    scheduler();
-    timer = setInterval(scheduler, 35);
-
-    $("disc").classList.add("playing");
-    $("play").textContent = "♫ Радио играет";
-    updateUI();
-  } catch (error) {
-    console.error(error);
-    $("status").textContent = "Не удалось включить звук. Попробуй нажать ещё раз.";
-  }
-}
-
-function stopRadio() {
-  running = false;
-  if (timer !== null) clearInterval(timer);
-  timer = null;
-
-  if (audio && master) {
-    setSmooth(master.gain, 0.0001, audio.currentTime, 0.04);
-  }
-
-  $("disc").classList.remove("playing");
-  $("play").textContent = "▶ Включить радио";
-  updateUI();
-}
-
-document.querySelectorAll(".mood").forEach(button => {
-  button.addEventListener("click", () => {
-    const next = button.dataset.mood;
-    if (next === currentMood) return;
-    switchMood(next);
-    currentMotif = motifForPhrase();
-    previousMotif = currentMotif;
+  ['music','beat','bass','amb','master'].forEach(id=>{
+    $(id).addEventListener('input',updateMixer);
   });
-});
 
-$("play").addEventListener("click", startRadio);
-$("stop").addEventListener("click", stopRadio);
-
-$("musicVolume").addEventListener("input", () => {
-  updateMixerLabels();
-  if (audio && musicBus) {
-    setSmooth(musicBus.gain, Number($("musicVolume").value) / 100, audio.currentTime);
+  function chooseTitle(){
+    let next=Math.floor(Math.random()*titles.length);
+    if(titles.length>1&&next===state.titleIndex) next=(next+1)%titles.length;
+    state.titleIndex=next;
+    $('track').textContent=titles[next];
   }
-});
 
-$("ambienceVolume").addEventListener("input", updateAmbience);
+  function startTimer(){
+    clearInterval(state.timer);
+    state.timer=setInterval(()=>{
+      if(!state.playing)return;
+      state.cycle++;
+      $('meter').style.width=((state.cycle%16)/16*100)+'%';
 
-$("masterVolume").addEventListener("input", () => {
-  updateMixerLabels();
-  if (audio && master && running) {
-    setSmooth(master.gain, Number($("masterVolume").value) / 100, audio.currentTime);
+      if(state.cycle%4===0){
+        state.variation++;
+        chooseTitle();
+        $('trackSub').textContent='Вариация '+String(state.variation).padStart(2,'0')+' · ночной эфир';
+
+        const drums=state.layers.drums;
+        if(drums&&drums.loaded){
+          const target=volume(drums)*(state.variation%4===2?.45:1);
+          rampGain(drums,target,2.8);
+        }
+
+        if(state.variation%3===0){
+          const loaded=defs.map(d=>state.layers[d.id]).filter(l=>l.loaded);
+          if(loaded.length>1){
+            const pick=loaded[Math.floor(Math.random()*loaded.length)];
+            rampGain(pick,0,2);
+            setTimeout(()=>{
+              if(state.playing&&pick.source)rampGain(pick,volume(pick),2.8);
+            },2400);
+          }
+        }
+      }
+    },12000);
   }
-});
 
-makeCity();
-trackTitle = chooseTitle();
-updateMixerLabels();
-updateUI();
+  async function startRadio(){
+    try{
+      error('');
+      await initAudio();
+      if(state.playing)return;
 
+      const loaded=defs.map(d=>state.layers[d.id]).filter(l=>l.loaded);
+      if(!loaded.length){
+        message('Аудиофайлы не загружены. Проверь папку Presets и имена файлов.');
+        return;
+      }
+
+      state.playing=true;
+      state.cycle=0;
+      updateStatus(true);
+      $('play').disabled=true;
+      $('stop').disabled=false;
+
+      loaded.forEach(layer=>makeSource(layer,true));
+      state.master.gain.setTargetAtTime(Number($('master').value)/100,state.ctx.currentTime,.08);
+      $('trackSub').textContent=loaded.length+' аудиослоя · плавная аранжировка';
+      message('Эфир идёт. Микшером можно менять громкость каждого слоя.');
+      startTimer();
+    }catch(e){
+      error('Ошибка запуска: '+e.message);
+    }
+  }
+
+  function stopRadio(){
+    if(!state.ctx||!state.playing)return;
+    state.playing=false;
+    clearInterval(state.timer);
+
+    defs.forEach(def=>{
+      const layer=state.layers[def.id];
+      if(layer&&layer.source){
+        const source=layer.source;
+        layer.source=null;
+        rampGain(layer,0,1.2);
+        setTimeout(()=>{try{source.stop();}catch(e){}},1300);
+      }
+    });
+
+    updateStatus(false);
+    $('play').disabled=false;
+    $('stop').disabled=true;
+    $('trackSub').textContent='Эфир на паузе';
+    $('meter').style.width='0%';
+    message('Эфир остановлен. Нажми «Начать эфир», чтобы продолжить.');
+  }
+
+  async function boot(){
+    try{
+      await initAudio();
+      const results=await Promise.all(defs.map(loadLayer));
+      const count=results.filter(Boolean).length;
+      $('trackSub').textContent=count+' из 4 аудиослоёв загружено';
+
+      if(count===4){
+        message('Все четыре слоя готовы. Нажми «Начать эфир».');
+        error('');
+      }else{
+        message('Загружено '+count+' из 4 слоёв. Проверь ошибки ниже и имена файлов.');
+      }
+    }catch(e){
+      message('Не удалось подготовить аудио.');
+      error('Подробности: '+e.message);
+    }
+  }
+
+  $('play').addEventListener('click',startRadio);
+  $('stop').addEventListener('click',stopRadio);
+  $('variation').addEventListener('click',()=>{
+    chooseTitle();
+    state.variation++;
+    $('trackSub').textContent='Новая вариация · ночной эфир';
+    defs.forEach(def=>{
+      const layer=state.layers[def.id];
+      if(layer&&layer.loaded&&state.playing)makeSource(layer,true);
+    });
+    message('Вариация обновлена.');
+  });
+
+  window.addEventListener('beforeunload',()=>clearInterval(state.timer));
+  boot();
 })();
 </script>
 </body>
