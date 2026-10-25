@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="night">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#121212">
+<title>lofi.player</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root,[data-theme="night"]{--bg:#121212;--surface:#1E1E1E;--surface-2:#2A2A2A;--border:#333;--text:#E0D8D0;--text-muted:#8A7A68;--text-dim:#5C5045;--accent:#C9A87C;--accent-2:#9B7FA6;--accent-glow:rgba(201,168,124,.2);--btn-primary-text:#121212}
+[data-theme="day"]{--bg:#F5EFE6;--surface:#FFFFFF;--surface-2:#F0E8DC;--border:#D8CFC2;--text:#3D3028;--text-muted:#7A6B5E;--text-dim:#A89888;--accent:#8B5E3C;--accent-2:#B87D9E;--accent-glow:rgba(139,94,60,.15);--btn-primary-text:#FFFFFF}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'SF Mono','Courier New',monospace;overflow:hidden;user-select:none}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(160,130,180,.06),transparent 50%),var(--bg);z-index:-1}
+.app{height:100dvh;display:flex;flex-direction:column;padding:12px 16px 12px;max-width:520px;margin:0 auto;gap:10px}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);cursor:default}
+.brand-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.header-btns{display:flex;gap:6px;align-items:center}
+.icon-btn{background:none;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.hidden{display:none !important}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.vinyl-wrap{position:relative;width:clamp(160px,46vw,210px);height:clamp(160px,46vw,210px);margin:0 auto}
+.vinyl{width:100%;height:100%;border-radius:50%;position:relative;background:radial-gradient(circle at center,#0a0a0a 0%,#0a0a0a 12%,transparent 12%),radial-gradient(circle at center,var(--accent-2) 12%,var(--accent-2) 32%,transparent 32%),repeating-radial-gradient(circle at center,#0a0a0a 0px,#0a0a0a 1px,#1a1a1a 1px,#1a1a1a 2.5px,#151515 2.5px,#151515 3px);box-shadow:0 16px 40px rgba(0,0,0,.5);animation:spin 6s linear infinite;animation-play-state:paused}
+.vinyl.spinning{animation-play-state:running}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vinyl-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32%;height:32%;border-radius:50%;background:radial-gradient(circle,var(--accent-2),#8B5C75);display:flex;align-items:center;justify-content:center}
+.vinyl-label::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--bg)}
+.label-text{font-size:10px;font-weight:700;color:#0a0a0a;text-align:center;line-height:1.1}
+.glow{position:absolute;inset:-18px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 60%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:-1}
+.glow.active{opacity:1;animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.05);opacity:1}}
+
+.now-playing{text-align:center;min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.np-title{font-size:clamp(18px,5vw,22px);font-weight:600;color:var(--text);line-height:1.15;padding:0 10px}
+.np-meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+
+.controls{display:flex;align-items:center;justify-content:center;gap:18px}
+.btn{border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);background:none;transition:transform .15s}
+.btn:active{transform:scale(.93)}
+.btn svg{width:20px;height:20px}
+.btn-play{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--btn-primary-text);box-shadow:0 5px 18px var(--accent-glow)}
+.btn-play svg{width:26px;height:26px}
+.btn-ctrl{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1px solid var(--border)}
+
+.genres{display:flex;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none;justify-content:center;flex-shrink:0}
+.genres::-webkit-scrollbar{display:none}
+.genre{flex-shrink:0;padding:7px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);font-family:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-radius:16px;cursor:pointer}
+.genre.active{background:var(--accent);color:var(--btn-primary-text);border-color:var(--accent)}
+
+.volume-row{display:flex;align-items:center;gap:10px;padding:2px 4px;flex-shrink:0}
+.mute-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;display:flex;align-items:center;flex-shrink:0}
+.mute-btn.muted{opacity:.35}
+.volume-slider{flex:1;height:3px;-webkit-appearance:none;appearance:none;background:var(--surface-2);border-radius:2px;outline:none;cursor:pointer}
+.volume-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.volume-slider::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:none}
+
+.footer{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);padding-top:8px;border-top:1px solid var(--border);flex-shrink:0}
+.footer-time{color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* Admin panel */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:0}
+.modal.open{display:flex}
+.panel{width:100%;max-width:520px;max-height:85vh;background:var(--bg);border-radius:16px 16px 0 0;border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-title{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
+.panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:12px 8px;background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.panel-body{flex:1;overflow-y:auto;padding:16px 18px 24px}
+.panel-body::-webkit-scrollbar{width:4px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:2px}
+
+.add-row{display:flex;gap:8px;margin-bottom:16px}
+.add-input{flex:1;padding:10px 12px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:inherit;font-size:12px;outline:none}
+.add-input:focus{border-color:var(--accent)}
+.add-btn{padding:10px 16px;background:var(--accent);color:var(--btn-primary-text);border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}
+
+.admin-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:12px}
+.admin-item-name{flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-item-count{font-size:10px;color:var(--text-dim);flex-shrink:0}
+.admin-item-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;color:var(--text-muted);flex-shrink:0}
+.admin-item-btn:hover{color:var(--accent)}
+
+.track-admin{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+.track-admin-title{flex:1;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.track-admin-sel{background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:10px;flex-shrink:0;max-width:110px}
+.track-admin.warn{border-color:#7A3A3A}
+
+.empty-hint{text-align:center;color:var(--text-dim);padding:24px 12px;font-size:11px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand" id="brand"><span class="brand-dot"></span><span>lofi.player</span></div>
+    <div class="header-btns">
+      <button class="icon-btn hidden" id="adminBtn" title="Админ">⚙</button>
+      <button class="icon-btn" id="themeBtn">🌙</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="vinyl-wrap">
+      <div class="vinyl" id="vinyl"><div class="vinyl-label"><div class="label-text">LO<br>FI</div></div></div>
+      <div class="glow" id="glow"></div>
+    </div>
+    <div class="now-playing">
+      <div class="np-title" id="npTitle">Press play</div>
+      <div class="np-meta" id="npMeta">lofi stream</div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-ctrl" id="prevBtn" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button class="btn btn-play" id="playBtn">
+        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+      </button>
+      <button class="btn btn-ctrl" id="nextBtn" aria-label="Дальше">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+      </button>
+    </div>
+    <div class="genres" id="genresWrap"></div>
+    <div class="volume-row">
+      <button class="mute-btn" id="muteBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+      </button>
+      <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+    </div>
+  </main>
+
+  <footer class="footer"><span id="footerInfo">ready</span><span class="footer-time" id="elapsed">00:00</span></footer>
+</div>
+
+<!-- Admin panel -->
+<div class="modal" id="adminModal">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Админ-панель</div>
+      <button class="panel-close" id="panelClose">×</button>
+    </div>
+    <div class="panel-tabs">
+      <button class="tab active" data-tab="genres">Жанры</button>
+      <button class="tab" data-tab="tracks">Треки</button>
+    </div>
+    <div class="panel-body">
+      <div id="tabGenres">
+        <div class="add-row">
+          <input class="add-input" id="newGenreInput" placeholder="Новый жанр" maxlength="30">
+          <button class="add-btn" id="addGenreBtn">+</button>
+        </div>
+        <div id="genreList"></div>
+      </div>
+      <div id="tabTracks" class="hidden">
+        <div id="trackListAdmin"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  TELEGRAM
+// ============================================================
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('#121212'); tg.setBackgroundColor('#121212'); } catch(e){} }
+
+// ============================================================
+//  ⚙️ КОНФИГ — ТРЕКИ
+//  Формат: { src: 'путь/к/файлу.mp3', name: 'Название', genre: 'Жанр' }
+//  mp3-файлы кладите в папку music/ рядом с index.html
+// ============================================================
+const TRACKS = [
+  { src: 'music/Norma Tale', name: 'Rainy Window',   genre: 'Chillhop' },
+  { src: 'music/track2.mp3', name: 'Slow Day',       genre: 'Chillhop' },
+  { src: 'music/track3.mp3', name: 'Evening Tape',   genre: 'Jazzhop'  },
+  { src: 'music/track4.mp3', name: 'Late Night',     genre: 'Jazzhop'  },
+  { src: 'music/track5.mp3', name: 'Distant Sky',    genre: 'Ambient'  },
+  { src: 'music/track6.mp3', name: 'Glacier',        genre: 'Ambient'  },
+];
+
+// ============================================================
+//  🔐 КОНФИГ — АДМИН
+// ============================================================
+const ADMIN_TG_IDS = []; // Свой Telegram ID сюда, например: [123456789]
+const ADMIN_PASSWORD = 'admin'; // Пароль для теста в браузере (зажать логотип 1.5 сек)
+
+// ============================================================
+//  КОНСТАНТЫ
+// ============================================================
+const CROSSFADE_MS = 2000; // длительность кроссфейда между треками
+
+// ============================================================
+//  УТИЛИТЫ
+// ============================================================
+const $ = id => document.getElementById(id);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+// ============================================================
+//  СОСТОЯНИЕ
+// ============================================================
+const state = {
+  genres: [],
+  currentGenre: null,
+  playing: false,
+  currentTrack: null,
+  lastTrackSrc: null,
+  volume: 0.7,
+  muted: false,
+  devAdmin: false,
+  tgAdmin: false,
+};
+
+// ============================================================
+//  ХРАНИЛИЩЕ
+// ============================================================
+function loadGenresFromStorage() {
+  const configGenres = [...new Set(TRACKS.map(t => t.genre))];
+  try {
+    const raw = localStorage.getItem('lofi_genres');
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length) {
+        state.genres = arr;
+        return;
+      }
+    }
+  } catch(e){}
+  state.genres = configGenres.length ? configGenres : ['Chillhop'];
+}
+
+function saveGenres() {
+  try { localStorage.setItem('lofi_genres', JSON.stringify(state.genres)); } catch(e){}
+}
+
+function getGenreOverrides() {
+  try { return JSON.parse(localStorage.getItem('lofi_track_genres') || '{}'); } catch(e) { return {}; }
+}
+
+function setTrackGenre(src, genre) {
+  const o = getGenreOverrides();
+  if (genre) o[src] = genre;
+  else delete o[src];
+  try { localStorage.setItem('lofi_track_genres', JSON.stringify(o)); } catch(e){}
+}
+
+function getTrackGenre(track) {
+  const overrides = getGenreOverrides();
+  return overrides[track.src] || track.genre || (state.genres[0] || '');
+}
+
+// ============================================================
+//  АУДИО
+// ============================================================
+const players = [new Audio(), new Audio()];
+players.forEach(p => { p.preload = 'auto'; p.volume = 0; });
+let activeIdx = 0;
+
+players.forEach((el, i) => {
+  el.addEventListener('ended', () => {
+    if (i === activeIdx && state.playing) playNext();
+  });
+});
+
+// ============================================================
+//  ВОСПРОИЗВЕДЕНИЕ
+// ============================================================
+function getTracksForCurrentGenre() {
+  const genre = state.currentGenre;
+  const filtered = TRACKS.filter(t => getTrackGenre(t) === genre);
+  return filtered.length ? filtered : TRACKS;
+}
+
+function pickRandomTrack() {
+  const pool = getTracksForCurrentGenre();
+  if (!pool.length) return null;
+  const candidates = pool.filter(t => t.src !== state.lastTrackSrc);
+  const chosen = (candidates.length ? candidates : pool);
+  return pick(chosen);
+}
+
+async function crossfadeTo(track, fadeMs = CROSSFADE_MS) {
+  const fromEl = players[activeIdx];
+  const toEl = players[1 - activeIdx];
+  const nextIdx = 1 - activeIdx;
+
+  toEl.src = track.src;
+  toEl.currentTime = 0;
+  toEl.volume = 0;
+
+  try {
+    await toEl.play();
+  } catch (e) {
+    $('footerInfo').textContent = 'не удалось загрузить трек';
+    console.warn('play fail', e, track.src);
+    return;
+  }
+
+  activeIdx = nextIdx;
+  state.currentTrack = track;
+  state.lastTrackSrc = track.src;
+
+  $('npTitle').textContent = track.name;
+  $('npMeta').textContent = getTrackGenre(track) + ' · lofi stream';
+
+  const start = performance.now();
+  const fromVolStart = fromEl.volume;
+
+  const step = () => {
+    const p = Math.min(1, (performance.now() - start) / fadeMs);
+    if (!state.muted) {
+      const target = state.volume;
+      toEl.volume = target * p;
+      fromEl.volume = fromVolStart * (1 - p);
+    }
+    if (p < 1) {
+      requestAnimationFrame(step);
+    } else {
+      try { fromEl.pause(); fromEl.src = ''; } catch(e){}
+    }
+  };
+  step();
+}
+
+async function playNext() {
+  const track = pickRandomTrack();
+  if (!track) {
+    $('footerInfo').textContent = 'нет треков в этой категории';
+    return;
+  }
+  await crossfadeTo(track);
+}
+
+async function playPrev() {
+  // Просто случайный трек — но не тот же самый, что играет
+  await playNext();
+}
+
+async function togglePlay() {
+  if (state.playing) {
+    players[activeIdx].pause();
+    state.playing = false;
+    updatePlayUI();
+  } else {
+    if (!state.currentTrack) {
+      const track = pickRandomTrack();
+      if (!track) {
+        $('footerInfo').textContent = 'нет треков';
+        return;
+      }
+      state.playing = true;
+      await crossfadeTo(track, 500);
+      updatePlayUI();
+    } else {
+      try {
+        await players[activeIdx].play();
+        state.playing = true;
+        updatePlayUI();
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+  }
+  tg?.HapticFeedback?.impactOccurred('light');
+}
+
+function updatePlayUI() {
+  $('vinyl').classList.toggle('spinning', state.playing);
+  $('glow').classList.toggle('active', state.playing);
+  document.querySelector('.icon-play').style.display = state.playing ? 'none' : 'block';
+  document.querySelector('.icon-pause').style.display = state.playing ? 'block' : 'none';
+  $('footerInfo').textContent = state.playing ? 'playing' : 'paused';
+}
+
+// ============================================================
+//  ЖАНРЫ (UI)
+// ============================================================
+function renderGenres() {
+  const wrap = $('genresWrap');
+  wrap.innerHTML = '';
+  state.genres.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'genre' + (g === state.currentGenre ? ' active' : '');
+    btn.textContent = g;
+    btn.addEventListener('click', () => switchGenre(g));
+    wrap.appendChild(btn);
+  });
+}
+
+async function switchGenre(g) {
+  if (g === state.currentGenre) return;
+  state.currentGenre = g;
+  renderGenres();
+  if (state.playing) {
+    // Плавно переключаемся на трек из нового жанра
+    const track = pickRandomTrack();
+    if (track) await crossfadeTo(track, 800);
+  } else if (state.currentTrack) {
+    state.currentTrack = null;
+  }
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+// ============================================================
+//  АДМИН — авторизация
+// ============================================================
+function checkAdmin() {
+  if (state.devAdmin) return true;
+  const user = tg?.initDataUnsafe?.user;
+  if (user && ADMIN_TG_IDS.includes(user.id)) return true;
+  return false;
+}
+
+function applyAdminUI() {
+  $('adminBtn').classList.toggle('hidden', !checkAdmin());
+}
+
+// Долгое нажатие на логотип — ввод пароля (для теста в браузере)
+let pressTimer = null;
+const brandEl = $('brand');
+function startPress() {
+  if (checkAdmin()) return;
+  pressTimer = setTimeout(() => {
+    const pwd = prompt('Пароль админа:');
+    if (pwd === ADMIN_PASSWORD) {
+      state.devAdmin = true;
+      applyAdminUI();
+      $('footerInfo').textContent = 'admin mode';
+      setTimeout(() => { $('footerInfo').textContent = 'ready'; }, 2000);
+    } else if (pwd !== null) {
+      $('footerInfo').textContent = 'неверный пароль';
+      setTimeout(() => { $('footerInfo').textContent = 'ready'; }, 2000);
+    }
+  }, 1500);
+}
+function cancelPress() {
+  if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+}
+brandEl.addEventListener('pointerdown', startPress);
+brandEl.addEventListener('pointerup', cancelPress);
+brandEl.addEventListener('pointerleave', cancelPress);
+brandEl.addEventListener('pointercancel', cancelPress);
+
+// ============================================================
+//  АДМИН — панель
+// ============================================================
+function openAdminPanel() {
+  if (!checkAdmin()) return;
+  $('adminModal').classList.add('open');
+  renderAdminGenres();
+  renderAdminTracks();
+}
+function closeAdminPanel() {
+  $('adminModal').classList.remove('open');
+}
+
+function renderAdminGenres() {
+  const list = $('genreList');
+  list.innerHTML = '';
+  state.genres.forEach(g => {
+    const count = TRACKS.filter(t => getTrackGenre(t) === g).length;
+    const el = document.createElement('div');
+    el.className = 'admin-item';
+    el.innerHTML = `
+      <span class="admin-item-name">${escapeHtml(g)}</span>
+      <span class="admin-item-count">${count} тр.</span>
+      <button class="admin-item-btn" data-action="rename" title="Переименовать">✎</button>
+      <button class="admin-item-btn" data-action="delete" title="Удалить">✕</button>
+    `;
+    el.querySelector('[data-action="rename"]').addEventListener('click', () => renameGenre(g));
+    el.querySelector('[data-action="delete"]').addEventListener('click', () => deleteGenre(g));
+    list.appendChild(el);
+  });
+  if (!state.genres.length) {
+    list.innerHTML = '<div class="empty-hint">Нет жанров. Добавьте первый.</div>';
+  }
+}
+
+function addGenre() {
+  const input = $('newGenreInput');
+  const name = input.value.trim();
+  if (!name) return;
+  if (state.genres.includes(name)) {
+    $('footerInfo').textContent = 'такой жанр уже есть';
+    setTimeout(() => { $('footerInfo').textContent = 'ready'; }, 1500);
+    return;
+  }
+  state.genres.push(name);
+  saveGenres();
+  input.value = '';
+  renderAdminGenres();
+  renderGenres();
+}
+
+function renameGenre(oldName) {
+  const newName = prompt('Новое название:', oldName);
+  if (!newName || newName.trim() === oldName) return;
+  const trimmed = newName.trim();
+  if (state.genres.includes(trimmed)) {
+    alert('Такой жанр уже есть');
+    return;
+  }
+  const idx = state.genres.indexOf(oldName);
+  if (idx === -1) return;
+  state.genres[idx] = trimmed;
+  // Обновляем у треков
+  const overrides = getGenreOverrides();
+  Object.keys(overrides).forEach(k => {
+    if (overrides[k] === oldName) overrides[k] = trimmed;
+  });
+  TRACKS.forEach(t => {
+    if (getTrackGenre(t) === oldName) setTrackGenre(t.src, trimmed);
+  });
+  saveGenres();
+  if (state.currentGenre === oldName) {
+    state.currentGenre = trimmed;
+    renderGenres();
+  }
+  renderAdminGenres();
+  renderAdminTracks();
+}
+
+function deleteGenre(name) {
+  if (state.genres.length <= 1) {
+    alert('Должен остаться хотя бы один жанр');
+    return;
+  }
+  const fallback = state.genres.find(g => g !== name);
+  const count = TRACKS.filter(t => getTrackGenre(t) === name).length;
+  if (count > 0 && !confirm(`В жанре «${name}» ${count} треков. Перенести в «${fallback}»?`)) return;
+  TRACKS.forEach(t => {
+    if (getTrackGenre(t) === name) setTrackGenre(t.src, fallback);
+  });
+  state.genres = state.genres.filter(g => g !== name);
+  if (state.currentGenre === name) state.currentGenre = fallback;
+  saveGenres();
+  renderGenres();
+  renderAdminGenres();
+  renderAdminTracks();
+}
+
+function renderAdminTracks() {
+  const list = $('trackListAdmin');
+  list.innerHTML = '';
+  if (!TRACKS.length) {
+    list.innerHTML = '<div class="empty-hint">Треков нет. Добавьте их в конфиг TRACKS в коде.</div>';
+    return;
+  }
+  TRACKS.forEach(t => {
+    const g = getTrackGenre(t);
+    const exists = state.genres.includes(g);
+    const el = document.createElement('div');
+    el.className = 'track-admin' + (exists ? '' : ' warn');
+    el.innerHTML = `
+      <span class="track-admin-title" title="${escapeHtml(t.src)}">${escapeHtml(t.name)}</span>
+      <select class="track-admin-sel" data-src="${escapeHtml(t.src)}">
+        ${state.genres.map(gn => `<option value="${escapeHtml(gn)}"${gn === g ? ' selected' : ''}>${escapeHtml(gn)}</option>`).join('')}
+      </select>
+    `;
+    el.querySelector('select').addEventListener('change', e => {
+      setTrackGenre(t.src, e.target.value);
+      renderAdminGenres();
+    });
+    list.appendChild(el);
+  });
+}
+
+// ============================================================
+//  ХЕЛПЕРЫ
+// ============================================================
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================================================
+//  ТЕМА
+// ============================================================
+let theme = 'night';
+$('themeBtn').addEventListener('click', () => {
+  theme = theme === 'night' ? 'day' : 'night';
+  document.documentElement.setAttribute('data-theme', theme);
+  $('themeBtn').textContent = theme === 'night' ? '🌙' : '☀️';
+  if (tg) {
+    try {
+      const bg = theme === 'night' ? '#121212' : '#F5EFE6';
+      tg.setHeaderColor(bg); tg.setBackgroundColor(bg);
+    } catch(e){}
+  }
+});
+
+// ============================================================
+//  WIRE UP
+// ============================================================
+$('playBtn').addEventListener('click', togglePlay);
+$('nextBtn').addEventListener('click', playNext);
+$('prevBtn').addEventListener('click', playPrev);
+
+$('volumeSlider').addEventListener('input', e => {
+  state.volume = parseInt(e.target.value, 10) / 100;
+  if (!state.muted) players[activeIdx].volume = state.volume;
+});
+
+$('muteBtn').addEventListener('click', () => {
+  state.muted = !state.muted;
+  $('muteBtn').classList.toggle('muted', state.muted);
+  players.forEach(p => p.volume = state.muted ? 0 : state.volume);
+});
+
+$('adminBtn').addEventListener('click', openAdminPanel);
+$('panelClose').addEventListener('click', closeAdminPanel);
+$('adminModal').addEventListener('click', e => {
+  if (e.target === $('adminModal')) closeAdminPanel();
+});
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const isGenres = tab.dataset.tab === 'genres';
+    $('tabGenres').classList.toggle('hidden', !isGenres);
+    $('tabTracks').classList.toggle('hidden', isGenres);
+  });
+});
+
+$('addGenreBtn').addEventListener('click', addGenre);
+$('newGenreInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addGenre();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+    e.preventDefault();
+    togglePlay();
+  }
+});
+
+// Таймер
+setInterval(() => {
+  const el = players[activeIdx];
+  const t = el && !isNaN(el.currentTime) ? el.currentTime : 0;
+  const m = Math.floor(t / 60).toString().padStart(2, '0');
+  const s = Math.floor(t % 60).toString().padStart(2, '0');
+  $('elapsed').textContent = `${m}:${s}`;
+}, 500);
+
+// Восстановление AudioContext после возврата из фона
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && state.playing) {
+    const el = players[activeIdx];
+    if (el.paused) el.play().catch(() => {});
+  }
+});
+
+// ============================================================
+//  СТАРТ
+// ============================================================
+loadGenresFromStorage();
+if (!state.genres.length) state.genres = ['Chillhop'];
+state.currentGenre = state.genres[0];
+applyAdminUI();
+renderGenres();
+</script>
+</body>
+</html>
