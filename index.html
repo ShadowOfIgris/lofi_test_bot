@@ -1,377 +1,394 @@
+
 <!DOCTYPE html>
-<html lang="ru" data-theme="night">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#121212">
-<title>lofi.audius</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midnight FM — Dream City</title>
 <style>
-:root,[data-theme="night"]{--bg:#121212;--surface:#1E1E1E;--border:#333;--text:#E0D8D0;--text-muted:#8A7A68;--text-dim:#5C5045;--accent:#C9A87C;--accent-2:#9B7FA6;--accent-glow:rgba(201,168,124,.2);--btn-primary-text:#121212}
-[data-theme="day"]{--bg:#F5EFE6;--surface:#FFF;--border:#D8CFC2;--text:#3D3028;--text-muted:#7A6B5E;--text-dim:#A89888;--accent:#8B5E3C;--accent-2:#B87D9E;--accent-glow:rgba(139,94,60,.15);--btn-primary-text:#FFF}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'SF Mono','Courier New',monospace;overflow:hidden;user-select:none}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(160,130,180,.06),transparent 50%),var(--bg);z-index:-1}
-.app{height:100dvh;display:flex;flex-direction:column;padding:12px 16px;max-width:520px;margin:0 auto;gap:10px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.brand{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
-.brand-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
-.icon-btn{background:none;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}
-.main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
-.vinyl-wrap{position:relative;width:clamp(160px,46vw,210px);height:clamp(160px,46vw,210px);margin:0 auto}
-.vinyl{width:100%;height:100%;border-radius:50%;position:relative;background:radial-gradient(circle,#0a0a0a 0%,#0a0a0a 12%,transparent 12%),radial-gradient(circle,var(--accent-2) 12%,var(--accent-2) 32%,transparent 32%),repeating-radial-gradient(circle,#0a0a0a 0px,#0a0a0a 1px,#1a1a1a 1px,#1a1a1a 2.5px,#151515 2.5px,#151515 3px);box-shadow:0 16px 40px rgba(0,0,0,.5);animation:spin 6s linear infinite;animation-play-state:paused}
-.vinyl.spinning{animation-play-state:running}
-@keyframes spin{to{transform:rotate(360deg)}}
-.vinyl-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32%;height:32%;border-radius:50%;background:radial-gradient(circle,var(--accent-2),#8B5C75);display:flex;align-items:center;justify-content:center}
-.vinyl-label::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--bg)}
-.label-text{font-size:10px;font-weight:700;color:#0a0a0a;text-align:center;line-height:1.1}
-.glow{position:absolute;inset:-18px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 60%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:-1}
-.glow.active{opacity:1;animation:breathe 4s ease-in-out infinite}
-@keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.05);opacity:1}}
-.now-playing{text-align:center;min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:6px}
-.np-title{font-size:clamp(18px,5vw,22px);font-weight:600;color:var(--text);line-height:1.15;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.np-meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.controls{display:flex;align-items:center;justify-content:center;gap:18px}
-.btn{border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);background:none}
-.btn:active{transform:scale(.93)}
-.btn svg{width:20px;height:20px}
-.btn-play{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--btn-primary-text);box-shadow:0 5px 18px var(--accent-glow)}
-.btn-play svg{width:26px;height:26px}
-.btn-ctrl{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1px solid var(--border)}
-.genres{display:flex;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none;justify-content:center}
-.genres::-webkit-scrollbar{display:none}
-.genre{flex-shrink:0;padding:7px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);font-family:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-radius:16px;cursor:pointer}
-.genre.active{background:var(--accent);color:var(--btn-primary-text);border-color:var(--accent)}
-.volume-row{display:flex;align-items:center;gap:10px}
-.mute-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px}
-.mute-btn.muted{opacity:.35}
-.volume-slider{flex:1;height:3px;-webkit-appearance:none;appearance:none;background:var(--surface);border-radius:2px;outline:none;cursor:pointer}
-.volume-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent)}
-.footer{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);padding-top:8px;border-top:1px solid var(--border)}
-.footer-time{color:var(--accent);font-variant-numeric:tabular-nums}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #edf1ff;
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(ellipse at top, #293653, #0b1020 65%);
+}
+main { max-width: 760px; margin: auto; padding: 24px 16px 40px; }
+header { display:flex; justify-content:space-between; align-items:center; }
+h1 { font-size: 21px; letter-spacing: 3px; }
+h2 { font-size: clamp(30px, 6vw, 48px); line-height:1.1; margin:24px 0 12px; }
+p { color:#aab6d0; }
+.panel {
+  background:#111a2c; border:1px solid #2a3855;
+  border-radius:22px; padding:22px; margin-top:16px;
+}
+.hero {
+  position:relative; overflow:hidden; min-height:255px;
+  padding:28px; border-radius:24px; margin-top:20px;
+  background:linear-gradient(130deg,#253653,#11192b);
+}
+.moon {
+  position:absolute; right:12%; top:30px; width:65px;height:65px;
+  border-radius:50%; background:#e4e8ff;
+  box-shadow:0 0 55px #c6d1ff55;
+}
+.city { position:absolute; bottom:0; left:0; right:0; height:75px;
+  display:flex; align-items:end; gap:4px; opacity:.8; }
+.building { flex:1; background:#10182b; border-top:1px solid #53678f; }
+.heroText { position:relative; z-index:1; max-width:450px; }
+.pill { color:#bfe9df; font-size:12px; letter-spacing:2px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.moods { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+button {
+  font:inherit; cursor:pointer; border-radius:12px; padding:11px;
+  border:1px solid #354362; background:#19243a; color:#dce4ff;
+}
+.mood { text-align:left; font-size:12px; }
+.mood b { display:block; font-size:13px; margin-bottom:3px; }
+.mood.active { background:#303d5d; border-color:#a6b8ff; }
+.primary { background:#c6ceff; color:#11182a; border:0; font-weight:700; flex:1; }
+.controls { display:flex; gap:10px; margin-top:18px; }
+.row { display:flex; justify-content:space-between; margin:18px 0 7px; font-size:13px; }
+.value { color:#b8c7ff; }
+input[type=range] { width:100%; accent-color:#b8c7ff; }
+.option { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:12px 0; border-bottom:1px solid #29354d; font-size:13px; }
+.option:last-child { border:0; }
+.option small { display:block; color:#9aa8c5; margin-top:4px; }
+.note { font-size:12px; }
+#bars { height:36px; display:flex; align-items:center; gap:3px; margin-top:15px; }
+.bar { flex:1; max-width:5px; height:5px; background:#c5b8ff; border-radius:5px; }
+@media(max-width:600px) {
+  .grid { grid-template-columns:1fr; }
+  .hero { padding:22px; }
+}
 </style>
 </head>
 <body>
-<div class="app">
-  <header class="header">
-    <div class="brand"><span class="brand-dot"></span><span>lofi.audius</span></div>
-    <button class="icon-btn" id="themeBtn">🌙</button>
-  </header>
-  <main class="main">
-    <div class="vinyl-wrap">
-      <div class="vinyl" id="vinyl"><div class="vinyl-label"><div class="label-text">LO<br>FI</div></div></div>
-      <div class="glow" id="glow"></div>
-    </div>
-    <div class="now-playing">
-      <div class="np-title" id="npTitle">Press play</div>
-      <div class="np-meta" id="npMeta">audius stream</div>
-    </div>
-    <div class="controls">
-      <button class="btn btn-ctrl" id="prevBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-      <button class="btn btn-play" id="playBtn">
-        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-      </button>
-      <button class="btn btn-ctrl" id="nextBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg></button>
-    </div>
-    <div class="genres" id="genresWrap"></div>
-    <div class="volume-row">
-      <button class="mute-btn" id="muteBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg></button>
-      <input type="range" min="0" max="100" value="65" class="volume-slider" id="volumeSlider">
-    </div>
-  </main>
-  <footer class="footer"><span id="footerInfo">ready</span><span class="footer-time" id="elapsed">00:00</span></footer>
+<main>
+<header>
+  <div><div class="pill">ENDLESS PROCEDURAL RADIO</div><h1>MIDNIGHT FM</h1></div>
+  <span>☾ 01:42 AM</span>
+</header>
+
+<section class="hero">
+  <div class="moon"></div>
+  <div class="city" id="city"></div>
+  <div class="heroText">
+    <div class="pill" id="moodLabel">DREAM CITY · 72 BPM</div>
+    <h2>A little music<br>for the hours<br>that belong to you.</h2>
+    <p>Soft keys. Distant lights. Slow thoughts.</p>
+    <div id="bars"></div>
+  </div>
+</section>
+
+<div class="grid">
+<section class="panel">
+  <h3>✦ Choose your night</h3>
+  <div class="moods">
+    <button class="mood active" data-mood="dream"><b>✦ Dream City</b>Мечтательный город</button>
+    <button class="mood" data-mood="rain"><b>☂ Rainy Window</b>Дождь за окном</button>
+    <button class="mood" data-mood="drive"><b>↗ Night Drive</b>Ночной путь</button>
+    <button class="mood" data-mood="cafe"><b>☕ Quiet Cafe</b>Тёплое кафе</button>
+  </div>
+
+  <div class="row"><label for="tempo">Темп</label><span class="value"><span id="tempoValue">72</span> BPM</span></div>
+  <input id="tempo" type="range" min="58" max="92" value="72">
+
+  <div class="row"><label for="noise">Винил и атмосфера</label><span class="value"><span id="noiseValue">45</span>%</span></div>
+  <input id="noise" type="range" min="0" max="100" value="45">
+
+  <div class="controls">
+    <button class="primary" id="play">▶ Включить радио</button>
+    <button id="newTheme" title="Новая мелодическая фраза">↻</button>
+  </div>
+  <p class="note" id="status">Ночь только начинается.</p>
+</section>
+
+<section class="panel">
+  <h3>✦ Звуковая сцена</h3>
+  <div class="option"><div><b>Мягкие ударные</b><small>Ненавязчивый ритм</small></div><input type="checkbox" id="drums" checked></div>
+  <div class="option"><div><b>Мелодия</b><small>Фразы, паузы и вариации</small></div><input type="checkbox" id="melody" checked></div>
+  <div class="option"><div><b>Ночной воздух</b><small>Тихий атмосферный шум</small></div><input type="checkbox" id="air" checked></div>
+  <div class="option"><div><b>Тёплая лента</b><small>Мягкое изменение тембра</small></div><input type="checkbox" id="tape" checked></div>
+  <p class="note">Звук генерируется прямо в браузере. Никаких установок и аккаунтов.</p>
+</section>
 </div>
+</main>
 
 <script>
-// ============================================================
-// TELEGRAM
-// ============================================================
-const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('#121212'); tg.setBackgroundColor('#121212'); } catch(e){} }
-
 const $ = id => document.getElementById(id);
-const pick = a => a[Math.floor(Math.random() * a.length)];
 
-// ============================================================
-// AUDIUS CONFIG
-// ============================================================
-const APP_NAME = 'lofi_player_demo_2026';
-const HOSTS_FALLBACK = [
-  'https://discoveryprovider.audius.co/v1',
-  'https://discoveryprovider2.audius.co/v1',
-  'https://discoveryprovider3.audius.co/v1',
-];
-let apiHost = HOSTS_FALLBACK[0];
-let tracksPool = [];
-let tracksByGenre = {};
+for (let i=0;i<24;i++) {
+  const b=document.createElement('div');
+  b.className='building';
+  b.style.height=(20+Math.random()*55)+'px';
+  $('city').appendChild(b);
+}
+for(let i=0;i<50;i++){
+  const b=document.createElement('div');
+  b.className='bar'; $('bars').appendChild(b);
+}
 
-// ============================================================
-// STATE
-// ============================================================
-const state = {
-  currentGenre: 'Lo-Fi',
-  playing: false,
-  currentTrack: null,
-  lastTrackId: null,
-  volume: 0.65,
-  muted: false,
-  elapsedStart: 0,
-  elapsedAccum: 0,
+let ctx, master, compressor, noiseGain, noiseFilter, noiseSource;
+let running=false, timer=null, step=0, bar=0, nextTime=0;
+let bpm=72, vinyl=45, mood='dream', motifIndex=0;
+
+const scenes={
+ dream:{
+  label:'DREAM CITY', root:57, air:.018, brightness:2800,
+  chords:[[0,3,7,10],[5,9,12,16],[3,7,10,14],[4,7,11,14]]
+ },
+ rain:{
+  label:'RAINY WINDOW', root:53, air:.042, brightness:1900,
+  chords:[[0,3,7,10],[8,12,15,19],[5,8,12,15],[3,7,10,14]]
+ },
+ drive:{
+  label:'NIGHT DRIVE', root:45, air:.014, brightness:3200,
+  chords:[[0,7,12,16],[5,12,17,21],[3,10,15,19],[8,15,20,24]]
+ },
+ cafe:{
+  label:'QUIET CAFE', root:55, air:.012, brightness:2300,
+  chords:[[0,4,7,11],[5,9,12,16],[2,5,9,12],[7,11,14,17]]
+ }
 };
 
-const GENRES = [
-  { key: 'Lo-Fi', label: 'Lo-Fi' },
-  { key: 'Jazz', label: 'Jazz' },
-  { key: 'Ambient', label: 'Ambient' },
-  { key: 'Hip-Hop/Rap', label: 'Hip-Hop' },
+// Пентатоника: ноты подобраны так, чтобы мелодия звучала согласованно.
+const scale=[0,2,3,7,9,12,14,15,19,21];
+const motifs=[
+ [4,3,1,3,4,6,4,3],
+ [2,4,6,4,3,1,0,1],
+ [4,6,7,6,4,3,2,3],
+ [6,4,3,1,2,4,3,1],
+ [1,3,4,6,4,3,1,0],
+ [3,4,6,4,2,3,1,0]
 ];
 
-// ============================================================
-// AUDIUS API
-// ============================================================
-async function selectHost() {
-  try {
-    const res = await fetch('https://api.audius.co');
-    const json = await res.json();
-    if (json.data && json.data.length) {
-      apiHost = json.data[Math.floor(Math.random() * json.data.length)] + '/v1';
-    }
-  } catch (e) {
-    console.warn('Host discovery failed, using fallback', e);
+function initAudio(){
+ if(ctx) return;
+ const AC=window.AudioContext||window.webkitAudioContext;
+ ctx=new AC();
+
+ master=ctx.createGain();
+ master.gain.value=.72;
+
+ compressor=ctx.createDynamicsCompressor();
+ compressor.threshold.value=-23;
+ compressor.knee.value=22;
+ compressor.ratio.value=3;
+ compressor.attack.value=.015;
+ compressor.release.value=.25;
+
+ const warmth=ctx.createWaveShaper();
+ const curve=new Float32Array(2048);
+ for(let i=0;i<curve.length;i++){
+  const x=i*2/curve.length-1;
+  curve[i]=1.12*x/(1+.12*Math.abs(x));
+ }
+ warmth.curve=curve;
+ warmth.oversample='2x';
+
+ master.connect(warmth);
+ warmth.connect(compressor);
+ compressor.connect(ctx.destination);
+
+ // Длинный зацикленный шум — основа винила и ночного воздуха.
+ const buffer=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);
+ const data=buffer.getChannelData(0);
+ for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1;
+
+ noiseSource=ctx.createBufferSource();
+ noiseSource.buffer=buffer;
+ noiseSource.loop=true;
+ noiseFilter=ctx.createBiquadFilter();
+ noiseFilter.type='lowpass';
+ noiseFilter.frequency.value=1000;
+ noiseGain=ctx.createGain();
+ noiseGain.gain.value=0;
+
+ noiseSource.connect(noiseFilter);
+ noiseFilter.connect(noiseGain);
+ noiseGain.connect(master);
+ noiseSource.start();
+ updateAtmosphere();
+}
+
+function updateAtmosphere(){
+ if(!ctx)return;
+ const scene=scenes[mood];
+ const target=$('air').checked
+   ? (vinyl/100)*.018 + scene.air*.18
+   : 0;
+ noiseGain.gain.setTargetAtTime(target,ctx.currentTime,.25);
+ noiseFilter.frequency.setTargetAtTime(mood==='rain'?1450:780,ctx.currentTime,.5);
+}
+
+function freq(note){return 440*Math.pow(2,(note-69)/12)}
+
+function piano(note,time,duration,volume=.06){
+ const f=freq(note);
+ const out=ctx.createGain();
+ const pan=ctx.createStereoPanner();
+ pan.pan.value=(Math.random()-.5)*.25;
+ out.gain.value=1;
+ out.connect(pan); pan.connect(master);
+
+ // Три гармоники дают мягкий, слегка электрический тембр клавиш.
+ [[1,1],[2.01,.20],[3.92,.055]].forEach(([ratio,amp],i)=>{
+  const osc=ctx.createOscillator();
+  const filter=ctx.createBiquadFilter();
+  const gain=ctx.createGain();
+  osc.type=i===0?'triangle':'sine';
+  osc.frequency.setValueAtTime(f*ratio,time);
+  filter.type='lowpass';
+  filter.frequency.setValueAtTime(scenes[mood].brightness,time);
+  filter.frequency.exponentialRampToValueAtTime(750,time+duration);
+  const peak=volume*amp;
+  gain.gain.setValueAtTime(.0001,time);
+  gain.gain.exponentialRampToValueAtTime(peak,time+.018);
+  gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
+  osc.connect(filter);filter.connect(gain);gain.connect(out);
+  osc.start(time);osc.stop(time+duration+.03);
+ });
+}
+
+function pad(note,time,duration,volume=.018){
+ const f=freq(note);
+ [[-5,.56],[5,.5],[0,.11]].forEach(([detune,amp],i)=>{
+  const osc=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+  osc.type='triangle';osc.frequency.value=f*(i===2?2:1);osc.detune.value=detune;
+  filter.type='lowpass';filter.frequency.value=1150;
+  gain.gain.setValueAtTime(.0001,time);
+  gain.gain.linearRampToValueAtTime(volume*amp,time+.45);
+  gain.gain.setValueAtTime(volume*amp,time+duration-.5);
+  gain.gain.linearRampToValueAtTime(.0001,time+duration);
+  osc.connect(filter);filter.connect(gain);gain.connect(master);
+  osc.start(time);osc.stop(time+duration+.04);
+ });
+}
+
+function bass(note,time,duration=.8){
+ const osc=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+ osc.type='triangle';osc.frequency.value=freq(note);
+ filter.type='lowpass';filter.frequency.value=280;
+ gain.gain.setValueAtTime(.0001,time);
+ gain.gain.linearRampToValueAtTime(.065,time+.06);
+ gain.gain.setTargetAtTime(.0001,time+duration*.5,.16);
+ osc.connect(filter);filter.connect(gain);gain.connect(master);
+ osc.start(time);osc.stop(time+duration+.1);
+}
+
+function kick(time,volume=.11){
+ const osc=ctx.createOscillator(),gain=ctx.createGain();
+ osc.type='sine';osc.frequency.setValueAtTime(100,time);
+ osc.frequency.exponentialRampToValueAtTime(42,time+.14);
+ gain.gain.setValueAtTime(volume,time);
+ gain.gain.exponentialRampToValueAtTime(.0001,time+.21);
+ osc.connect(gain);gain.connect(master);osc.start(time);osc.stop(time+.22);
+}
+
+function snare(time,volume=.022){
+ const length=Math.floor(ctx.sampleRate*.14);
+ const buffer=ctx.createBuffer(1,length,ctx.sampleRate);
+ const data=buffer.getChannelData(0);
+ for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,2);
+ const src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+ src.buffer=buffer;filter.type='bandpass';filter.frequency.value=1500;filter.Q.value=.65;
+ gain.gain.setValueAtTime(volume,time);
+ gain.gain.exponentialRampToValueAtTime(.0001,time+.14);
+ src.connect(filter);filter.connect(gain);gain.connect(master);src.start(time);
+}
+
+function beatDuration(){return 60/bpm/2}
+
+function scheduleStep(s,time){
+ const scene=scenes[mood];
+ const chord=scene.chords[Math.floor(bar/2)%4];
+ const root=scene.root;
+
+ // Новые аккорды раз в два такта — гармония не скачет случайно.
+ if(s===0){
+  chord.forEach((n,i)=>pad(root+n+12,time,beatDuration()*31,.017*(i===0?1.1:.8)));
+  bass(root-12,time,.9);
+ }
+ // Редкие аккордовые ноты создают ощущение живого пианино.
+ if(s===4 || s===12){
+  chord.slice(0,3).forEach((n,i)=>piano(root+n+12,time,.85,.022*(i===0?1.1:.8)));
+ }
+
+ // Мотив занимает два такта. Повторяется узнаваемо, но не буквально.
+ if($('melody').checked && [1,3,5,7,9,11,13,15].includes(s)){
+  const motif=motifs[(motifIndex+Math.floor(bar/2))%motifs.length];
+  const idx=Math.floor(s/2);
+  const degree=motif[idx];
+  const rests=[2,6,11,14];
+  const isRest=rests.includes((s+motifIndex)%16) || Math.random()<.10;
+  if(!isRest){
+   let note=root+24+scale[(degree+motifIndex)%scale.length];
+   if(s===15 && Math.random()<.20)note+=12;
+   piano(note,time,.32+Math.random()*.12,.05);
   }
+ }
+
+ if($('drums').checked){
+  const amount=mood==='drive'?1:mood==='dream'?.8:.65;
+  if(s===0 || s===8)kick(time,.11*amount);
+  if(s===4 || s===12)snare(time,.022*amount);
+  if([2,6,10,14].includes(s) && Math.random()<.38)snare(time,.006);
+ }
 }
 
-async function fetchTracks(genre, limit = 40) {
-  if (tracksByGenre[genre]) return tracksByGenre[genre];
-
-  const url = `${apiHost}/tracks/trending?app_name=${encodeURIComponent(APP_NAME)}&genre=${encodeURIComponent(genre)}&limit=${limit}`;
-  let res = await fetch(url);
-  if (!res.ok) {
-    // fallback: search by keyword
-    const q = genre === 'Lo-Fi' ? 'lofi' : genre.toLowerCase();
-    const url2 = `${apiHost}/tracks/search?app_name=${encodeURIComponent(APP_NAME)}&query=${encodeURIComponent(q)}&limit=${limit}`;
-    res = await fetch(url2);
-  }
-  if (!res.ok) throw new Error('Audius request failed: ' + res.status);
-
-  const json = await res.json();
-  const raw = json.data || [];
-
-  const tracks = raw
-    .filter(t => t.is_streamable && t.id)
-    .map(t => ({
-      id: t.id,
-      title: t.title || 'Untitled',
-      artist: t.user?.name || t.user?.handle || 'Unknown',
-      genre: t.genre || genre,
-      duration: t.duration || 0,
-      streamUrl: `${apiHost}/tracks/${t.id}/stream?app_name=${encodeURIComponent(APP_NAME)}`,
-    }));
-
-  tracksByGenre[genre] = tracks;
-  return tracks;
+function scheduler(){
+ if(!running)return;
+ while(nextTime<ctx.currentTime+.12){
+  scheduleStep(step,nextTime);
+  step++;
+  if(step>=16){step=0;bar++;if(bar%4===0)motifIndex=(motifIndex+1)%motifs.length;}
+  nextTime+=beatDuration();
+ }
+ timer=setTimeout(scheduler,25);
 }
 
-async function loadGenre(genre) {
-  $('footerInfo').textContent = 'loading ' + genre + '…';
-  try {
-    const tracks = await fetchTracks(genre);
-    if (!tracks.length) throw new Error('empty');
-    tracksPool = tracks;
-    $('footerInfo').textContent = `${tracks.length} треков · ${genre}`;
-  } catch (e) {
-    console.error(e);
-    $('footerInfo').textContent = 'ошибка загрузки';
-    tracksPool = [];
-  }
+function start(){
+ initAudio();ctx.resume();
+ running=true;step=0;bar=0;motifIndex=Math.floor(Math.random()*motifs.length);
+ nextTime=ctx.currentTime+.08;
+ $('play').textContent='Ⅱ  Пауза';
+ $('status').textContent='Сейчас играет · музыка ночного города';
+ updateAtmosphere();scheduler();animate();
 }
-
-// ============================================================
-// AUDIO (dual-player crossfade)
-// ============================================================
-const players = [new Audio(), new Audio()];
-players.forEach(p => { p.preload = 'auto'; p.volume = 0; });
-let activeIdx = 0;
-
-players.forEach((el, i) => {
-  el.addEventListener('ended', () => {
-    if (i === activeIdx && state.playing) playNext();
-  });
+function stop(){
+ running=false;clearTimeout(timer);
+ $('play').textContent='▶  Включить радио';
+ $('status').textContent='Пауза · город никуда не исчезнет';
+}
+function animate(){
+ if(!running)return;
+ document.querySelectorAll('.bar').forEach((b,i)=>{
+  b.style.height=(5+Math.abs(Math.sin(Date.now()/260+i*.47))*19+Math.random()*6)+'px';
+ });
+ requestAnimationFrame(animate);
+}
+$('play').addEventListener('click',()=>running?stop():start());
+$('newTheme').addEventListener('click',()=>{
+ motifIndex=(motifIndex+1+Math.floor(Math.random()*3))%motifs.length;
+ $('status').textContent='Новая мелодическая фраза готова.';
+ if(running){step=0;bar=0;nextTime=ctx.currentTime+.08;}
 });
-
-// ============================================================
-// PLAYBACK
-// ============================================================
-function pickNextTrack() {
-  if (!tracksPool.length) return null;
-  const candidates = tracksPool.filter(t => t.id !== state.lastTrackId);
-  return pick(candidates.length ? candidates : tracksPool);
-}
-
-function updateTrackUI(track) {
-  $('npTitle').textContent = track.title;
-  $('npMeta').textContent = `${track.artist} · ${track.genre}`;
-}
-
-async function crossfadeTo(track, fadeMs = 2000) {
-  const fromEl = players[activeIdx];
-  const toEl = players[1 - activeIdx];
-  const nextIdx = 1 - activeIdx;
-
-  toEl.src = track.streamUrl;
-  toEl.currentTime = 0;
-  toEl.volume = 0;
-
-  try {
-    await toEl.play();
-  } catch (e) {
-    console.warn('play fail', e);
-    $('footerInfo').textContent = 'не удалось воспроизвести';
-    return;
-  }
-
-  activeIdx = nextIdx;
-  state.currentTrack = track;
-  state.lastTrackId = track.id;
-  updateTrackUI(track);
-
-  const start = performance.now();
-  const fromVolStart = fromEl.volume;
-  const step = () => {
-    const p = Math.min(1, (performance.now() - start) / fadeMs);
-    if (!state.muted) {
-      toEl.volume = state.volume * p;
-      fromEl.volume = fromVolStart * (1 - p);
-    }
-    if (p < 1) requestAnimationFrame(step);
-    else { try { fromEl.pause(); fromEl.src = ''; } catch(e){} }
-  };
-  step();
-}
-
-async function startPlayback() {
-  if (!tracksPool.length) await loadGenre(state.currentGenre);
-  const track = pickNextTrack();
-  if (!track) { $('footerInfo').textContent = 'нет треков'; return; }
-  await crossfadeTo(track, 600);
-  state.playing = true;
-  updatePlayUI();
-}
-
-async function playNext() {
-  if (!tracksPool.length) return;
-  const track = pickNextTrack();
-  if (!track) return;
-  await crossfadeTo(track);
-  state.playing = true;
-  updatePlayUI();
-  tg?.HapticFeedback?.impactOccurred('light');
-}
-
-function pausePlayback() {
-  players[activeIdx].pause();
-  state.playing = false;
-  updatePlayUI();
-}
-
-async function resumePlayback() {
-  try {
-    await players[activeIdx].play();
-    state.playing = true;
-    updatePlayUI();
-  } catch (e) { console.warn(e); }
-}
-
-async function togglePlay() {
-  if (state.playing) pausePlayback();
-  else if (state.currentTrack) await resumePlayback();
-  else await startPlayback();
-  tg?.HapticFeedback?.impactOccurred('light');
-}
-
-// ============================================================
-// UI
-// ============================================================
-function updatePlayUI() {
-  $('vinyl').classList.toggle('spinning', state.playing);
-  $('glow').classList.toggle('active', state.playing);
-  document.querySelector('.icon-play').style.display = state.playing ? 'none' : 'block';
-  document.querySelector('.icon-pause').style.display = state.playing ? 'block' : 'none';
-  $('footerInfo').textContent = state.playing ? 'playing' : 'paused';
-}
-
-function renderGenres() {
-  const wrap = $('genresWrap');
-  wrap.innerHTML = '';
-  GENRES.forEach(g => {
-    const btn = document.createElement('button');
-    btn.className = 'genre' + (g.key === state.currentGenre ? ' active' : '');
-    btn.textContent = g.label;
-    btn.addEventListener('click', async () => {
-      if (g.key === state.currentGenre) return;
-      state.currentGenre = g.key;
-      renderGenres();
-      if (state.playing) pausePlayback();
-      state.currentTrack = null;
-      await loadGenre(g.key);
-      if (state.playing) await startPlayback();
-      tg?.HapticFeedback?.selectionChanged();
-    });
-    wrap.appendChild(btn);
-  });
-}
-
-// ============================================================
-// THEME
-// ============================================================
-let theme = 'night';
-$('themeBtn').addEventListener('click', () => {
-  theme = theme === 'night' ? 'day' : 'night';
-  document.documentElement.setAttribute('data-theme', theme);
-  $('themeBtn').textContent = theme === 'night' ? '🌙' : '☀️';
+$('tempo').addEventListener('input',e=>{
+ bpm=Number(e.target.value);$('tempoValue').textContent=bpm;
+ $('moodLabel').textContent=scenes[mood].label+' · '+bpm+' BPM';
 });
-
-// ============================================================
-// WIRE UP
-// ============================================================
-$('playBtn').addEventListener('click', togglePlay);
-$('nextBtn').addEventListener('click', playNext);
-$('prevBtn').addEventListener('click', playNext); // prev = тоже next (случайный)
-
-$('volumeSlider').addEventListener('input', e => {
-  state.volume = parseInt(e.target.value, 10) / 100;
-  if (!state.muted) players[activeIdx].volume = state.volume;
+$('noise').addEventListener('input',e=>{
+ vinyl=Number(e.target.value);$('noiseValue').textContent=vinyl;updateAtmosphere();
 });
-
-$('muteBtn').addEventListener('click', () => {
-  state.muted = !state.muted;
-  $('muteBtn').classList.toggle('muted', state.muted);
-  players.forEach(p => p.volume = state.muted ? 0 : state.volume);
-});
-
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
-    e.preventDefault(); togglePlay();
-  }
-});
-
-setInterval(() => {
-  const el = players[activeIdx];
-  const t = el && !isNaN(el.currentTime) ? el.currentTime : 0;
-  const m = Math.floor(t / 60).toString().padStart(2, '0');
-  const s = Math.floor(t % 60).toString().padStart(2, '0');
-  $('elapsed').textContent = `${m}:${s}`;
-}, 500);
-
-// ============================================================
-// INIT
-// ============================================================
-(async function init() {
-  $('footerInfo').textContent = 'connecting to audius…';
-  await selectHost();
-  renderGenres();
-  await loadGenre(state.currentGenre);
+document.querySelectorAll('.mood').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('.mood').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');mood=btn.dataset.mood;
+ $('moodLabel').textContent=scenes[mood].label+' · '+bpm+' BPM';
+ updateAtmosphere();
+}));
+['air','drums','melody','tape'].forEach(id=>$(id).addEventListener('change',updateAtmosphere));
 })();
 </script>
 </body>
