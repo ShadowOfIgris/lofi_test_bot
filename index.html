@@ -4,82 +4,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Midnight FM — Piano Test</title>
+<title>Midnight FM — Lo-fi Piano Lab</title>
 <script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
+
 <style>
 * { box-sizing: border-box; }
+
 body {
-  margin: 0; min-height: 100vh; display: grid; place-items: center;
-  padding: 20px; background: #0c1120; color: #e8e7f0;
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #0b101c;
+  color: #ece8df;
   font-family: Georgia, serif;
 }
+
 main {
-  width: min(420px, 100%); padding: 28px;
-  border: 1px solid #343d54; border-radius: 18px;
-  background: #151b2b; text-align: center;
+  width: min(430px, 100%);
+  padding: 30px;
+  border: 1px solid #414354;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #202536, #121725 75%);
+  box-shadow: 0 24px 80px #0007;
 }
-h1 { font-weight: normal; letter-spacing: 3px; }
-p { color: #a5aec5; line-height: 1.5; }
+
+.eyebrow {
+  color: #b8a88e;
+  font: 10px Arial, sans-serif;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 29px;
+  font-weight: normal;
+  letter-spacing: 2px;
+  margin: 12px 0 8px;
+}
+
+p {
+  color: #b4b6c3;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 button {
-  width: 100%; margin-top: 12px; padding: 14px;
-  border: 1px solid #47536f; border-radius: 24px;
-  background: #29344c; color: white; cursor: pointer;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #5a6072;
+  border-radius: 28px;
+  background: #30384b;
+  color: #f2eee6;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .2s;
 }
+
+button:hover { background: #414b60; }
 button:disabled { opacity: .45; cursor: wait; }
+
+#load {
+  background: #d5c8ad;
+  color: #191d28;
+  border-color: transparent;
+}
+
 #status {
-  margin-top: 20px; color: #a5aec5;
-  font: 12px/1.6 Arial, sans-serif; overflow-wrap: anywhere;
+  min-height: 36px;
+  margin-top: 20px;
+  color: #c0b49e;
+  font: 12px/1.6 Arial, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  margin-top: 12px;
+  color: #818ba0;
+  font: 11px/1.6 Arial, sans-serif;
 }
 </style>
 </head>
+
 <body>
 <main>
-  <h1>Midnight FM</h1>
-  <p>Проверяем меланхоличное акустическое пианино</p>
+  <div class="eyebrow">Midnight FM · sound lab</div>
+  <h1>Warm Piano</h1>
+  <p>
+    Тёплое акустическое пианино, мягкие аккорды
+    и лёгкая текстура старой записи.
+  </p>
+
   <button id="load">Загрузить пианино</button>
   <button id="chord" disabled>Послушать аккорд</button>
   <button id="melody" disabled>Послушать мелодию</button>
-  <div id="status">Нажми «Загрузить пианино»</div>
+
+  <div id="status">Ожидаем загрузки звуков…</div>
+  <div class="note">
+    Обработка: мягкая сатурация, приглушённые высокие частоты,
+    лёгкая реверберация и тихий виниловый шум.
+  </div>
 </main>
 
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+
   const loadButton = $("load");
   const chordButton = $("chord");
   const melodyButton = $("melody");
   const status = $("status");
 
   let piano = null;
-  let reverb = null;
+  let noise = null;
+  let noiseGain = null;
   let ready = false;
   let loading = false;
-  let playingDemo = false;
+  let demoPlaying = false;
+  let demoTimer = null;
+  let effects = [];
 
-  function message(text) {
+  function say(text) {
     status.textContent = text;
+  }
+
+  function clearEffects() {
+    for (const effect of effects) {
+      try { effect.dispose(); } catch (_) {}
+    }
+    effects = [];
+  }
+
+  function makeNoise() {
+    // Тихая непрерывная текстура, а не громкий дождь.
+    noise = new Tone.Noise("pink");
+
+    const noiseHighpass = new Tone.Filter({
+      frequency: 1800,
+      type: "highpass",
+      rolloff: -12
+    });
+
+    const noiseLowpass = new Tone.Filter({
+      frequency: 6500,
+      type: "lowpass"
+    });
+
+    noiseGain = new Tone.Gain(0.012);
+
+    noise.connect(noiseHighpass);
+    noiseHighpass.connect(noiseLowpass);
+    noiseLowpass.connect(noiseGain);
+    noiseGain.toDestination();
+
+    effects.push(noise, noiseHighpass, noiseLowpass, noiseGain);
+    noise.start();
   }
 
   async function loadPiano() {
     if (loading || ready) return;
 
     if (typeof Tone === "undefined") {
-      message("Tone.js не загрузился. Обнови страницу.");
+      say("Tone.js не загрузился. Обнови страницу.");
       return;
     }
 
     loading = true;
     loadButton.disabled = true;
-    message("Загружаем записи пианино…");
+    say("Загружаем пианино и готовим обработку…");
 
     try {
       await Tone.start();
 
-      reverb = new Tone.Reverb({
-        decay: 3,
-        wet: 0.16
+      const highpass = new Tone.Filter({
+        frequency: 85,
+        type: "highpass",
+        rolloff: -12
       });
+
+      const lowpass = new Tone.Filter({
+        frequency: 6200,
+        type: "lowpass",
+        rolloff: -12
+      });
+
+      const compressor = new Tone.Compressor({
+        threshold: -25,
+        ratio: 2,
+        attack: 0.025,
+        release: 0.25
+      });
+
+      // Очень мягкое насыщение, чтобы чуть смягчить
+      // стерильное ощущение цифровой записи.
+      const saturation = new Tone.Distortion(0.07);
+      saturation.wet.value = 0.16;
+
+      const reverb = new Tone.Reverb({
+        decay: 3.2,
+        wet: 0.2
+      });
+
+      effects.push(
+        highpass, lowpass, compressor, saturation, reverb
+      );
+
       await reverb.generate();
+
+      highpass.connect(lowpass);
+      lowpass.connect(compressor);
+      compressor.connect(saturation);
+      saturation.connect(reverb);
       reverb.toDestination();
 
       piano = new Tone.Sampler({
@@ -99,98 +236,136 @@ button:disabled { opacity: .45; cursor: wait; }
           C6: "C6.mp3"
         },
         baseUrl: "https://tonejs.github.io/audio/salamander/",
-        attack: 0.02,
-        release: 2
+        attack: 0.025,
+        release: 2.2
       });
 
-      piano.connect(reverb);
-      piano.volume.value = -5;
+      piano.connect(highpass);
+      piano.volume.value = -4;
 
       await Tone.loaded();
+
+      makeNoise();
 
       ready = true;
       chordButton.disabled = false;
       melodyButton.disabled = false;
-      message("Пианино готово! Выбирай, что послушать.");
+      say("Готово. Послушай аккорд и мелодию.");
     } catch (error) {
       console.error(error);
-      if (piano) piano.dispose();
-      if (reverb) reverb.dispose();
+
+      if (piano) {
+        try { piano.dispose(); } catch (_) {}
+      }
+
       piano = null;
-      reverb = null;
+      clearEffects();
       loadButton.disabled = false;
-      message("Ошибка загрузки: " + error.message);
+
+      say("Ошибка загрузки: " + error.message);
     } finally {
       loading = false;
     }
   }
 
-  function setDemoBusy(busy) {
-    playingDemo = busy;
-    chordButton.disabled = busy || !ready;
-    melodyButton.disabled = busy || !ready;
+  function setDemoBusy(value) {
+    demoPlaying = value;
+    chordButton.disabled = value || !ready;
+    melodyButton.disabled = value || !ready;
+  }
+
+  function finishDemo(message) {
+    clearTimeout(demoTimer);
+    setDemoBusy(false);
+    say(message);
   }
 
   async function playChord() {
-    if (!ready || playingDemo) return;
+    if (!ready || demoPlaying) return;
 
     try {
       await Tone.start();
       setDemoBusy(true);
+
+      const now = Tone.now() + 0.1;
+
+      // Тёплый аккорд с мягким верхним голосом.
       piano.triggerAttackRelease(
-        ["C4", "D#4", "G4", "A#4"],
-        3.5,
-        Tone.now() + 0.1,
-        0.55
+        ["C4", "D#4", "G4", "A#4", "D#5"],
+        4,
+        now,
+        0.48
       );
-      message("Звучит меланхоличный аккорд…");
-      setTimeout(() => {
-        setDemoBusy(false);
-        message("Готово! Попробуй мелодию.");
-      }, 4500);
+
+      piano.triggerAttackRelease(
+        ["G3", "C4"],
+        3.5,
+        now + 0.08,
+        0.24
+      );
+
+      say("Слушаем тёплый аккорд…");
+
+      demoTimer = setTimeout(() => {
+        finishDemo("Как тебе тембр и мягкость звука?");
+      }, 5200);
     } catch (error) {
       console.error(error);
-      setDemoBusy(false);
-      message("Ошибка воспроизведения: " + error.message);
+      finishDemo("Ошибка воспроизведения: " + error.message);
     }
   }
 
   async function playMelody() {
-    if (!ready || playingDemo) return;
+    if (!ready || demoPlaying) return;
 
     try {
       await Tone.start();
       setDemoBusy(true);
 
+      const now = Tone.now() + 0.15;
+
+      // Неспешная фраза с паузами, не ровная гамма.
       const notes = [
-        ["G4", 0, 0.48],
-        ["D#4", 0.55, 0.42],
-        ["C4", 1.2, 0.58],
-        ["D4", 1.95, 0.38],
-        ["G4", 2.45, 0.48],
-        ["A#4", 3.15, 0.42],
-        ["G4", 3.85, 0.48],
-        ["D#4", 4.5, 0.4],
-        ["D4", 5.15, 0.36],
-        ["C4", 5.85, 0.52]
+        ["G4", 0.00, 0.42, 1.1],
+        ["D#5", 0.72, 0.34, 0.9],
+        ["C5", 1.42, 0.40, 1.3],
+        ["G4", 2.35, 0.30, 0.9],
+        ["A#4", 2.85, 0.38, 1.2],
+        ["G4", 3.60, 0.32, 1.0],
+        ["D#4", 4.30, 0.35, 1.4],
+        ["C4", 5.15, 0.44, 1.8],
+        ["G4", 6.15, 0.28, 1.0],
+        ["C5", 6.70, 0.34, 1.5]
       ];
 
-      const start = Tone.now() + 0.1;
-      notes.forEach(([note, offset, velocity]) => {
+      // Тихие аккордовые опоры под мелодией.
+      piano.triggerAttackRelease(
+        ["C4", "D#4", "G4"],
+        3.4, now, 0.22
+      );
+
+      piano.triggerAttackRelease(
+        ["A#3", "D4", "F4"],
+        3.1, now + 3.6, 0.18
+      );
+
+      notes.forEach(([note, offset, velocity, duration]) => {
         piano.triggerAttackRelease(
-          note, 1.1, start + offset, velocity
+          note,
+          duration,
+          now + offset,
+          velocity
         );
       });
 
-      message("Звучит ночная мелодия…");
-      setTimeout(() => {
-        setDemoBusy(false);
-        message("Как тебе тембр пианино?");
-      }, 8500);
+      say("Звучит уютная ночная мелодия…");
+
+      demoTimer = setTimeout(() => {
+        finishDemo("Готово. Оцени новое звучание.");
+      }, 9200);
     } catch (error) {
       console.error(error);
-      setDemoBusy(false);
-      message("Ошибка воспроизведения: " + error.message);
+      finishDemo("Ошибка воспроизведения: " + error.message);
     }
   }
 
