@@ -2,877 +2,564 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Midnight FM 2.2</title>
-
-  <script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #101622;
-      color: #eee9df;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-    }
-
-    .radio {
-      width: 100%;
-      max-width: 560px;
-      background: #192231;
-      border: 1px solid #344050;
-      border-radius: 22px;
-      padding: 28px;
-      box-shadow: 0 18px 60px #0005;
-    }
-
-    .eyebrow {
-      color: #c2a989;
-      font-size: 11px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: 36px;
-      font-weight: 400;
-      margin: 0 0 8px;
-      letter-spacing: -1px;
-    }
-
-    .subtitle {
-      color: #a7b0bc;
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 25px;
-    }
-
-    .visual {
-      height: 125px;
-      border-radius: 14px;
-      background:
-        radial-gradient(ellipse at 50% 120%, #b29b7a30, transparent 65%),
-        linear-gradient(180deg, #151e2d, #202b3a);
-      border: 1px solid #344050;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .bar {
-      width: 4px;
-      height: 14px;
-      border-radius: 5px;
-      background: #c5ad8c;
-      opacity: .65;
-      transition: height .25s;
-    }
-
-    .visual.playing .bar:nth-child(3n) {
-      height: 42px;
-    }
-
-    .visual.playing .bar:nth-child(3n + 1) {
-      height: 25px;
-    }
-
-    .visual.playing .bar:nth-child(4n) {
-      height: 55px;
-    }
-
-    .visual.playing .bar:nth-child(5n) {
-      height: 18px;
-    }
-
-    .status {
-      font-size: 12px;
-      color: #b6c0cc;
-      min-height: 18px;
-      margin-bottom: 16px;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 10px;
-      padding: 13px 16px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: opacity .2s, transform .2s;
-    }
-
-    button:hover {
-      opacity: .88;
-    }
-
-    button:active {
-      transform: scale(.98);
-    }
-
-    button:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-    }
-
-    .primary {
-      background: #c7b08f;
-      color: #151b25;
-      flex: 1;
-      font-weight: bold;
-    }
-
-    .secondary {
-      background: #2a3545;
-      color: #eee9df;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 17px;
-      font-size: 12px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #c7b08f;
-    }
-
-    .mixer {
-      border-top: 1px solid #344050;
-      padding-top: 20px;
-    }
-
-    .channel {
-      margin-bottom: 19px;
-    }
-
-    .channel-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 9px;
-      font-size: 13px;
-    }
-
-    .channel-name {
-      color: #e9e4da;
-    }
-
-    .channel-value {
-      color: #b9a487;
-      min-width: 38px;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: #c7b08f;
-      cursor: pointer;
-    }
-
-    .footer {
-      margin-top: 23px;
-      padding-top: 17px;
-      border-top: 1px solid #344050;
-      color: #8491a1;
-      font-size: 11px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    @media (max-width: 420px) {
-      .radio {
-        padding: 21px;
-      }
-
-      h1 {
-        font-size: 30px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midnight FM — Lo-fi Radio Lab</title>
+<script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; padding: 20px;
+  display: grid; place-items: center;
+  background: #0b101c; color: #ece8df; font-family: Georgia, serif;
+}
+main {
+  width: min(460px, 100%); padding: 28px;
+  border: 1px solid #414354; border-radius: 20px;
+  background: linear-gradient(160deg, #202536, #121725 75%);
+  box-shadow: 0 24px 80px #0007;
+}
+.eyebrow {
+  color: #b8a88e; font: 10px Arial, sans-serif;
+  letter-spacing: 4px; text-transform: uppercase;
+}
+h1 { font-size: 29px; font-weight: normal; letter-spacing: 2px; margin: 12px 0 8px; }
+p { color: #b4b6c3; font-size: 14px; line-height: 1.6; }
+button {
+  width: 100%; margin-top: 10px; padding: 13px;
+  border: 1px solid #5a6072; border-radius: 28px;
+  background: #30384b; color: #f2eee6; font-size: 14px; cursor: pointer;
+}
+button:hover { background: #414b60; }
+button:disabled { opacity: .45; cursor: wait; }
+.primary { background: #d5c8ad; color: #191d28; border-color: transparent; }
+.controls {
+  margin-top: 22px; padding: 16px;
+  border: 1px solid #373e50; border-radius: 14px; background: #11172580;
+}
+.controls h2 { margin: 0 0 16px; color: #d9cdb8; font-size: 15px; font-weight: normal; }
+.slider-row { margin-top: 15px; }
+.slider-heading {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin-bottom: 8px; color: #c4c6d0; font: 12px Arial, sans-serif;
+}
+.slider-heading output { color: #d9cdb8; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: #c9b99c; cursor: pointer; }
+#status {
+  min-height: 36px; margin-top: 18px; color: #c0b49e;
+  font: 12px/1.6 Arial, sans-serif; overflow-wrap: anywhere;
+}
+.small { margin-top: 14px; color: #818ba0; font: 11px/1.6 Arial, sans-serif; }
+</style>
 </head>
-
 <body>
-  <main class="radio">
-    <div class="eyebrow">Your quiet corner</div>
-    <h1>Midnight FM</h1>
-    <div class="subtitle">
-      Бесконечное процедурное lo-fi радио.<br>
-      Ночь, мягкие клавиши и город за окном.
+<main>
+  <div class="eyebrow">Midnight FM · sound lab</div>
+  <h1>Warm Lo-fi Radio</h1>
+  <p>Тёплое пианино, мягкий бас и приглушённый бит. Музыка создаётся на ходу.</p>
+
+  <button id="load" class="primary">1. Загрузить звуки</button>
+  <button id="chord" disabled>Тест: пианино</button>
+  <button id="play" class="primary" disabled>▶ Запустить радио</button>
+  <button id="stop" disabled>■ Остановить радио</button>
+
+  <section class="controls">
+    <h2>Микшер</h2>
+
+    <div class="slider-row">
+      <div class="slider-heading"><label for="pianoVol">Пианино</label><output id="pianoOut">100%</output></div>
+      <input id="pianoVol" type="range" min="0" max="100" value="100">
     </div>
 
-    <div class="visual" id="visual">
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
+    <div class="slider-row">
+      <div class="slider-heading"><label for="bassVol">Бас</label><output id="bassOut">15%</output></div>
+      <input id="bassVol" type="range" min="0" max="100" value="15">
     </div>
 
-    <div class="status" id="status">Сначала загрузи звуки.</div>
-
-    <div class="buttons">
-      <button class="primary" id="loadButton">
-        1. Загрузить звуки
-      </button>
-      <button class="secondary" id="playButton" disabled>
-        2. Запустить радио
-      </button>
-      <button class="secondary" id="stopButton" disabled>
-        ■
-      </button>
+    <div class="slider-row">
+      <div class="slider-heading"><label for="drumsVol">Ударные</label><output id="drumsOut">100%</output></div>
+      <input id="drumsVol" type="range" min="0" max="100" value="100">
     </div>
 
-    <section class="mixer">
-      <div class="section-title">
-        <span>Микшер</span>
-        <span>02:00 AM</span>
-      </div>
-
-      <div class="channel">
-        <div class="channel-head">
-          <span class="channel-name">Piano · Пианино</span>
-          <span class="channel-value" id="pianoValue">100%</span>
-        </div>
-        <input id="pianoVol" type="range" min="0" max="100" value="100">
-      </div>
-
-      <div class="channel">
-        <div class="channel-head">
-          <span class="channel-name">Bass · Бас</span>
-          <span class="channel-value" id="bassValue">15%</span>
-        </div>
-        <input id="bassVol" type="range" min="0" max="100" value="15">
-      </div>
-
-      <div class="channel">
-        <div class="channel-head">
-          <span class="channel-name">Drums · Ударные</span>
-          <span class="channel-value" id="drumsValue">100%</span>
-        </div>
-        <input id="drumsVol" type="range" min="0" max="100" value="100">
-      </div>
-
-      <div class="channel">
-        <div class="channel-head">
-          <span class="channel-name">Atmosphere · Пэд</span>
-          <span class="channel-value" id="padValue">55%</span>
-        </div>
-        <input id="padVol" type="range" min="0" max="100" value="55">
-      </div>
-
-      <div class="channel">
-        <div class="channel-head">
-          <span class="channel-name">Bells · Колокольчики</span>
-          <span class="channel-value" id="bellsValue">100%</span>
-        </div>
-        <input id="bellsVol" type="range" min="0" max="100" value="100">
-      </div>
-
-      <div class="channel">
-        <div class="channel-head">
-          <span class="channel-name">Vinyl · Текстура записи</span>
-          <span class="channel-value" id="textureValue">5%</span>
-        </div>
-        <input id="textureVol" type="range" min="0" max="100" value="5">
-      </div>
-    </section>
-
-    <div class="footer">
-      Procedural music · 72 BPM · Never the same evening twice
+    <div class="slider-row">
+      <div class="slider-heading"><label for="textureVol">Текстура записи</label><output id="textureOut">15%</output></div>
+      <input id="textureVol" type="range" min="0" max="100" value="15">
     </div>
-  </main>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
+    <div class="slider-row">
+      <div class="slider-heading"><label for="bellsVol">Колокольчики</label><output id="bellsOut">100%</output></div>
+      <input id="bellsVol" type="range" min="0" max="100" value="100">
+    </div>
+  </section>
 
-    let loaded = false;
-    let playing = false;
-    let instruments = {};
-    let scheduledEvent = null;
+  <div id="status">Сначала загрузи звуки.</div>
+  <div class="small">72 BPM · уютная минорная гармония · развивающиеся мелодии · мягкий бит · независимая громкость слоёв.</div>
+</main>
 
-    const BPM = 72;
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
 
-    // Аккорды и ноты в тональности C major / A minor.
-    const progressions = [
-      [
-        ["A3", "C4", "E4", "G4"],
-        ["F3", "A3", "C4", "E4"],
-        ["C3", "E3", "G3", "B3"],
-        ["G3", "B3", "D4", "A4"]
-      ],
-      [
-        ["F3", "A3", "C4", "E4"],
-        ["G3", "B3", "D4", "F4"],
-        ["E3", "G3", "B3", "D4"],
-        ["A3", "C4", "E4", "G4"]
-      ],
-      [
-        ["C3", "E3", "G3", "B3"],
-        ["G3", "B3", "D4", "F4"],
-        ["A3", "C4", "E4", "G4"],
-        ["F3", "A3", "C4", "E4"]
-      ]
-    ];
+  const loadButton = $("load");
+  const chordButton = $("chord");
+  const playButton = $("play");
+  const stopButton = $("stop");
+  const status = $("status");
 
-    const melodyNotes = [
-      "E4", "G4", "A4", "C5", "D5",
-      "E5", "G5", "A5", "C6"
-    ];
+  let ready = false;
+  let loading = false;
+  let playing = false;
+  let piano = null;
+  let pad = null;
+  let padGain = null;
+  let bass = null;
+  let kick = null;
+  let snare = null;
+  let hats = null;
+  let noise = null;
+  let bells = null;
+  let bellReverb = null;
 
-    const bellNotes = [
-      "C5", "D5", "E5", "G5", "A5",
-      "C6", "D6", "E6", "G6"
-    ];
+  let pianoGain, bassGain, drumsGain, textureGain, bellsGain;
+  let pianoFilter, pianoCompressor, saturation, reverb;
+  let noiseHighpass, noiseLowpass;
+  let repeatId = null;
+  let barNumber = 0;
 
-    let barIndex = 0;
-    let currentProgression = 0;
-    let melodyIndex = 0;
+  const effects = [];
+  const BPM = 72;
+  const beat = 60 / BPM;
 
-    function setStatus(message) {
-      $("status").textContent = message;
+  const progressions = [
+    [
+      { notes: ["C4", "D#4", "G4"], root: "C2" },
+      { notes: ["C4", "G#4", "D#5"], root: "G#1" },
+      { notes: ["D#4", "G4", "A#4"], root: "D#2" },
+      { notes: ["A#3", "D4", "F4"], root: "A#1" }
+    ],
+    [
+      { notes: ["C4", "D#4", "G4"], root: "C2" },
+      { notes: ["A#3", "D4", "F4"], root: "A#1" },
+      { notes: ["C4", "G#4", "D#5"], root: "G#1" },
+      { notes: ["B3", "D4", "G4"], root: "G1" }
+    ],
+    [
+      { notes: ["C4", "G#4", "D#5"], root: "G#1" },
+      { notes: ["D#4", "G4", "A#4"], root: "D#2" },
+      { notes: ["C4", "D#4", "G4"], root: "C2" },
+      { notes: ["A#3", "D4", "F4"], root: "A#1" }
+    ]
+  ];
+
+  const scale = ["C4", "D#4", "F4", "G4", "A#4", "C5", "D#5", "F5", "G5"];
+
+  let currentProgression = progressions[0];
+  let previousNote = "G4";
+
+  function say(message) {
+    status.textContent = message;
+  }
+
+  function choose(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
+  function setControls() {
+    chordButton.disabled = !ready || playing;
+    playButton.disabled = !ready || playing;
+    stopButton.disabled = !playing;
+  }
+
+  function createGain(value) {
+    const gain = new Tone.Gain(value);
+    gain.toDestination();
+    effects.push(gain);
+    return gain;
+  }
+
+  async function loadAudio() {
+    if (loading || ready) return;
+
+    if (typeof Tone === "undefined") {
+      say("Tone.js не загрузился. Обнови страницу.");
+      return;
     }
 
-    function sliderGain(value) {
-      // Мягкая регулировка громкости, чтобы низкие значения
-      // оставались слышимыми и не были слишком резкими.
-      return Number(value) / 100;
-    }
-
-    function setChannelVolume(id, valueId, gainNode) {
-      const slider = $(id);
-      const output = $(valueId);
-
-      function update() {
-        const value = Number(slider.value);
-        output.textContent = value + "%";
-
-        if (gainNode) {
-          gainNode.gain.rampTo(sliderGain(value), 0.08);
-        }
-      }
-
-      slider.addEventListener("input", update);
-      update();
-    }
-
-    async function loadRadio() {
-      if (loaded) return;
-
-      $("loadButton").disabled = true;
-      setStatus("Загружаю пианино и собираю звуковые слои…");
-
-      try {
-        await Tone.start();
-
-        const master = new Tone.Gain(0.78);
-        const compressor = new Tone.Compressor({
-          threshold: -20,
-          ratio: 3,
-          attack: 0.01,
-          release: 0.25
-        });
-
-        const limiter = new Tone.Limiter(-1);
-        master.connect(compressor);
-        compressor.connect(limiter);
-        limiter.toDestination();
-
-        const pianoGain = new Tone.Gain(1).connect(master);
-        const bassGain = new Tone.Gain(0.15).connect(master);
-        const drumsGain = new Tone.Gain(1).connect(master);
-        const padGain = new Tone.Gain(0.55).connect(master);
-        const bellsGain = new Tone.Gain(1).connect(master);
-        const textureGain = new Tone.Gain(0.05).connect(master);
-
-        const pianoFilter = new Tone.Filter({
-          frequency: 4200,
-          type: "lowpass",
-          rolloff: -12
-        }).connect(pianoGain);
-
-        const pianoReverb = new Tone.Reverb({
-          decay: 3.2,
-          preDelay: 0.03,
-          wet: 0.25
-        }).connect(pianoFilter);
-
-        await pianoReverb.generate();
-
-        const piano = new Tone.Sampler({
-          urls: {
-            A0: "A0.mp3",
-            C1: "C1.mp3",
-            "D#1": "Ds1.mp3",
-            "F#1": "Fs1.mp3",
-            A1: "A1.mp3",
-            C2: "C2.mp3",
-            "D#2": "Ds2.mp3",
-            "F#2": "Fs2.mp3",
-            A2: "A2.mp3",
-            C3: "C3.mp3",
-            "D#3": "Ds3.mp3",
-            "F#3": "Fs3.mp3",
-            A3: "A3.mp3",
-            C4: "C4.mp3",
-            "D#4": "Ds4.mp3",
-            "F#4": "Fs4.mp3",
-            A4: "A4.mp3",
-            C5: "C5.mp3",
-            "D#5": "Ds5.mp3",
-            "F#5": "Fs5.mp3",
-            A5: "A5.mp3",
-            C6: "C6.mp3",
-            "D#6": "Ds6.mp3",
-            "F#6": "Fs6.mp3",
-            A6: "A6.mp3",
-            C7: "C7.mp3",
-            "D#7": "Ds7.mp3",
-            "F#7": "Fs7.mp3",
-            A7: "A7.mp3",
-            C8: "C8.mp3"
-          },
-          release: 2,
-          baseUrl: "https://tonejs.github.io/audio/salamander/"
-        }).connect(pianoReverb);
-
-        const padFilter = new Tone.Filter({
-          frequency: 1100,
-          type: "lowpass",
-          rolloff: -12
-        }).connect(padGain);
-
-        const padReverb = new Tone.Reverb({
-          decay: 5,
-          wet: 0.35
-        }).connect(padFilter);
-
-        await padReverb.generate();
-
-        const pad = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: "triangle" },
-          envelope: {
-            attack: 1.1,
-            decay: 1.5,
-            sustain: 0.45,
-            release: 3.5
-          },
-          volume: -13
-        }).connect(padReverb);
-
-        const bassFilter = new Tone.Filter({
-          frequency: 240,
-          type: "lowpass"
-        }).connect(bassGain);
-
-        const bass = new Tone.MonoSynth({
-          oscillator: { type: "triangle" },
-          filter: {
-            Q: 1,
-            type: "lowpass",
-            rolloff: -24
-          },
-          envelope: {
-            attack: 0.02,
-            decay: 0.25,
-            sustain: 0.45,
-            release: 0.8
-          },
-          filterEnvelope: {
-            attack: 0.01,
-            decay: 0.2,
-            sustain: 0.15,
-            release: 0.5,
-            baseFrequency: 70,
-            octaves: 2
-          },
-          volume: -3
-        }).connect(bassFilter);
-
-        const bellReverb = new Tone.Reverb({
-          decay: 5.5,
-          preDelay: 0.02,
-          wet: 0.45
-        }).connect(bellsGain);
-
-        await bellReverb.generate();
-
-        const bells = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: "sine" },
-          envelope: {
-            attack: 0.008,
-            decay: 1.8,
-            sustain: 0.03,
-            release: 3.2
-          },
-          volume: -8
-        }).connect(bellReverb);
-
-        const kick = new Tone.MembraneSynth({
-          pitchDecay: 0.04,
-          octaves: 5,
-          oscillator: { type: "sine" },
-          envelope: {
-            attack: 0.001,
-            decay: 0.32,
-            sustain: 0.01,
-            release: 0.25
-          },
-          volume: -9
-        }).connect(drumsGain);
-
-        const snareFilter = new Tone.Filter({
-          frequency: 7500,
-          type: "highpass"
-        });
-
-        const snareReverb = new Tone.Reverb({
-          decay: 1.2,
-          wet: 0.12
-        }).connect(drumsGain);
-
-        await snareReverb.generate();
-
-        snareFilter.connect(snareReverb);
-
-        const snare = new Tone.NoiseSynth({
-          noise: { type: "pink" },
-          envelope: {
-            attack: 0.005,
-            decay: 0.18,
-            sustain: 0
-          },
-          volume: -18
-        }).connect(snareFilter);
-
-        const hat = new Tone.MetalSynth({
-          frequency: 240,
-          envelope: {
-            attack: 0.001,
-            decay: 0.07,
-            release: 0.01
-          },
-          harmonicity: 5.1,
-          modulationIndex: 24,
-          resonance: 3500,
-          octaves: 1.2,
-          volume: -24
-        }).connect(drumsGain);
-
-        const textureNoise = new Tone.Noise("pink");
-        const textureFilter = new Tone.Filter({
-          frequency: 1200,
-          type: "lowpass",
-          rolloff: -12
-        });
-
-        textureNoise.connect(textureFilter);
-        textureFilter.connect(textureGain);
-
-        instruments = {
-          master,
-          piano,
-          pianoGain,
-          bass,
-          bassGain,
-          drumsGain,
-          pad,
-          padGain,
-          bells,
-          bellsGain,
-          kick,
-          snare,
-          hat,
-          textureNoise,
-          textureGain
-        };
-
-        setChannelVolume("pianoVol", "pianoValue", pianoGain);
-        setChannelVolume("bassVol", "bassValue", bassGain);
-        setChannelVolume("drumsVol", "drumsValue", drumsGain);
-        setChannelVolume("padVol", "padValue", padGain);
-        setChannelVolume("bellsVol", "bellsValue", bellsGain);
-        setChannelVolume("textureVol", "textureValue", textureGain);
-
-        await Tone.loaded();
-
-        loaded = true;
-        $("playButton").disabled = false;
-        $("loadButton").textContent = "Звуки загружены";
-        setStatus("Готово. Можно запускать радио.");
-      } catch (error) {
-        console.error(error);
-        $("loadButton").disabled = false;
-        setStatus("Не удалось загрузить звуки. Проверь интернет и консоль браузера.");
-      }
-    }
-
-    function pick(array) {
-      return array[Math.floor(Math.random() * array.length)];
-    }
-
-    function generateBar(time) {
-      if (!playing) return;
-
-      const beat = 60 / BPM;
-      const barDuration = beat * 4;
-
-      if (barIndex % 16 === 0 && Math.random() < 0.7) {
-        currentProgression = Math.floor(
-          Math.random() * progressions.length
-        );
-      }
-
-      const progression = progressions[currentProgression];
-      const chord = progression[barIndex % progression.length];
-
-      // Пэд: длинный, мягкий аккорд на каждый такт.
-      instruments.pad.triggerAttackRelease(
-        chord,
-        "1m",
-        time,
-        0.28
-      );
-
-      // Пианино: арпеджио с небольшими изменениями.
-      const pianoPattern = Math.random() < 0.35
-        ? [0, 2, 1, 3, 2, 1]
-        : [0, 1, 2, 3, 2, 1];
-
-      let pianoNotesPlayed = 0;
-
-      for (let i = 0; i < pianoPattern.length; i++) {
-        const step = pianoPattern[i];
-
-        // Небольшие паузы, но мелодия не исчезает надолго.
-        if (Math.random() < 0.14 && pianoNotesPlayed >= 2) {
-          continue;
-        }
-
-        let note = chord[step % chord.length];
-
-        if (Math.random() < 0.3) {
-          note = pick(melodyNotes);
-        }
-
-        const noteTime = time + i * (beat * 0.66);
-        const velocity = 0.3 + Math.random() * 0.18;
-
-        instruments.piano.triggerAttackRelease(
-          note,
-          pick(["8n", "8n", "4n"]),
-          noteTime,
-          velocity
-        );
-
-        pianoNotesPlayed++;
-      }
-
-      // Защита от слишком пустого такта.
-      if (pianoNotesPlayed < 2) {
-        instruments.piano.triggerAttackRelease(
-          chord[1],
-          "4n",
-          time + beat,
-          0.35
-        );
-      }
-
-      // Бас: редкие корневые ноты.
-      const root = chord[0];
-
-      if (barIndex % 2 === 0 || Math.random() < 0.35) {
-        instruments.bass.triggerAttackRelease(
-          root,
-          "2n",
-          time,
-          0.5
-        );
-      }
-
-      // Ненавязчивый бит.
-      instruments.kick.triggerAttackRelease(
-        "C1",
-        "8n",
-        time,
-        0.55
-      );
-
-      instruments.kick.triggerAttackRelease(
-        "C1",
-        "8n",
-        time + beat * 2,
-        0.38
-      );
-
-      instruments.snare.triggerAttackRelease(
-        "8n",
-        time + beat,
-        0.3
-      );
-
-      instruments.snare.triggerAttackRelease(
-        "8n",
-        time + beat * 3,
-        0.34
-      );
-
-      // Хэты с лёгкими случайными пропусками.
-      for (let i = 0; i < 8; i++) {
-        if (Math.random() < 0.2) continue;
-
-        instruments.hat.triggerAttackRelease(
-          "C6",
-          "16n",
-          time + i * (beat / 2),
-          0.12 + Math.random() * 0.12
-        );
-      }
-
-      // КОЛОКОЛЬЧИКИ 2.2:
-      // играют в большинстве тактов, иногда двумя-тремя нотами.
-      // Вероятность появления слоя — 82%.
-      if (Math.random() < 0.82) {
-        const bellCount = Math.random() < 0.42 ? 2 : 1;
-        const firstBellTime = time + beat * (0.5 + Math.random() * 2.5);
-
-        const firstNote = pick(bellNotes);
-
-        instruments.bells.triggerAttackRelease(
-          firstNote,
-          pick(["8n", "4n"]),
-          firstBellTime,
-          0.42 + Math.random() * 0.15
-        );
-
-        if (bellCount === 2) {
-          let secondNote = pick(bellNotes);
-
-          if (Math.random() < 0.65) {
-            const index = bellNotes.indexOf(firstNote);
-            secondNote = bellNotes[
-              Math.min(bellNotes.length - 1, index + 2)
-            ];
-          }
-
-          const secondBellTime =
-            firstBellTime + beat * (0.5 + Math.random() * 0.75);
-
-          instruments.bells.triggerAttackRelease(
-            secondNote,
-            pick(["8n", "4n"]),
-            secondBellTime,
-            0.32 + Math.random() * 0.15
-          );
-        }
-      }
-
-      // Иногда добавляем маленький высокий ответ мелодии.
-      if (Math.random() < 0.28) {
-        instruments.piano.triggerAttackRelease(
-          pick(["E5", "G5", "A5", "C6"]),
-          "8n",
-          time + beat * (2.5 + Math.random()),
-          0.18
-        );
-      }
-
-      barIndex++;
-    }
-
-    async function startRadio() {
-      if (!loaded || playing) return;
-
+    loading = true;
+    loadButton.disabled = true;
+    say("Загружаем пианино и создаём инструменты…");
+
+    try {
       await Tone.start();
 
-      playing = true;
-      Tone.Transport.bpm.value = BPM;
-      Tone.Transport.timeSignature = 4;
-      Tone.Transport.cancel();
+      // Исходная цепочка обработки пианино из версии 2.1.
+      pianoGain = new Tone.Gain(0.8);
+      pianoFilter = new Tone.Filter({ type: "lowpass", frequency: 6200, rolloff: -12 });
+      const pianoHighpass = new Tone.Filter({ type: "highpass", frequency: 85, rolloff: -12 });
+      pianoCompressor = new Tone.Compressor({
+        threshold: -25, ratio: 2, attack: 0.025, release: 0.25
+      });
+      saturation = new Tone.Distortion(0.07);
+      saturation.wet.value = 0.16;
+      reverb = new Tone.Reverb({ decay: 3.2, wet: 0.2 });
 
-      instruments.textureNoise.start();
+      pianoGain.connect(pianoHighpass);
+      pianoHighpass.connect(pianoFilter);
+      pianoFilter.connect(pianoCompressor);
+      pianoCompressor.connect(saturation);
+      saturation.connect(reverb);
+      reverb.toDestination();
 
-      scheduledEvent = Tone.Transport.scheduleRepeat(
-        (time) => generateBar(time),
-        "1m",
-        0
-      );
+      effects.push(pianoGain, pianoHighpass, pianoFilter, pianoCompressor, saturation, reverb);
+      await reverb.generate();
 
-      Tone.Transport.start("+0.1");
+      piano = new Tone.Sampler({
+        urls: {
+          C3: "C3.mp3", "D#3": "Ds3.mp3", "F#3": "Fs3.mp3", A3: "A3.mp3",
+          C4: "C4.mp3", "D#4": "Ds4.mp3", "F#4": "Fs4.mp3", A4: "A4.mp3",
+          C5: "C5.mp3", "D#5": "Ds5.mp3", "F#5": "Fs5.mp3", A5: "A5.mp3",
+          C6: "C6.mp3"
+        },
+        baseUrl: "https://tonejs.github.io/audio/salamander/",
+        attack: 0.025,
+        release: 2.2
+      });
+      piano.connect(pianoGain);
+      piano.volume.value = -4;
 
-      $("visual").classList.add("playing");
-      $("playButton").disabled = true;
-      $("stopButton").disabled = false;
+      // Исходный мягкий пэд.
+      padGain = createGain(0.055);
+      const padFilter = new Tone.Filter({ type: "lowpass", frequency: 1100, rolloff: -12 });
+      pad = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.65, decay: 1.2, sustain: 0.22, release: 2.8 }
+      });
+      pad.volume.value = -17;
+      pad.connect(padFilter);
+      padFilter.connect(padGain);
+      effects.push(padFilter);
 
-      setStatus("Радио играет. Устраивайся поудобнее 🌙");
+      // Исходный бас.
+      bassGain = createGain(0.12);
+      const bassFilter = new Tone.Filter({ type: "lowpass", frequency: 155, rolloff: -24 });
+      bass = new Tone.Synth({
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.055, decay: 0.28, sustain: 0.12, release: 0.32 }
+      });
+      bass.connect(bassFilter);
+      bassFilter.connect(bassGain);
+      effects.push(bassFilter);
+
+      // Исходные ударные.
+      drumsGain = createGain(0.35);
+      kick = new Tone.MembraneSynth({
+        pitchDecay: 0.04,
+        octaves: 3,
+        oscillator: { type: "sine" },
+        envelope: { attack: 0.001, decay: 0.28, sustain: 0, release: 0.12 }
+      });
+      kick.volume.value = -3;
+      kick.connect(drumsGain);
+
+      snare = new Tone.NoiseSynth({
+        noise: { type: "pink" },
+        envelope: { attack: 0.002, decay: 0.13, sustain: 0, release: 0.025 }
+      });
+      snare.volume.value = -13;
+      snare.connect(drumsGain);
+
+      hats = new Tone.MetalSynth({
+        frequency: 220,
+        envelope: { attack: 0.001, decay: 0.07, release: 0.01 },
+        harmonicity: 5.1,
+        modulationIndex: 24,
+        resonance: 3200,
+        octaves: 1.5
+      });
+      hats.volume.value = -25;
+      hats.connect(drumsGain);
+
+      // Исходная текстура записи.
+      textureGain = createGain(0.012);
+      noiseHighpass = new Tone.Filter({ type: "highpass", frequency: 1800, rolloff: -12 });
+      noiseLowpass = new Tone.Filter({ type: "lowpass", frequency: 6500 });
+      noise = new Tone.Noise("pink");
+      noise.connect(noiseHighpass);
+      noiseHighpass.connect(noiseLowpass);
+      noiseLowpass.connect(textureGain);
+      effects.push(noiseHighpass, noiseLowpass);
+      noise.start();
+
+      // Новый слой колокольчиков. Он не меняет цепочки других инструментов.
+      bellsGain = new Tone.Gain(0.16);
+      bellsGain.toDestination();
+      bellReverb = new Tone.Reverb({ decay: 4.2, wet: 0.32 });
+      bells = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: "sine" },
+        envelope: { attack: 0.01, decay: 1.25, sustain: 0.02, release: 2.2 }
+      });
+      bells.volume.value = -13;
+      bells.connect(bellReverb);
+      bellReverb.connect(bellsGain);
+      effects.push(bellsGain, bellReverb);
+      await bellReverb.generate();
+
+      await Tone.loaded();
+
+      ready = true;
+      setControls();
+      updateMix();
+      say("Готово! Послушай пианино или запускай радио.");
+    } catch (error) {
+      console.error(error);
+      say("Ошибка загрузки: " + error.message);
+      loadButton.disabled = false;
+      disposeAudio();
+    } finally {
+      loading = false;
     }
+  }
 
-    function stopRadio() {
-      if (!playing) return;
+  function updateMix() {
+    const p = Number($("pianoVol").value);
+    const b = Number($("bassVol").value);
+    const d = Number($("drumsVol").value);
+    const t = Number($("textureVol").value);
+    const bv = Number($("bellsVol").value);
 
-      playing = false;
+    $("pianoOut").textContent = p + "%";
+    $("bassOut").textContent = b + "%";
+    $("drumsOut").textContent = d + "%";
+    $("textureOut").textContent = t + "%";
+    $("bellsOut").textContent = bv + "%";
 
+    if (pianoGain) pianoGain.gain.rampTo(p / 100, 0.08);
+    if (bassGain) bassGain.gain.rampTo((b / 100) * 0.35, 0.08);
+    if (drumsGain) drumsGain.gain.rampTo(d / 100, 0.08);
+    if (textureGain) textureGain.gain.rampTo((t / 100) * 0.048, 0.08);
+    if (bellsGain) bellsGain.gain.rampTo((bv / 100) * 0.16, 0.08);
+  }
+
+  function testPiano() {
+    if (!ready || playing) return;
+    const now = Tone.now() + 0.1;
+    piano.triggerAttackRelease(["C4", "D#4", "G4", "A#4", "D#5"], 4, now, 0.48);
+    piano.triggerAttackRelease(["G3", "C4"], 3.5, now + 0.08, 0.24);
+    say("Тест пианино: тёплый аккорд.");
+  }
+
+  function startRadio() {
+    if (!ready || playing) return;
+
+    try {
       Tone.Transport.stop();
       Tone.Transport.cancel();
+      Tone.Transport.bpm.value = BPM;
+      Tone.Transport.timeSignature = 4;
 
-      if (instruments.textureNoise) {
-        instruments.textureNoise.stop();
-      }
+      barNumber = 0;
+      previousNote = "G4";
+      currentProgression = choose(progressions);
 
-      Object.values(instruments).forEach((instrument) => {
-        if (instrument && typeof instrument.releaseAll === "function") {
-          try {
-            instrument.releaseAll();
-          } catch (error) {
-            // Некоторые синтезаторы не поддерживают releaseAll.
-          }
-        }
-      });
+      repeatId = Tone.Transport.scheduleRepeat((time) => {
+        generateBar(time);
+      }, "1m");
 
-      $("visual").classList.remove("playing");
-      $("playButton").disabled = false;
-      $("stopButton").disabled = true;
+      playing = true;
+      Tone.Transport.start("+0.1");
+      setControls();
+      say("Midnight FM играет: пианино, бас и мягкий бит.");
+    } catch (error) {
+      console.error(error);
+      playing = false;
+      setControls();
+      say("Не удалось запустить радио: " + error.message);
+    }
+  }
 
-      setStatus("Радио остановлено. Ночь подождёт.");
+  function generateBar(time) {
+    const position = barNumber % 4;
+    const phrasePosition = barNumber % 16;
+    const section = Math.floor(phrasePosition / 4);
+
+    if (barNumber > 0 && phrasePosition === 0) {
+      currentProgression = choose(progressions);
     }
 
-    $("loadButton").addEventListener("click", loadRadio);
-    $("playButton").addEventListener("click", startRadio);
-    $("stopButton").addEventListener("click", stopRadio);
-  </script>
+    const chord = currentProgression[position];
+    const breakdown = section === 3;
+    const lightSection = section === 1;
+
+    const chordVelocity = breakdown ? 0.15 : (lightSection ? 0.21 : 0.27);
+    piano.triggerAttackRelease(
+      chord.notes,
+      (breakdown ? 2.8 : 3.4) * beat,
+      time,
+      chordVelocity
+    );
+
+    pad.triggerAttackRelease(
+      chord.notes.map(note => Tone.Frequency(note).transpose(-12).toNote()),
+      "1m",
+      time,
+      breakdown ? 0.10 : (lightSection ? 0.12 : 0.15)
+    );
+
+    if (!breakdown && (position === 0 || position === 2)) {
+      bass.triggerAttackRelease(chord.root, "2n", time, 0.24);
+    } else if (breakdown && position === 0) {
+      bass.triggerAttackRelease(chord.root, "2n", time, 0.16);
+    }
+
+    if (!breakdown && !lightSection) {
+      if (Math.random() > 0.08) kick.triggerAttackRelease("C1", "8n", time, 0.42);
+      if (Math.random() > 0.28) kick.triggerAttackRelease("C1", "8n", time + 2 * beat, 0.29);
+      if (Math.random() > 0.12) snare.triggerAttackRelease("8n", time + beat, 0.20);
+      if (Math.random() > 0.15) snare.triggerAttackRelease("8n", time + 3 * beat, 0.19);
+    } else if (lightSection) {
+      if (position % 2 === 0) kick.triggerAttackRelease("C1", "8n", time, 0.28);
+      if (position === 3 && Math.random() > 0.35) snare.triggerAttackRelease("8n", time + 3 * beat, 0.13);
+    } else {
+      if (position === 0 && Math.random() > 0.45) kick.triggerAttackRelease("C1", "8n", time, 0.20);
+    }
+
+    const hatChance = breakdown ? 0.12 : (lightSection ? 0.24 : 0.48);
+    for (let i = 0; i < 8; i++) {
+      if (Math.random() < hatChance) {
+        hats.triggerAttackRelease(
+          "32n",
+          time + i * beat / 2 + (i % 2 ? beat * 0.018 : 0),
+          breakdown ? 0.055 : 0.09 + Math.random() * 0.05
+        );
+      }
+    }
+
+    const motifs = [
+      [0, 2, 4, 2],
+      [4, 3, 2, 1],
+      [0, 2, 3, 4],
+      [4, 2, 1, 0]
+    ];
+    const motif = motifs[position];
+    const slotsByBar = [
+      [0.5, 1.5, 2.5, 3.5],
+      [0.5, 1, 2.5, 3.5],
+      [1, 1.5, 2.5, 3],
+      [0.5, 2, 3.5]
+    ];
+    const slots = slotsByBar[position];
+    const chordTonePool = chord.notes.filter(note => scale.includes(note));
+    const safePool = chordTonePool.length ? chordTonePool : scale;
+
+    {
+      let notesScheduled = 0;
+      for (let i = 0; i < slots.length; i++) {
+        let note;
+        if (i < motif.length && Math.random() < 0.68) {
+          note = scale[motif[i]];
+        } else {
+          note = choose(safePool);
+        }
+
+        if (Math.random() < 0.22) {
+          const idx = scale.indexOf(note);
+          if (idx >= 0) {
+            const step = choose([-1, 1]);
+            note = scale[Math.max(0, Math.min(scale.length - 1, idx + step))];
+          }
+        }
+
+        if (Math.random() < (breakdown ? 0.20 : 0.09)) continue;
+
+        const velocity = breakdown
+          ? 0.10 + Math.random() * 0.05
+          : (lightSection ? 0.11 + Math.random() * 0.07 : 0.14 + Math.random() * 0.10);
+
+        piano.triggerAttackRelease(
+          note,
+          choose([0.45, 0.7, 1.0, 1.3]),
+          time + slots[i] * beat,
+          velocity
+        );
+        previousNote = note;
+        notesScheduled++;
+      }
+
+      if (notesScheduled < 2) {
+        const note = choose(safePool);
+        piano.triggerAttackRelease(note, 0.7, time + 2.5 * beat, breakdown ? 0.09 : 0.13);
+      }
+    }
+
+    if (!breakdown && Math.random() > 0.55) {
+      const note = choose(chord.notes);
+      piano.triggerAttackRelease(note, "8n", time + 3.5 * beat, 0.09);
+    }
+
+    // Колокольчики — единственное музыкальное изменение:
+    // чаще появляются, иногда отвечают второй нотой.
+    if (Math.random() < 0.60) {
+      const bellPool = ["C5", "D#5", "G5", "A#5", "C6"];
+      const firstBell = choose(bellPool);
+      const bellTime = time + choose([0.5, 1.5, 2.5, 3.5]) * beat;
+      const bellVelocity = breakdown ? 0.16 : (lightSection ? 0.19 : 0.22);
+
+      bells.triggerAttackRelease(firstBell, "8n", bellTime, bellVelocity);
+
+      if (Math.random() < 0.24) {
+        const secondBell = choose(bellPool.filter(note => note !== firstBell));
+        bells.triggerAttackRelease(
+          secondBell, "8n", bellTime + 0.5 * beat, bellVelocity * 0.78
+        );
+      }
+    }
+
+    barNumber++;
+  }
+
+  function stopRadio() {
+    if (!playing) return;
+    Tone.Transport.stop();
+    Tone.Transport.cancel();
+    repeatId = null;
+    playing = false;
+    setControls();
+    say("Радио остановлено.");
+  }
+
+  function disposeAudio() {
+    try {
+      Tone.Transport.stop();
+      Tone.Transport.cancel();
+    } catch (_) {}
+
+    for (const instrument of [piano, pad, bass, kick, snare, hats, noise, bells]) {
+      if (instrument) {
+        try { instrument.dispose(); } catch (_) {}
+      }
+    }
+
+    for (const effect of effects) {
+      try { effect.dispose(); } catch (_) {}
+    }
+
+    effects.length = 0;
+    piano = pad = bass = kick = snare = hats = noise = bells = null;
+    padGain = null;
+    bellsGain = null;
+    bellReverb = null;
+    ready = false;
+  }
+
+  loadButton.addEventListener("click", loadAudio);
+  chordButton.addEventListener("click", testPiano);
+  playButton.addEventListener("click", startRadio);
+  stopButton.addEventListener("click", stopRadio);
+
+  ["pianoVol", "bassVol", "drumsVol", "textureVol", "bellsVol"].forEach(id => {
+    $(id).addEventListener("input", updateMix);
+  });
+})();
+</script>
 </body>
 </html>
